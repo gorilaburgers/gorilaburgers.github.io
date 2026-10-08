@@ -297,20 +297,21 @@
       : D.programar && datos.cuando === 'programar' && !datos.hora ? 'Elige la hora a la que quieres tu pedido.' : '';
     if (falta) { err.textContent = falta; return; }
     err.textContent = '';
-    let numero = null;
+    let numero = null, urlWA = '';
     if (window.REST && !R) {
       const btn = $('#pd-enviar', h); btn.disabled = true; btn.textContent = 'Enviando…';
       const w = window.open('', '_blank'); if (w) w.opener = null;     // se abre antes de esperar a la base para que el navegador no bloquee WhatsApp
       try { numero = (await guardarEnBase()).numero; }
       catch (e) { if (w) w.close(); err.textContent = e.message; btn.disabled = false; btn.textContent = 'Enviar pedido por WhatsApp'; return; }
-      const texto = `Pedido #${numero}\n` + mensaje();
-      if (w) w.location.href = wa(D.waCliente, texto); else window.open(wa(D.waCliente, texto), '_blank', 'noopener');
-    } else window.open(wa(D.waCliente, mensaje()), '_blank', 'noopener');
+      urlWA = wa(D.waCliente, `Pedido #${numero}\n` + mensaje());
+      if (w) w.location.href = urlWA; else window.open(urlWA, '_blank', 'noopener');
+    } else { urlWA = wa(D.waCliente, mensaje()); window.open(urlWA, '_blank', 'noopener'); }
     guardarPrueba();
     abrirHoja(`
       <div class="pd-listo" aria-hidden="true">✓</div>
       <h2 class="pd-hoja-tit">${R ? 'Tu reserva se abrió en WhatsApp' : numero ? `Pedido #${numero} recibido` : 'Tu pedido se abrió en WhatsApp'}</h2>
       <p class="pd-sub">${R ? `Envía el mensaje. ${D.corto || D.cliente} te confirma el día y la hora.` : `${numero ? 'Ya lo recibimos. ' : ''}Envía el mensaje de WhatsApp para confirmarlo. ${D.corto || D.cliente} te responde con el tiempo${datos.tipo === 'domicilio' ? (envioActual() == null ? ' y el costo de envío' : ' de entrega') : ' de retiro'}.`}</p>
+      <a class="pd-btn pd-btn-sec pd-btn-full" href="${esc(urlWA)}" target="_blank" rel="noopener" style="text-align:center;text-decoration:none">¿No se abrió WhatsApp? Ábrelo aquí</a>
       <button type="button" class="pd-btn pd-btn-full" id="pd-nuevo">${R ? 'Hacer otra reserva' : 'Hacer otro pedido'}</button>`,
       hh => { $('#pd-nuevo', hh).onclick = () => { carrito.length = 0; actualizarBarra(); hh.close(); }; });
   }

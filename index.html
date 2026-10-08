@@ -269,6 +269,9 @@ document.querySelectorAll('[data-wa]').forEach(a => { a.href = wa(DEMO.waCliente
 ['ig', 'ig2'].forEach(i => document.getElementById(i).href = DEMO.instagram);
 { const fb = document.getElementById('fb'); if (fb) fb.href = DEMO.facebook; }
 P.pintarCarta('#carta-lista');
+/* Premium: envío por sector (todo Ambato) y pedido programado. El precio real sale de la base; si no responde, los datos del cliente. */
+{ const aplicar = ss => { DEMO.sectores = ss.map(z => ({ nombre: z.nombre, costo: z.costo_cent })); DEMO.programar = true; };
+  aplicar(RESTDATA.sectores); REST.rpc('carta').then(c => aplicar(c.sectores)).catch(() => {}); }
 { const q = new URLSearchParams(location.search).get('pedir'); if (q && P.items.has(q)) setTimeout(() => P.abrirProducto(q), 500); }   /* viene de la vitrina de burgers: «Pedir esta burger» */
 
 /* Diagnóstico: recomienda solo productos reales de la carta. Preguntas y reglas vienen de cliente.json → diag */
