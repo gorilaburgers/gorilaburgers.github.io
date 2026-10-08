@@ -3,12 +3,11 @@
 Sitio de **Gorila Burgers (Ambato)**, plan Premium. HTML/CSS/JS sin build; se publica con GitHub Pages: **push a `main` = publicado** en `https://gorilaburgers.github.io/`.
 
 ## Qué incluye
-Landing con carta y pedido (llevar o domicilio en todo Ambato) · vitrina de burgers · pantalla de ventas del equipo · dashboard del dueño en vivo · base de datos en Supabase.
+Página con vitrina de burgers, carta y pedido (llevar o domicilio en todo Ambato) · pantalla de ventas del equipo · dashboard del dueño en vivo · base de datos en Supabase.
 
 | Ruta | Qué es |
 |---|---|
-| `index.html` | Landing: carta, «¿Qué Gorila eres hoy?» y pedido (se guarda en la base y termina en WhatsApp) |
-| `burgers.html` | Vitrina de burgers |
+| `index.html` | Una sola página: vitrina de burgers arriba, «¿Qué Gorila eres hoy?», carta y pedido (se guarda en la base y termina en WhatsApp) |
 | `personal.html` | Pantalla de ventas del equipo (no aparece en Google) |
 | `dashboard.html` | Dashboard del dueño (no aparece en Google) |
 | `config.js` · `menu.js` | Datos del negocio (WhatsApp, horario) y carta |
