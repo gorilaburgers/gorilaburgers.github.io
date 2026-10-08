@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#092E2F">
+<link rel="icon" href="assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@300;700;800;900&amp;family=Big+Shoulders+Text:wght@400;600;700&amp;display=swap">
+<link rel="stylesheet" href="estilos/base.css">
+<link rel="stylesheet" href="efectos/base.css">
+<link rel="stylesheet" href="efectos/energia.css">
+<link rel="stylesheet" href="motor/pedido.css">
+<style>:root { --fx-bg: #F3EFD5; --fx-paper: #FBF8EA; --fx-accent: #D39B67; --fx-ink: #092E2F; --fx-deep: #092E2F; --fx-pop: #DCAF82; --fx-font: "Big Shoulders Text", "Arial Narrow", Arial, sans-serif; --fx-font-disp: "Big Shoulders Display", Impact, "Arial Narrow", sans-serif; --fx-font-txt: "Big Shoulders Text", "Arial Narrow", Arial, sans-serif; --fx-deep-2: #051c1d; --fx-line-deep: #1c4c4d; --fx-soft: #dfe3cf; --fx-soft-2: #b9c4b8; --fx-warm: #7a4a1f; --fx-chat: #e6ddd0; }</style>
+
+<title>Gorila Burgers Ambato · Burgers bestiales en FICOA</title>
+<meta name="description" content="Gorila Burgers Ambato, en FICOA frente al Parque de los Quindes. Descubre qué Gorila eres hoy, arma tu pedido y envíalo listo por WhatsApp.">
+<meta property="og:title" content="Gorila Burgers Ambato">
+<meta property="og:description" content="Burgers bestiales, calidad brutal. Arma tu pedido en 1 minuto y envíalo por WhatsApp.">
+<meta property="og:image" content="assets/og.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "Restaurant", "name": "Gorila Burgers Ambato", "servesCuisine": "Hamburguesas", "telephone": "+593987188071", "address": {"@type": "PostalAddress", "streetAddress": "FICOA, Las Frambuesas y Guaytambos, frente al Parque de los Quindes", "addressLocality": "Ambato", "addressRegion": "Tungurahua", "addressCountry": "EC"}, "sameAs": ["https://www.instagram.com/gorila_burgerambato/", "https://www.facebook.com/p/Gorila-Burger-61558488550023/"]}
+</script>
+<style>
+/* Hero */
+.hero { position: relative; overflow: hidden; }
+.hero .wrap { display: grid; gap: 28px; align-items: center; padding-block: clamp(28px, 5vw, 64px) clamp(44px, 6vw, 80px); grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); }
+.hero h1 { text-transform: uppercase; line-height: .84; }
+.hero h1 .fino { display: block; font: 300 clamp(2.4rem, 6.4vw, 4.6rem)/.9 var(--fx-font-disp); }
+.hero h1 .grueso { display: block; font: 900 clamp(4.2rem, 13vw, 9.6rem)/.84 var(--fx-font-disp); letter-spacing: .005em; }
+.hero .lead { margin-top: 20px; max-width: 40ch; font-size: 1.2rem; color: var(--fx-soft); }
+.hero-media { position: relative; justify-self: end; width: min(100%, 540px); }
+.hero-foto { aspect-ratio: 572 / 553; border-radius: 22px; overflow: hidden; box-shadow: 10px 10px 0 var(--fx-accent); }
+.hero-foto img { width: 100%; height: 100%; object-fit: cover; }
+.hero .sello { position: absolute; left: -34px; bottom: -26px; z-index: 2; }
+@media (max-width: 860px) {
+  .hero .wrap { grid-template-columns: 1fr; }
+  .hero-media { order: -1; justify-self: stretch; width: 100%; }
+  .hero-foto { aspect-ratio: 4 / 3.6; }
+  .hero .sello { left: auto; right: 10px; bottom: -22px; width: 108px; height: 108px; font-size: .98rem; }
+}
+
+/* Diagnóstico */
+.diag .wrap { display: grid; gap: clamp(28px, 5vw, 64px); grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); align-items: center; }
+@media (max-width: 860px) { .diag .wrap { grid-template-columns: 1fr; } }
+.caja { background: var(--fx-paper); border: 3px solid var(--fx-deep); border-radius: 20px; box-shadow: 8px 8px 0 var(--fx-deep); padding: clamp(20px, 3vw, 30px); min-height: 440px; display: flex; flex-direction: column; gap: 16px; }
+.caja-cab { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 2px dashed color-mix(in srgb, var(--fx-deep) 30%, transparent); }
+.caja-cab img { width: 42px; height: 42px; border-radius: 50%; }
+.caja-cab b { display: block; font: 900 1.3rem/1 var(--fx-font-disp); text-transform: uppercase; }
+.caja-cab small { font-size: .95rem; }
+.prog { display: flex; align-items: center; gap: 12px; font: 700 .95rem var(--fx-font-txt); }
+.prog .pista { flex: 1; height: 8px; border-radius: 99px; background: color-mix(in srgb, var(--fx-deep) 15%, transparent); overflow: hidden; }
+.prog .pista div { height: 100%; background: var(--fx-accent); border-radius: 99px; transition: width .35s var(--fx-ease); }
+.caja h3 { font: 900 clamp(1.8rem, 4vw, 2.4rem)/.95 var(--fx-font-disp); text-transform: uppercase; }
+.ops { display: grid; gap: 10px; }
+.op { display: flex; align-items: center; gap: 12px; min-height: 58px; padding: 10px 16px; text-align: left; background: #fff; border: 2px solid var(--fx-deep); border-radius: 12px; font: 700 1.12rem/1.2 var(--fx-font-txt); color: var(--fx-ink); cursor: pointer; transition: transform .2s var(--fx-ease), box-shadow .2s; box-shadow: 3px 3px 0 var(--fx-deep); }
+.op:active { transform: translate(3px, 3px); box-shadow: none; }
+.op small { display: block; font-weight: 400; font-size: .95rem; }
+.enlace { align-self: flex-start; min-height: 44px; border: 0; background: none; font: 700 1.05rem var(--fx-font-txt); color: var(--fx-ink); cursor: pointer; padding: 0; text-decoration: underline; text-underline-offset: 3px; }
+.reco { background: var(--fx-deep); color: var(--fx-bg); border-radius: 14px; padding: 18px; }
+.reco small { color: var(--fx-pop); font: 700 .95rem var(--fx-font-txt); }
+.reco b { display: block; font: 900 clamp(2.1rem, 5vw, 2.8rem)/.9 var(--fx-font-disp); text-transform: uppercase; margin: 6px 0; }
+.reco p { color: var(--fx-soft); }
+.reco .precio { font: 900 1.8rem/1 var(--fx-font-disp); color: var(--fx-pop); margin-top: 10px; }
+
+/* Cómo pides */
+.pasos { display: grid; gap: 30px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); margin-top: 44px; }
+.paso { display: flex; gap: 16px; align-items: flex-start; }
+.paso .ico { color: var(--fx-pop); }
+.paso b { font: 300 1.1rem var(--fx-font-disp); color: var(--fx-pop); }
+.paso h3 { font: 800 1.6rem/1 var(--fx-font-disp); text-transform: uppercase; margin: 2px 0 6px; }
+.paso p { color: var(--fx-soft); }
+
+/* Galería */
+.galeria { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); margin-top: 40px; }
+.galeria figure { margin: 0; border-radius: 18px; border: 3px solid var(--fx-bg); aspect-ratio: 1 / 1; }
+.galeria img { width: 100%; height: 100%; object-fit: cover; }
+.galeria figure:nth-child(2) { transform: rotate(1.5deg); } .galeria figure:nth-child(3) { transform: rotate(-1.5deg); }
+
+/* Qué cambia */
+.cambia { display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); margin-top: 40px; }
+.chat { border-radius: 20px; padding: 18px; background: var(--fx-chat); border: 3px solid var(--fx-deep); }
+.chat h3 { font: 800 1.4rem/1 var(--fx-font-disp); text-transform: uppercase; margin-bottom: 12px; display: flex; gap: 10px; align-items: center; }
+.burbuja { max-width: 88%; padding: 9px 12px; border-radius: 12px; margin: 8px 0; font: 400 1.02rem/1.35 var(--fx-font-txt); background: #fff; white-space: pre-line; }
+.burbuja.yo { margin-left: auto; background: #d9fdd3; }
+.chat.despues { background: var(--fx-deep); }
+.chat.despues h3 { color: var(--fx-bg); }
+
+/* Dónde */
+.donde { display: grid; gap: 30px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; }
+@media (max-width: 860px) { .donde { grid-template-columns: 1fr; } }
+.dato { display: flex; gap: 14px; align-items: center; margin-top: 16px; font-size: 1.15rem; }
+.dato .ico { width: 50px; height: 50px; }
+
+/* Cierre */
+.cierre { overflow: hidden; text-align: center; }
+.cierre .contorno { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); white-space: nowrap; }
+.cierre .wrap { position: relative; }
+.cierre .acciones { justify-content: center; }
+.demo-links { display: flex; flex-wrap: wrap; gap: 8px 18px; justify-content: center; margin-top: 22px; font-size: 1.02rem; }
+</style>
+</head>
+<body data-pagina="Landing (Pro)" data-secciones='["Inicio", "¿Qué Gorila eres hoy?", "Cómo pides", "Carta", "Galería", "Qué cambia", "Dónde estamos", "Cierre"]'>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="i-reloj" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6 7-11.5a7 7 0 0 0-14 0C5 15 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
+  <symbol id="i-tel" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></symbol>
+  <symbol id="i-burger" viewBox="0 0 24 24"><path d="M4 10a8 5 0 0 1 16 0z"/><path d="M3.5 13.5h17M4 17h16a0 0 0 0 1 0 0 3 3 0 0 1-3 3H7a3 3 0 0 1-3-3z"/><path d="M9 7h.01M13 6.5h.01M15.5 8h.01"/></symbol>
+  <symbol id="i-bolsa" viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></symbol>
+  <symbol id="i-moto" viewBox="0 0 24 24"><circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M9 17h5l2-6h-4M16 11l2 6M12 11 10 7H7"/></symbol>
+  <symbol id="i-envio" viewBox="0 0 24 24"><path d="M21 4 3 11l7 3 3 7z"/><path d="m10 14 4-4"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></symbol>
+  <symbol id="i-web" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="1.5"/><path d="M3.5 9h17M7 6.8h.01M9.5 6.8h.01"/></symbol>
+  <symbol id="i-ok" viewBox="0 0 24 24"><path d="m5 12 4.5 4.5L19 7"/></symbol>
+  <symbol id="i-pago" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="1.5"/><path d="M3 10h18M7 14h3"/></symbol>
+  <symbol id="i-llave" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="1.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-foto" viewBox="0 0 24 24"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+  <symbol id="i-lista" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></symbol>
+  <symbol id="i-copa" viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8.5 20h7"/></symbol>
+  <symbol id="i-qr" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="6" height="6" rx="1"/><rect x="14.5" y="3.5" width="6" height="6" rx="1"/><rect x="3.5" y="14.5" width="6" height="6" rx="1"/><path d="M14.5 14.5h2v2h-2zM18.5 14.5h2M14.5 18.5h2M18.5 18.5v2"/></symbol>
+  <symbol id="i-estrella" viewBox="0 0 24 24"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.8 6.8 19.6l1-5.8-4.3-4.1 5.9-.9z"/></symbol>
+  <symbol id="i-tarjeta" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M3 10h18M7 15h4"/></symbol>
+  <symbol id="i-caja" viewBox="0 0 24 24"><path d="M6 3.5h12v5H6zM4 8.5h16l-1.5 11h-13z"/><path d="M9 13h6"/></symbol>
+  <symbol id="i-equipo" viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3"/><circle cx="17" cy="9.5" r="2.3"/><path d="M3.5 19c.5-3.5 2.7-5.5 5.5-5.5s5 2 5.5 5.5M15 14.2c2.6-.4 4.7 1 5.5 4.3"/></symbol>
+  <symbol id="i-juego" viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8.5 20h7"/></symbol>
+  <symbol id="i-agenda" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4M8 14h2M13 14h3M8 17h2"/></symbol>
+  <symbol id="i-panel" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></symbol>
+</defs></svg>
+
+
+<div class="barra"><div class="wrap">
+  <div class="datos">
+    <span class="ocultable"><svg><use href="#i-reloj"/></svg>Lunes a sábado <span class="pend">[CONFIRMAR horario]</span></span>
+    <span><svg><use href="#i-pin"/></svg>FICOA · frente al Parque de los Quindes</span>
+    <span class="ocultable"><svg><use href="#i-tel"/></svg>098 718 8071</span>
+  </div>
+  <a href="#carta">Pedir ahora</a>
+</div></div>
+
+<header class="cabecera"><div class="wrap">
+  <a class="marca" href="#inicio"><img src="assets/logo.webp" alt="" width="52" height="52"><span><b>Gorila</b><small>Burgers · Ambato</small></span></a>
+  <nav aria-label="Principal"><a href="burgers.html">Las burgers</a><a href="#diagnostico">¿Qué Gorila eres?</a><a href="#carta">Carta</a><a href="#como">Cómo pides</a><a href="#donde">Dónde</a></nav>
+</div></header>
+
+<main>
+<section class="hero oscuro" id="inicio"><div class="wrap">
+  <div>
+    <h1><span class="fino fx-entra fx-d1">Burgers bestiales</span><span class="grueso fx-golpe">Calidad brutal</span></h1>
+    <p class="lead fx-entra fx-d3">En FICOA, frente al Parque de los Quindes. Elige tu burger, dinos si es para llevar o a domicilio y tu pedido llega completo al WhatsApp de Gorila.</p>
+    <div class="acciones fx-entra fx-d4">
+      <a class="btn" href="#diagnostico">¿Qué Gorila eres hoy?</a>
+      <a class="btn btn-linea" href="#carta">Ver la carta</a>
+    </div>
+  </div>
+  <div class="hero-media fx-entra fx-d2">
+    <div class="hero-foto"><img src="assets/neon-hongos.webp" alt="Hamburguesa con champiñones, queso fundido y cebolla crocante, con la banderita de Gorila frente a su neón" width="572" height="553" fetchpriority="high"></div>
+    <div class="sello fx-sello-in"><div>Territorio Gorila<small>FICOA · Ambato</small></div></div>
+  </div>
+</div></section>
+
+<div class="cinta" aria-label="Burgers de la carta"><div class="cinta-pista">
+  <ul><li>Gorila Texas</li><li>SuperGuesa</li><li>Jam Smash</li><li>Hawayana</li><li>Tocino BBQ</li><li>Cheese Burger</li><li>Mini Gorila</li><li>Cheese Bacon Fries</li></ul>
+  <ul aria-hidden="true"><li>Gorila Texas</li><li>SuperGuesa</li><li>Jam Smash</li><li>Hawayana</li><li>Tocino BBQ</li><li>Cheese Burger</li><li>Mini Gorila</li><li>Cheese Bacon Fries</li></ul>
+</div></div>
+
+<section class="sec papel diag" id="diagnostico"><div class="wrap">
+  <div data-reveal>
+    <h2 class="doble"><span>Aquí cada burger tiene personalidad</span>¿Qué Gorila eres hoy?</h2>
+    <p class="intro">Tres preguntas y te decimos cuál pedir. La agregas a tu pedido con un toque y eliges si es para llevar o a domicilio.</p>
+  </div>
+  <div class="caja" id="caja-diag" aria-live="polite"></div>
+</div></section>
+
+<section class="sec oscuro" id="como"><div class="wrap">
+  <h2 class="doble" data-reveal><span>Así pides</span>en un minuto</h2>
+  <div class="pasos" data-stagger>
+    <div class="paso"><span class="ico"><svg><use href="#i-burger"/></svg></span><div><b>1</b><h3>Elige tu burger</h3><p>Desde la carta o con “¿Qué Gorila eres hoy?”. Súmale los extras que quieras.</p></div></div>
+    <div class="paso"><span class="ico"><svg><use href="#i-bolsa"/></svg></span><div><b>2</b><h3>Llevar o domicilio</h3><p>Retiras en el local o te lo llevamos. Si es a domicilio, compartes tu ubicación con un toque.</p></div></div>
+    <div class="paso"><span class="ico"><svg><use href="#i-envio"/></svg></span><div><b>3</b><h3>Envías y listo</h3><p>Tu pedido llega a WhatsApp con todo: burgers, extras, total y dirección.</p></div></div>
+    
+  </div>
+</div></section>
+
+<section class="sec" id="carta"><div class="wrap">
+  <h2 class="doble" data-reveal><span>Esto no es un menú</span>es territorio Gorila</h2>
+  <p class="intro" data-reveal>Toca “Agregar” en lo que se te antoje. Tu pedido se arma abajo.</p>
+  <div id="carta-lista" style="margin-top:36px"></div>
+</div></section>
+
+<section class="sec oscuro" id="galeria"><div class="wrap">
+  <h2 class="doble" data-reveal><span>Así sale</span>de la plancha</h2>
+  <div class="galeria" data-stagger>
+    <figure class="fx-zoom"><img src="assets/doble-tocino.webp" alt="Hamburguesa de doble carne con queso cheddar y tocino, con papas" width="458" height="464" loading="lazy"></figure>
+    <figure class="fx-zoom"><img src="assets/smash-plancha.webp" alt="Hamburguesa smash con queso fundido y cebolla caramelizada en pan con ajonjolí negro" width="571" height="453" loading="lazy"></figure>
+    <figure class="fx-zoom"><img src="assets/this-is-gorila.webp" alt="Hamburguesa con papas en la mesa del local, frente al neón This is Gorila" width="563" height="694" loading="lazy" style="object-position:60% 40%"></figure>
+    
+  </div>
+</div></section>
+
+<section class="sec papel" id="cambia"><div class="wrap">
+  <h2 class="doble" data-reveal><span>Tu pedido llega</span>completo a la primera</h2>
+  <p class="intro" data-reveal>Sin idas y vueltas por mensaje: la web arma el pedido por ti.</p>
+  <div class="cambia" data-stagger>
+    <div class="chat"><h3><span class="ico" style="width:40px;height:40px"><svg style="width:20px;height:20px"><use href="#i-chat"/></svg></span>Antes</h3>
+      <div class="burbuja yo">Hola, info</div><div class="burbuja yo">¿Precio de la Texas?</div><div class="burbuja">Hola 🦍 $7.90 con papas</div><div class="burbuja yo">¿Y hacen domicilio?</div><div class="burbuja yo">¿Qué extras tienen?</div>
+    </div>
+    <div class="chat despues"><h3><span class="ico" style="width:40px;height:40px"><svg style="width:20px;height:20px"><use href="#i-envio"/></svg></span>Ahora</h3>
+      <div class="burbuja yo">Hola Gorila Burgers, quiero hacer un pedido desde la web 🦍🍔
+
+1 × Gorila Texas + papas — $9.40
+   + Tocino
+1 × Lemon Sun — $1.90
+
+Total: $11.30
+Tipo: Para llevar
+Retiro: En 30 minutos</div>
+    </div>
+  </div>
+</div></section>
+
+<section class="sec arena" id="donde"><div class="wrap donde">
+  <div data-reveal>
+    <h2 class="doble"><span>Ven al</span>territorio Gorila</h2>
+    <div class="dato"><span class="ico"><svg><use href="#i-pin"/></svg></span><span>FICOA, Las Frambuesas y Guaytambos, frente al Parque de los Quindes, Ambato</span></div>
+    <div class="dato"><span class="ico"><svg><use href="#i-reloj"/></svg></span><span>Lunes a sábado <span class="pend">[CONFIRMAR horario por día]</span></span></div>
+    <div class="acciones">
+      <a class="btn" href="https://www.google.com/maps/search/?api=1&amp;query=Gorila+Burgers+FICOA+Ambato" target="_blank" rel="noopener">Cómo llegar</a>
+      <a class="btn btn-linea" id="ig" target="_blank" rel="noopener">Instagram</a>
+    </div>
+  </div>
+  <div class="oscuro" style="border-radius:20px;padding:clamp(22px,3vw,32px);box-shadow:8px 8px 0 var(--fx-deep);border:3px solid var(--fx-deep)" data-reveal>
+    <h3 style="font:900 2rem/.95 var(--fx-font-disp);text-transform:uppercase">Pedidos por WhatsApp</h3>
+    <p style="font:900 clamp(2.4rem,7vw,3.4rem)/1 var(--fx-font-disp);color:var(--fx-pop);margin:10px 0 6px">098 718 8071</p>
+    <div class="dato"><span class="ico" style="color:var(--fx-pop)"><svg><use href="#i-bolsa"/></svg></span><span>Para llevar: pides en la web y pasas a retirar.</span></div>
+    <div class="dato"><span class="ico" style="color:var(--fx-pop)"><svg><use href="#i-moto"/></svg></span><span>A domicilio <span class="pend">[CONFIRMAR si hacen domicilio y a qué sectores]</span></span></div>
+    <div class="acciones"><a class="btn" data-wa="Hola Gorila, quiero hacer un pedido.">Escribir a Gorila</a></div>
+  </div>
+</div></section>
+
+<section class="sec oscuro cierre"><div class="contorno" aria-hidden="true">Gorila</div><div class="wrap">
+  <h2 class="doble" data-reveal><span>¿Hambre de campeonato?</span>Pide tu Gorila</h2>
+  <div class="acciones"><a class="btn" href="#carta">Armar mi pedido</a><a class="btn btn-linea" data-wa="Hola Gorila, quiero hacer una consulta.">Escribir por WhatsApp</a></div>
+  
+</div></section>
+</main>
+
+<footer><div class="wrap">
+  <img src="assets/logo.webp" alt="Gorila Burgers" width="64" height="64" loading="lazy">
+  <div>Gorila Burgers Ambato · FICOA, frente al Parque de los Quindes · 098 718 8071<br>
+  <a id="ig2" target="_blank" rel="noopener">Instagram</a> · <a id="fb" target="_blank" rel="noopener">Facebook</a></div>
+</div></footer>
+
+<a class="wa-flot" data-wa="Hola Gorila, quiero hacer un pedido." aria-label="Escribir a Gorila Burgers por WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.3-.5 0-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg></a>
+
+
+<script src="config.js"></script>
+<script src="menu.js"></script>
+<script src="modulos/restaurante/restaurante-datos.js"></script>
+<script src="modulos/restaurante/rest-ui.js"></script>
+
+<script src="modulos/restaurante/rest-api.js"></script>
+<script src="motor/pedido.js"></script>
+<script>
+const P = Pedido, esc = P.esc, plata = P.plata;
+const wa = (n, t) => `https://wa.me/${String(n).replace(/\D/g, '')}?text=${encodeURIComponent(t)}`;
+document.querySelectorAll('[data-wa]').forEach(a => { a.href = wa(DEMO.waCliente, a.dataset.wa); a.target = '_blank'; a.rel = 'noopener'; });
+['ig', 'ig2'].forEach(i => document.getElementById(i).href = DEMO.instagram);
+{ const fb = document.getElementById('fb'); if (fb) fb.href = DEMO.facebook; }
+P.pintarCarta('#carta-lista');
+{ const q = new URLSearchParams(location.search).get('pedir'); if (q && P.items.has(q)) setTimeout(() => P.abrirProducto(q), 500); }   /* viene de la vitrina de burgers: «Pedir esta burger» */
+
+/* Diagnóstico: recomienda solo productos reales de la carta. Preguntas y reglas vienen de cliente.json → diag */
+const DIAG = {"titulo": "¿Qué Gorila eres hoy?", "sub": "3 preguntas · 30 segundos", "fino": "Aquí cada burger tiene personalidad", "intro": "Tres preguntas y te decimos cuál pedir. La agregas a tu pedido con un toque y eliges si es para llevar o a domicilio.", "hoy": "Hoy eres", "preguntas": [{"clave": "hambre", "texto": "¿Cuánta hambre traes?", "opciones": [{"valor": "antojo", "texto": "Un antojo", "detalle": "Algo rico sin exagerar"}, {"valor": "seria", "texto": "Hambre seria", "detalle": "Vengo a comer bien"}, {"valor": "campeonato", "texto": "Hambre de campeonato", "detalle": "Que no sobre nada"}]}, {"clave": "sabor", "texto": "¿Qué sabor te llama hoy?", "opciones": [{"valor": "clasico", "texto": "El clásico que no falla", "detalle": "Carne, queso y salsa Kong"}, {"valor": "tocino", "texto": "Tocino y BBQ", "detalle": "Ahumado y con fuego"}, {"valor": "smash", "texto": "Smash con cebolla caramelizada", "detalle": "Carne aplastada y queso derretido"}, {"valor": "dulce", "texto": "Dulce y atrevido", "detalle": "Con piña"}]}, {"clave": "quien", "texto": "¿Para quién es?", "opciones": [{"valor": "yo", "texto": "Para mí"}, {"valor": "peque", "texto": "Para un peque", "detalle": "Porción de su tamaño"}, {"valor": "compartir", "texto": "Para compartir", "detalle": "Vamos varios"}]}], "reglas": [{"si": {"quien": "peque", "hambre": "antojo"}, "id": "mini"}, {"si": {"quien": "peque"}, "id": "cheese"}, {"si": {"sabor": "dulce"}, "id": "hawayana"}, {"si": {"sabor": "smash"}, "id": "jam"}, {"si": {"sabor": "tocino", "hambre": "campeonato"}, "id": "texas"}, {"si": {"sabor": "tocino"}, "id": "tocino"}, {"si": {"hambre": "antojo"}, "id": "cheese"}], "defecto": "superguesa", "compartir": {"clave": "quien", "valor": "compartir", "id": "cbfries", "texto": "Para el centro de la mesa:"}};
+const preguntas = DIAG.preguntas.map(q => ({ k: q.clave, t: q.texto, ops: q.opciones.map(o => [o.valor, o.texto, o.detalle || '']) }));
+function recomendar(r) {
+  for (const g of DIAG.reglas) if (Object.entries(g.si).every(([k, v]) => r[k] === v)) return g.id;
+  return DIAG.defecto;
+}
+const s = { paso: 0, r: {} }, caja = document.getElementById('caja-diag'), N = preguntas.length;
+const cab = `<div class="caja-cab"><img src="assets/logo.webp" alt="" width="42" height="42"><div><b>${esc(DIAG.titulo)}</b><small>${esc(DIAG.sub)}</small></div></div>`;
+function pintar() {
+  if (s.paso < N) {
+    const q = preguntas[s.paso];
+    caja.innerHTML = `${cab}<div class="prog"><span>Paso ${s.paso + 1} de ${N}</span><div class="pista"><div style="width:${s.paso / N * 100}%"></div></div></div>
+      <div class="fx-paso" style="display:flex;flex-direction:column;gap:14px"><h3>${esc(q.t)}</h3>
+      <div class="ops">${q.ops.map(([v, t, d]) => `<button type="button" class="op" data-v="${esc(v)}"><span>${esc(t)}${d ? `<small>${esc(d)}</small>` : ''}</span></button>`).join('')}</div>
+      ${s.paso ? '<button type="button" class="enlace" id="volver">Volver</button>' : ''}</div>`;
+    requestAnimationFrame(() => requestAnimationFrame(() => { caja.querySelector('.pista div').style.width = ((s.paso + 1) / N * 100) + '%'; }));
+    caja.querySelectorAll('.op').forEach(b => b.onclick = () => { s.r[q.k] = b.dataset.v; s.paso++; pintar(); });
+    const v = document.getElementById('volver'); if (v) v.onclick = () => { s.paso--; pintar(); };
+  } else {
+    const id = recomendar(s.r), it = P.items.get(id);
+    const comp = s.r[DIAG.compartir.clave] === DIAG.compartir.valor ? P.items.get(DIAG.compartir.id) : null;
+    caja.innerHTML = `${cab}<div class="fx-paso" style="display:flex;flex-direction:column;gap:14px">
+      <div class="reco"><small>${esc(DIAG.hoy)}</small><b>${esc(it.nombre)}</b>${it.lema ? `<p><strong>${esc(it.lema)}.</strong></p>` : ''}
+        <p>${it.desc ? esc(it.desc) : '<span class="pend">[CONFIRMAR ingredientes]</span>'}</p><div class="precio">${plata(it.precio)}</div></div>
+      ${comp ? `<p>${esc(DIAG.compartir.texto)} <strong>${esc(comp.nombre)}</strong> por ${plata(comp.precio)}.</p>` : ''}
+      <button type="button" class="btn" id="add-reco">Agregar a mi pedido</button>
+      ${comp ? `<button type="button" class="btn btn-linea" id="add-comp">Sumar ${esc(comp.nombre)}</button>` : ''}
+      <div style="display:flex;gap:18px;flex-wrap:wrap"><a class="enlace" href="#carta">Ver toda la carta</a><button type="button" class="enlace" id="otra">Probar otra vez</button></div></div>`;
+    document.getElementById('add-reco').onclick = () => P.abrirProducto(id);
+    const c = document.getElementById('add-comp'); if (c) c.onclick = () => { P.abrirProducto(DIAG.compartir.id); c.disabled = true; c.textContent = 'Agregadas ✓'; };
+    document.getElementById('otra').onclick = () => { s.paso = 0; s.r = {}; pintar(); };
+  }
+}
+pintar();
+</script>
+<script src="fx.js"></script>
+
+</body>
+</html>

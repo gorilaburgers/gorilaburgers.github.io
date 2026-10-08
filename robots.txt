@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /personal.html
+Disallow: /dashboard.html
+Sitemap: https://gorilaburgers.github.io/sitemap.xml
