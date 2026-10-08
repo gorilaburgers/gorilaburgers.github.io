@@ -288,6 +288,71 @@ dialog.rest-dialogo::backdrop { background: rgba(0, 0, 0, .65); }
 dialog.rest-dialogo h2 { font: 800 1.5rem/1 var(--fx-font-disp); text-transform: uppercase; margin-bottom: 12px; }
 dialog.rest-dialogo .acc { display: flex; gap: 10px; margin-top: 14px; justify-content: flex-end; }
 
+
+/* ====================== PÁGINA COMPLETA EN ESTILO VITRINA (body.rb-pagina) ======================
+   La landing de un cliente con el módulo de restaurante usa la vitrina como inicio y el resto de las secciones en el mismo estilo oscuro:
+   fondos petróleo, titulares de dos pesos, píldoras en vez de sombras duras, tarjetas de línea fina. Solo variables --fx-* de la marca. */
+body.rb-pagina { background: var(--fx-deep-2); color: var(--fx-bg); }
+.rb-pagina .sec { background: var(--fx-deep-2); color: var(--fx-bg); }
+.rb-pagina .sec.papel, .rb-pagina .sec.arena, .rb-pagina .sec.oscuro.alt { background: var(--fx-deep); }
+.rb-pagina .oscuro { color: var(--fx-bg); }
+.rb-pagina .intro, .rb-pagina .pd-desc { color: var(--fx-soft-2); }
+.rb-pagina .doble span { color: var(--fx-pop); }
+.rb-pagina .sec + .sec { border-top: 1px solid var(--fx-line-deep); }
+.rb-pagina :focus-visible { outline-color: var(--fx-pop); }
+/* botones: píldora de acento o de contorno */
+.rb-pagina .btn { border-radius: 999px; border-color: var(--fx-accent); background: var(--fx-accent); background-image: none; color: var(--fx-deep); box-shadow: none; letter-spacing: .06em; }
+.rb-pagina .btn.btn-linea, .rb-pagina .oscuro .btn.btn-linea { background: transparent; color: var(--fx-bg); border: 2px solid var(--fx-bg); box-shadow: none; }
+.rb-pagina .btn:active, .rb-pagina .oscuro .btn:active { transform: scale(.97); box-shadow: none; }
+/* diagnóstico «¿Qué Gorila eres hoy?» */
+.rb-pagina .caja { background: color-mix(in srgb, var(--fx-deep) 78%, var(--fx-deep-2)); border: 1px solid var(--fx-line-deep); border-radius: 26px; box-shadow: none; }
+.rb-pagina .caja-cab { border-bottom: 1px solid var(--fx-line-deep); }
+.rb-pagina .prog .pista { background: color-mix(in srgb, var(--fx-bg) 14%, transparent); }
+.rb-pagina .op { background: color-mix(in srgb, var(--fx-bg) 6%, transparent); border: 1px solid var(--fx-line-deep); border-radius: 16px; color: var(--fx-bg); box-shadow: none; }
+.rb-pagina .op:active { transform: scale(.98); }
+.rb-pagina .op small { color: var(--fx-soft-2); }
+.rb-pagina .enlace { color: var(--fx-bg); }
+.rb-pagina .reco { background: var(--fx-accent); color: var(--fx-deep); border-radius: 18px; }
+.rb-pagina .reco small, .rb-pagina .reco p, .rb-pagina .reco .precio { color: var(--fx-deep); }
+.rb-pagina .paso p, .rb-pagina .cierre p { color: var(--fx-soft-2); }
+/* carta y pedido */
+.rb-pagina .pd-cat h2 .fino { color: var(--fx-pop); }
+.rb-pagina .pd-item { background: color-mix(in srgb, var(--fx-deep) 78%, var(--fx-deep-2)); border: 1px solid var(--fx-line-deep); border-radius: 20px; box-shadow: none; color: var(--fx-bg); }
+.rb-pagina .pd-lema { color: var(--fx-pop); }
+.rb-pagina .pd-lista .pd-item .pd-foto { border-radius: 14px; }
+.rb-pagina .pd-temporada { background: color-mix(in srgb, var(--fx-deep) 78%, var(--fx-deep-2)); border: 1px solid var(--fx-line-deep); border-radius: 24px; box-shadow: none; }
+.rb-pagina .pd-btn, .rb-pagina .pd-btn.pd-btn-full { border-radius: 999px; border-color: var(--fx-accent); box-shadow: none; letter-spacing: .05em; }
+.rb-pagina .pd-btn-sec { background: transparent; color: var(--fx-bg); border-color: var(--fx-bg); }
+.rb-pagina .pd-btn:active { transform: scale(.97); box-shadow: none; }
+.rb-pagina .pd-marca { background: var(--fx-marca-bg); color: var(--fx-marca-ink); }
+.rb-pagina .pd-barra { background: color-mix(in srgb, var(--fx-deep-2) 92%, transparent); backdrop-filter: blur(8px); border-top: 1px solid var(--fx-line-deep); }
+/* hoja del pedido (dialog): oscura, con campos de línea fina */
+.rb-pagina .pd-hoja { background: var(--fx-deep); color: var(--fx-bg); border: 1px solid var(--fx-line-deep); }
+.rb-pagina .pd-hoja::backdrop { background: rgba(0, 0, 0, .7); }
+.rb-pagina .pd-cerrar, .rb-pagina .pd-hoja .pd-sub { color: var(--fx-bg); }
+.rb-pagina .pd-op > span, .rb-pagina .pd-chip > span { background: color-mix(in srgb, var(--fx-bg) 6%, transparent); border: 1px solid var(--fx-line-deep); color: var(--fx-bg); }
+.rb-pagina .pd-op input:checked + span, .rb-pagina .pd-chip input:checked + span { background: var(--fx-accent); border-color: var(--fx-accent); color: var(--fx-deep); box-shadow: none; }
+.rb-pagina .pd-op small { color: inherit; opacity: .85; }
+.rb-pagina .pd-campo input, .rb-pagina .pd-campo select { background: var(--fx-deep-2); color: var(--fx-bg); border: 1px solid var(--fx-line-deep); }
+.rb-pagina .pd-mini { background: transparent; border-color: var(--fx-line-deep); color: var(--fx-bg); }
+.rb-pagina .pd-linea { border-bottom: 1px solid var(--fx-line-deep); }
+.rb-pagina .pd-total { border-top: 1px solid var(--fx-line-deep); }
+.rb-pagina .pd-error { color: #ff9a9a; }
+.rb-pagina .pd-listo { background: var(--fx-accent); color: var(--fx-deep); }
+.rb-pagina .pd-cuenta { background: var(--fx-deep); color: var(--fx-bg); }
+/* qué cambia, galería, dónde, cierre */
+.rb-pagina .chat { background: color-mix(in srgb, var(--fx-deep) 78%, var(--fx-deep-2)); border: 1px solid var(--fx-line-deep); border-radius: 24px; }
+.rb-pagina .chat h3 { color: var(--fx-bg); }
+.rb-pagina .burbuja { color: #14201f; }
+.rb-pagina .chat.despues { background: color-mix(in srgb, var(--fx-bg) 8%, var(--fx-deep)); }
+.rb-pagina .galeria figure { border: 1px solid var(--fx-line-deep); border-radius: 24px; }
+.rb-pagina #donde .oscuro[data-reveal] { border: 1px solid var(--fx-line-deep) !important; box-shadow: none !important; border-radius: 24px !important; background: color-mix(in srgb, var(--fx-deep-2) 60%, var(--fx-deep)); }
+.rb-pagina .ico { border-width: 1.5px; }
+.rb-pagina footer { background: var(--fx-deep-2); color: var(--fx-soft-2); border-top: 1px solid var(--fx-line-deep); }
+/* cabecera de la vitrina que acompaña al bajar (aparece con fondo al salir del hero) */
+.rb-cab.fijo { position: fixed; background: color-mix(in srgb, var(--fx-deep-2) 90%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--fx-line-deep); }
+.rb-cab.fijo .wrap { min-height: 66px; }
+
 @media (prefers-reduced-motion: reduce) {
   .rb-slide, .rb-glow, .rb-filas, .rest-tip, .rd-atenuado { transition: none; }
   .rb-fila span, .rb-sello svg.giro, .rd-vivo i, .rd-feed .nuevo { animation: none; }

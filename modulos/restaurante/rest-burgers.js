@@ -34,22 +34,24 @@
     $('#rb-det-txt').textContent = b.intro;
     const q = b.id ? quedan(b.id) : null, ag = b.id ? agotada(b.id) : false;
     $('#rb-quedan').innerHTML = b.id && q != null ? `<span class="rb-quedan ${ag ? 'agotado' : q <= R.stock_bajo ? 'bajo' : ''}"><i></i>${ag ? esc(T.agotada) : esc(T.quedan.replace('{n}', q))}</span>` : '';
-    const pedir = $('#rb-pedir'); pedir.textContent = T.pedir_esta; pedir.href = b.id ? `index.html?pedir=${encodeURIComponent(b.id)}#carta` : 'index.html#carta';
-    if (!b.id) { pedir.textContent = T.consultar; pedir.href = `https://wa.me/${window.DEMO.waCliente}?text=${encodeURIComponent(b.wa_texto || '')}`; }
+    /* «Pedir esta burger» abre el pedido con esa burger (si lleva extras, la hoja de extras); la de temporada se consulta por WhatsApp */
+    const pedir = $('#rb-pedir'); pedir.textContent = T.pedir_esta; pedir.href = '#carta'; pedir.onclick = null; pedir.removeAttribute('target');
+    if (b.id) pedir.onclick = e => { if (window.Pedido) { e.preventDefault(); window.Pedido.abrirProducto(b.id); } };
+    else { pedir.textContent = T.consultar; pedir.href = `https://wa.me/${window.DEMO.waCliente}?text=${encodeURIComponent(b.wa_texto || '')}`; pedir.target = '_blank'; pedir.rel = 'noopener'; }
   }
 
   $('#rb-ant').onclick = () => pintar(i - 1); $('#rb-sig').onclick = () => pintar(i + 1);
   document.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') pintar(i - 1); if (e.key === 'ArrowRight') pintar(i + 1); });
-  let x0 = null; const h = $('#rb-hero');
+  let x0 = null; const h = $('.rb-hero');
   h.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true });
   h.addEventListener('touchend', e => { if (x0 == null) return; const dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 45) pintar(i + (dx < 0 ? 1 : -1)); x0 = null; });
   const dlg = $('#rb-menu'); $('#rb-abrir').onclick = () => dlg.showModal(); $$('a', dlg).forEach(a => a.addEventListener('click', () => dlg.close()));
-  $$('[data-pedir]').forEach(a => a.href = V[i] && V[i].id ? `index.html?pedir=${encodeURIComponent(V[i].id)}#carta` : 'index.html#carta');
+  const cab = $('.rb-cab'); if (cab) { const f = () => cab.classList.toggle('fijo', window.scrollY > 140); addEventListener('scroll', f, { passive: true }); f(); }
   pintar(0, true);
 
   /* ---------- categorías en fila ---------- */
   const cats = R.categorias.map(c => { const v = V.find(b => b.id && c.ids.includes(b.id)); return { ...c, corte: v && v.corte, alt: v && v.alt }; });
-  $('#rb-cats').innerHTML = cats.map(c => `<a class="rb-cat" href="index.html#cat-${esc(c.id)}"><div class="foto">${c.corte ? `<img src="${esc(c.corte)}" alt="" loading="lazy">` : `<img class="marca-agua" src="${esc(R.logo)}" alt="" loading="lazy">`}</div>
+  $('#rb-cats').innerHTML = cats.map(c => `<a class="rb-cat" href="#cat-${esc(c.id)}"><div class="foto">${c.corte ? `<img src="${esc(c.corte)}" alt="" loading="lazy">` : `<img class="marca-agua" src="${esc(R.logo)}" alt="" loading="lazy">`}</div>
     <h3>${esc(c.nombre)} <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18L18 6M8 6h10v10"/></svg></h3><p>${esc(c.sub)}</p></a>`).join('');
 
   /* ---------- contador LED ---------- */
