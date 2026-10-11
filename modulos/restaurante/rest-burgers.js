@@ -5,7 +5,10 @@
   let i = 0, carta = null;
   const noMov = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  slides.innerHTML = V.map((b, n) => `<div class="rb-slide" data-n="${n}" role="group" aria-roledescription="diapositiva" aria-label="${n + 1} de ${V.length}"><img src="${esc(b.corte)}" alt="${esc(b.alt)}" ${n ? 'loading="lazy"' : ''}></div>`).join('');
+  /* la primera burger ya viene en el HTML (es lo que más tarda en pintarse): se conserva y solo se agregan las demás */
+  const estatica = slides.querySelector('.rb-slide');
+  if (estatica) estatica.setAttribute('aria-label', `1 de ${V.length}`);
+  slides.insertAdjacentHTML('beforeend', V.map((b, n) => estatica && n === 0 ? '' : `<div class="rb-slide" data-n="${n}" role="group" aria-roledescription="diapositiva" aria-label="${n + 1} de ${V.length}"><img src="${esc(b.corte)}" alt="${esc(b.alt)}" ${n ? 'loading="lazy"' : ''}></div>`).join(''));
   glows.innerHTML = V.map(b => `<div class="rb-glow" style="--g:${esc(b.glow)}"></div>`).join('');
 
   const quedan = id => carta && (carta.productos.find(p => p.clave === id) || {}).quedan;
@@ -46,7 +49,9 @@
   h.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true });
   h.addEventListener('touchend', e => { if (x0 == null) return; const dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 45) pintar(i + (dx < 0 ? 1 : -1)); x0 = null; });
   const dlg = $('#rb-menu'); $('#rb-abrir').onclick = () => dlg.showModal(); $$('a', dlg).forEach(a => a.addEventListener('click', () => dlg.close()));
-  const cab = $('.rb-cab'); if (cab) { const f = () => cab.classList.toggle('fijo', window.scrollY > 140); addEventListener('scroll', f, { passive: true }); f(); }
+  /* cabecera fija al bajar: un observador, sin leer el scroll (evita un reflow forzado al cargar) */
+  const cab = $('.rb-cab'), centinela = $('#rb-centinela');
+  if (cab && centinela && 'IntersectionObserver' in window) new IntersectionObserver(([e]) => cab.classList.toggle('fijo', !e.isIntersecting && e.boundingClientRect.top < 0)).observe(centinela);
   pintar(0, true);
 
   /* ---------- categorías en fila ---------- */

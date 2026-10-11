@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#12324A">
 <link rel="icon" href="assets/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@300;700;800;900&amp;family=Big+Shoulders+Text:wght@400;600;700&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@300;700;800;900&amp;family=Big+Shoulders+Text:wght@400;600;700&amp;display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@300;700;800;900&amp;family=Big+Shoulders+Text:wght@400;600;700&amp;display=swap"></noscript>
 <link rel="stylesheet" href="estilos/base.css">
 <link rel="stylesheet" href="efectos/base.css">
 <link rel="stylesheet" href="efectos/energia.css">
@@ -15,6 +15,7 @@
 <style>:root { --fx-bg: #F3EFD5; --fx-paper: #FBF8EA; --fx-accent: #D39B67; --fx-ink: #12324A; --fx-deep: #12324A; --fx-pop: #DCAF82; --fx-font: "Big Shoulders Text", "Arial Narrow", Arial, sans-serif; --fx-font-disp: "Big Shoulders Display", Impact, "Arial Narrow", sans-serif; --fx-font-txt: "Big Shoulders Text", "Arial Narrow", Arial, sans-serif; --fx-deep-2: #0A2234; --fx-line-deep: #295573; --fx-soft: #dfe5e8; --fx-soft-2: #b6c5cf; --fx-warm: #7a4a1f; --fx-chat: #e6ddd0; }</style>
 
 <link rel="stylesheet" href="modulos/restaurante/rest.css">
+<link rel="preload" as="image" href="assets/corte-texas.webp" fetchpriority="high">
 <title>Gorila Burgers Ambato · Burgers bestiales en FICOA</title>
 <meta name="description" content="Gorila Burgers Ambato, en FICOA frente al Parque de los Quindes. Descubre qué Gorila eres hoy, arma tu pedido y envíalo listo por WhatsApp.">
 <meta property="og:title" content="Gorila Burgers Ambato">
@@ -163,9 +164,10 @@
     <a class="rb-pill lleno" href="#carta" data-pedir>Pedir ahora</a>
   </div>
 </div></header>
+  <div id="rb-centinela" aria-hidden="true" style="position:absolute;top:140px;left:0;width:1px;height:1px;pointer-events:none"></div>
   <div id="rb-glows" aria-hidden="true"></div>
   <div class="rb-filas" id="rb-filas" aria-hidden="true"></div>
-  <div class="rb-escena" id="rb-escena"></div>
+  <div class="rb-escena" id="rb-escena"><div class="rb-slide on" data-n="0" role="group" aria-roledescription="diapositiva" aria-label="1"><img src="assets/corte-texas.webp" alt="Hamburguesa Gorila Texas de doble carne con queso cheddar y tocino, con la banderita de Gorila" width="428" height="425" fetchpriority="high" decoding="async"></div></div>
   <div class="rb-pie">
     <div class="rb-texto" aria-live="polite">
       <p class="rb-intro" id="rb-intro"></p>
