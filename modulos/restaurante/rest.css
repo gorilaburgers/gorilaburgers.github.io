@@ -5,6 +5,9 @@ body.rest-oscuro { background: var(--fx-deep-2); color: var(--fx-bg); padding-bo
 .rest-oscuro .cabecera { background: color-mix(in srgb, var(--fx-deep-2) 88%, transparent); backdrop-filter: blur(8px); }
 .rest-oscuro a:focus-visible, .rest-oscuro button:focus-visible, .rest-oscuro input:focus-visible { outline: 3px solid var(--fx-pop); outline-offset: 3px; }
 [hidden] { display: none !important; }
+/* las pantallas del local (dashboard y ventas) se navegan entre sí: el menú de la cabecera no se oculta en el celular */
+.rest-oscuro .cabecera nav { display: flex; flex-wrap: wrap; justify-content: flex-end; }
+@media (max-width: 560px) { .rest-oscuro .cabecera .wrap { flex-wrap: wrap; row-gap: 0; padding-block: 6px; } .rest-oscuro .cabecera nav a { padding: 0 9px; font-size: .95rem; min-height: 40px; } .rest-oscuro .marca small { display: none; } }
 
 /* ====================== VITRINA DE BURGERS (la que ve el cliente) ====================== */
 /* Estructura de la referencia (filas gigantes del nombre detrás de la burger, pie con frase + nombre + flechas, menú a pantalla completa, contador LED)

@@ -47,7 +47,7 @@
     const R = window.RESTDATA, esDemo = window.REST.modo === 'demo';
     const mostrarEntrada = (aviso) => {
       raiz.hidden = false; raiz.innerHTML = `<div class="rest-entrar"><h2>${esc(titulo)}</h2><p>${esc(texto)}</p>${aviso ? `<p class="rest-error" role="alert">${esc(aviso)}</p>` : ''}
-        ${esDemo ? `<p class="rest-chip-demo">Demo: elige con quién entrar</p><div class="rest-usuarios">${R.demo.usuarios.filter(u => roles.includes(u.rol)).map((u, i) => `<button type="button" class="rest-btn" data-u="${i}">${esc(u.nombre)}<small>${u.rol === 'admin' ? 'Dueño' : 'Empleado'}</small></button>`).join('')}</div>`
+        ${esDemo ? `<p class="rest-chip-demo">Demo: elige con quién entrar</p><div class="rest-usuarios">${R.demo.usuarios.filter(u => roles.includes(u.rol)).map((u, i) => `<button type="button" class="rest-btn" data-u="${i}">${esc(u.nombre)}${(u.rol === 'admin' ? 'Dueño' : 'Empleado') === u.nombre ? '' : `<small>${u.rol === 'admin' ? 'Dueño' : 'Empleado'}</small>`}</button>`).join('')}</div>`
         : `<form class="rest-form" autocomplete="on"><label>Correo<input type="email" name="correo" autocomplete="username" required></label><label>Clave<input type="password" name="clave" autocomplete="current-password" required></label><button class="rest-btn" type="submit">Entrar</button></form>`}</div>`;
       if (esDemo) $$('[data-u]', raiz).forEach(b => b.onclick = () => { window.REST.entrarDemo(R.demo.usuarios.filter(u => roles.includes(u.rol))[+b.dataset.u]); verificar(); });
       else $('form', raiz).onsubmit = async e => { e.preventDefault(); const f = e.target, btn = $('button', f); btn.disabled = true;

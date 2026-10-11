@@ -224,7 +224,7 @@
       (window.REST ? campo('celular', 'Tu celular', 'type="tel" inputmode="tel" autocomplete="tel" placeholder="09XXXXXXXX" required') : '') +
       (datos.tipo === 'llevar'
         ? `<label class="pd-campo"><span>¿Cuándo pasas?</span><select id="pd-retiro">${['Lo antes posible', 'En 30 minutos', 'En 1 hora'].map(o => `<option ${o === datos.retiro ? 'selected' : ''}>${o}</option>`).join('')}</select></label>`
-        : (sectores() ? `<label class="pd-campo"><span>Sector</span><select id="pd-sector"><option value="">Elige tu sector</option>${sectores().map(z => `<option ${z.nombre === datos.sector ? 'selected' : ''} value="${esc(z.nombre)}">${esc(z.nombre)} · envío ${plata(z.costo)}</option>`).join('')}</select></label>` : '') +
+        : (sectores() ? `<label class="pd-campo"><span>Sector</span><select id="pd-sector"><option value="">Elige tu sector</option>${sectores().map(z => `<option ${z.nombre === datos.sector ? 'selected' : ''} value="${esc(z.nombre)}">${esc(z.nombre)} · envío ${plata(z.costo)}${z.ejemplo ? ' (ejemplo)' : ''}</option>`).join('')}</select></label>` : '') +
           campo('direccion', 'Dirección', 'autocomplete="street-address" required') +
           campo('referencia', 'Referencia (casa, color, junto a…)') +
           `<button type="button" class="pd-btn pd-btn-sec" id="pd-ubi">${datos.ubicacion ? 'Ubicación agregada ✓' : 'Usar mi ubicación'}</button><p class="pd-sub" id="pd-ubi-estado"></p>`) +
