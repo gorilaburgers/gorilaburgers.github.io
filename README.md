@@ -31,10 +31,8 @@ Página con vitrina de burgers, carta y pedido (llevar o domicilio en todo Ambat
 3. Después el dueño da de alta a cada empleado desde su sesión: `select gorila_burgers.equipo_guardar('correo@ejemplo.com', 'Nombre', 'vendedor');` (rol `vendedor` = empleado, `admin` = dueño).
 4. Empleados entran en `personal.html`; el dueño, en `dashboard.html`. Cada día el dueño carga el stock en el dashboard («Cargar stock de hoy»).
 
-## Mini juego «Gorila arriba» (premio: cerveza)
-- Está en la sección «Juega y espera» de la página. Quien llega a la cerveza recibe un código de 6 caracteres (vale 7 días, 1 premio por celular y día).
-- **Canje:** el empleado entra a `personal.html` › pestaña **Premios**, escribe el código y elige la venta de hoy que respalda el canje (compra mínima $5,00; una venta sirve para un solo canje).
-- **Dueño:** en `dashboard.html` ve partidas, ganadores, canjeados y códigos pendientes, y ajusta premios por día, dificultad (normal = gana ~1 de 10) y apagar el juego.
+## Mini juego «Gorila arriba»
+Está en la sección «Juega y espera» de la página. Es solo para pasar el rato mientras llega el pedido: no pide datos, no tiene premio y no usa la base de datos.
 
 ## Contador público (opcional)
 Para mostrar «hamburguesas vendidas en <año>» en la vitrina: el dueño corre `select gorila_burgers.contador_publico_guardar(true);`. Viene apagado.
