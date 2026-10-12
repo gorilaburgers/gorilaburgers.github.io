@@ -8,13 +8,14 @@
     jugar: 'Jugar', lleva: 'Llega hasta la cerveza', regla: 'Esquiva las hamburguesas que bajan de la plancha. Solo 1 de cada 10 lo logra.', empezar: 'Empezar', nombre: 'Tu nombre', celular: 'Tu celular',
     privacidad: 'Usamos tu celular solo para tu premio y para limitar las partidas.', ganaste: '¡Llegaste a la cerveza!', perdiste: 'Te alcanzó una hamburguesa', otra: 'Intentar otra vez', cerrar: 'Volver',
     canje: 'Muestra este código en el local con tu compra (mínimo {min}) y la cerveza es tuya. Vale {dias} días.', wa: 'Avisar por WhatsApp', sin_cupo: 'Hoy ya se entregaron todos los premios. ¡Vuelve mañana!',
+    brindis: '¡Brindis! Llegaste a la cerveza', mejor: 'Tu mejor marca: piso {n} de 5', pide: 'Armar mi pedido', mientras: 'Mientras esperas tu pedido, sube hasta la cerveza.',
     invalida: 'No pudimos validar tu partida. Inténtalo otra vez.', apagado: 'El juego no está disponible por ahora.', quedan: 'Te quedan {n} partidas hoy.', sube: '¡Sube!'
   }, window.RESTDATA.juego_txt || {});
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const lee = k => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } };
   const guarda = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* sin almacenamiento */ } };
   const plata = c => '$' + (c / 100).toFixed(2).replace('.', ',');
-  const demo = REST.modo === 'demo';
+  const demo = REST.modo === 'demo', PREMIO = !!window.RESTDATA.juego_premio;   // sin premio: solo para pasar el rato, no pide datos ni toca la base
   const col = k => getComputedStyle(document.documentElement).getPropertyValue(k).trim();
   const C = { bg: col('--fx-bg') || '#F3EFD5', deep: col('--fx-deep') || '#12324A', deep2: col('--fx-deep-2') || '#0A2234', acc: col('--fx-accent') || '#D39B67', line: col('--fx-line-deep') || '#295573' };
   let estado = null, sesion = lee('gorila_jugador') || {}, facil = false;
@@ -78,11 +79,11 @@
     document.body.classList.remove('jg-jugando');
     raiz.innerHTML = `<div class="jg-tarjeta"><div class="jg-vista"></div><div class="jg-texto">
       <h3>${esc(T.lleva)}</h3><p>${esc(T.regla)}</p>
-      <ul class="jg-lista"><li>${esc(estado ? estado.premio : '')}</li></ul>
+      ${PREMIO ? `<ul class="jg-lista"><li>${esc(estado ? estado.premio : '')}</li></ul>` : (lee('gorila_mejor') ? `<p class="jg-nota">${esc(T.mejor.replace('{n}', lee('gorila_mejor')))}</p>` : '')}
       <button type="button" class="btn jg-ir" id="jg-jugar">${esc(T.jugar)}</button>
       ${demo ? '<label class="jg-facil"><input type="checkbox" id="jg-facil"> Modo fácil (solo en la demo, para ver cómo se gana)</label>' : ''}</div></div>`;
     const { ctx } = lienzo(raiz.querySelector('.jg-vista')), g = N.crear({ semilla: 5 }); for (let i = 0; i < 60 * 5; i++) g.paso(1 / 60); dibujar(ctx, g, 0.4);
-    raiz.querySelector('#jg-jugar').onclick = registro;
+    raiz.querySelector('#jg-jugar').onclick = PREMIO ? registro : () => jugar({ semilla: Math.floor(Math.random() * 2147483646) + 1, dificultad: 1, token: null });
     const fa = raiz.querySelector('#jg-facil'); if (fa) fa.onchange = () => { facil = fa.checked; };
     if (estado && !estado.activo) { raiz.querySelector('#jg-jugar').disabled = true; raiz.querySelector('.jg-texto p').textContent = T.apagado; }
   }
@@ -125,6 +126,10 @@
     const cierra = async () => {
       if (fin) return; fin = true; salir();
       await new Promise(r => setTimeout(r, 650));
+      if (!PREMIO) {   // solo para pasar el rato: se guarda la mejor marca en este celular y se muestra el resultado
+        const piso = g.j.max + 1; const mejor = lee('gorila_mejor') || 0; if (piso > mejor) guarda('gorila_mejor', piso);
+        resultado({ resultado: g.resultado === 'gano' ? 'brindis' : 'perdio', piso }, p); return;
+      }
       try { resultado(await REST.rpc('juego_terminar', { p_token: p.token, p_gano: g.resultado === 'gano', p_hitos: g.resultado === 'gano' ? g.hitos : null }), p); }
       catch (x) { resultado({ resultado: 'error', mensaje: x.message }, p); }
     };
@@ -144,7 +149,9 @@
   function resultado(r, p) {
     const quedan = Math.max(0, (p.partidas_restantes || 0));
     let cuerpo;
-    if (r.resultado === 'gano') {
+    if (r.resultado === 'brindis') cuerpo = `<h3>${esc(T.brindis)}</h3><p>${esc(T.mientras)}</p><a class="btn jg-ir" href="#carta">${esc(T.pide)}</a>`;
+    else if (!PREMIO && r.resultado === 'perdio') cuerpo = `<h3>${esc(T.perdiste)}</h3><p>Llegaste al piso ${r.piso} de 5.</p>`;
+    else if (r.resultado === 'gano') {
       const num = window.DEMO && window.DEMO.waCliente, min = plata(estado && estado.compra_min_cent != null ? estado.compra_min_cent : 500);
       const txt = encodeURIComponent(`Hola Gorila, gané la ${r.premio} jugando en la web. Mi código es ${r.codigo} (${sesion.nombre || ''}).`);
       cuerpo = `<h3>${esc(T.ganaste)}</h3><p class="jg-premio">${esc(r.premio)}</p><p class="jg-codigo" aria-label="Tu código">${esc(r.codigo)}</p>
@@ -154,11 +161,12 @@
     else if (r.resultado === 'invalido') cuerpo = `<h3>${esc(T.perdiste)}</h3><p>${esc(T.invalida)}</p>`;
     else if (r.resultado === 'error') cuerpo = `<h3>${esc(T.perdiste)}</h3><p>${esc(r.mensaje)}</p>`;
     else cuerpo = `<h3>${esc(T.perdiste)}</h3><p>${quedan ? esc(T.quedan.replace('{n}', quedan)) : ''}</p>`;
-    const otra = r.resultado === 'gano' || (r.resultado !== 'gano_sin_cupo' && quedan === 0 && r.resultado !== 'error') ? '' : `<button type="button" class="btn jg-ir" id="jg-otra">${esc(T.otra)}</button>`;
+    const otra = !PREMIO ? `<button type="button" class="btn jg-ir" id="jg-otra">${esc(T.otra)}</button>` : r.resultado === 'gano' || (r.resultado !== 'gano_sin_cupo' && quedan === 0 && r.resultado !== 'error') ? '' : `<button type="button" class="btn jg-ir" id="jg-otra">${esc(T.otra)}</button>`;
     raiz.innerHTML = `<div class="jg-tarjeta jg-fin"><div class="jg-texto" role="status">${cuerpo}${otra}<button type="button" class="enlace" id="jg-volver">${esc(T.cerrar)}</button></div></div>`;
-    const o = raiz.querySelector('#jg-otra'); if (o) o.onclick = () => registro();
+    const o = raiz.querySelector('#jg-otra'); if (o) o.onclick = () => PREMIO ? registro() : portada();
     raiz.querySelector('#jg-volver').onclick = portada;
   }
 
-  REST.rpc('juego_estado').then(e => { estado = e; portada(); }).catch(() => { estado = { activo: false, premio: '' }; portada(); });
+  if (PREMIO) REST.rpc('juego_estado').then(e => { estado = e; portada(); }).catch(() => { estado = { activo: false, premio: '' }; portada(); });
+  else { estado = { activo: true, premio: '' }; portada(); }
 })();
