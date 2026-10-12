@@ -22,7 +22,7 @@ Página con vitrina de burgers, carta y pedido (llevar o domicilio en todo Ambat
 
 ## Base de datos (Supabase)
 1. Crear el proyecto. Authentication › **desactivar «Allow new users to sign up»**. Settings › API › **Exposed schemas**: agregar `gorila_burgers`.
-2. Correr `supabase/migrations/001` a `006` **en orden** (SQL Editor).
+2. Correr `supabase/migrations/001` a `007` **en orden** (SQL Editor). La 007 es el mini juego «Gorila arriba».
 3. Poner la URL y la clave **anon** del proyecto en `modulos/restaurante/restaurante-datos.js` (o en la configuración de producción de la agencia y regenerar). **Nunca la clave `service_role`.**
 
 ## Dar de alta al personal
@@ -30,6 +30,11 @@ Página con vitrina de burgers, carta y pedido (llevar o domicilio en todo Ambat
 2. El primer dueño recibe el rol con la línea comentada al final de `supabase/migrations/006_semilla.sql`.
 3. Después el dueño da de alta a cada empleado desde su sesión: `select gorila_burgers.equipo_guardar('correo@ejemplo.com', 'Nombre', 'vendedor');` (rol `vendedor` = empleado, `admin` = dueño).
 4. Empleados entran en `personal.html`; el dueño, en `dashboard.html`. Cada día el dueño carga el stock en el dashboard («Cargar stock de hoy»).
+
+## Mini juego «Gorila arriba» (premio: cerveza)
+- Está en la sección «Juega y espera» de la página. Quien llega a la cerveza recibe un código de 6 caracteres (vale 7 días, 1 premio por celular y día).
+- **Canje:** el empleado entra a `personal.html` › pestaña **Premios**, escribe el código y elige la venta de hoy que respalda el canje (compra mínima $5,00; una venta sirve para un solo canje).
+- **Dueño:** en `dashboard.html` ve partidas, ganadores, canjeados y códigos pendientes, y ajusta premios por día, dificultad (normal = gana ~1 de 10) y apagar el juego.
 
 ## Contador público (opcional)
 Para mostrar «hamburguesas vendidas en <año>» en la vitrina: el dueño corre `select gorila_burgers.contador_publico_guardar(true);`. Viene apagado.
