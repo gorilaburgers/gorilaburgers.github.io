@@ -147,8 +147,8 @@
   </nav>
   <footer>
     <p><a href="https://www.instagram.com/gorila_burgerambato/" rel="noopener">Instagram</a><br><a href="https://www.facebook.com/p/Gorila-Burger-61558488550023/" rel="noopener">Facebook</a><br>FICOA · frente al Parque de los Quindes</p>
-    <a class="rb-sello" href="#carta" aria-label="Pedir ahora">
-      <svg class="giro" viewBox="0 0 200 200" aria-hidden="true"><defs><path id="rb-circ" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0"/></defs><text><textPath href="#rb-circ">Pedir ahora · Pedir ahora · Pedir ahora ·</textPath></text></svg>
+    <a class="rb-sello" href="#carta" aria-label="Ver menú">
+      <svg class="giro" viewBox="0 0 200 200" aria-hidden="true"><defs><path id="rb-circ" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0"/></defs><text><textPath href="#rb-circ">Ver menú · Ver menú · Ver menú ·</textPath></text></svg>
       <svg class="flecha" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18L18 6M8 6h10v10"/></svg>
     </a>
   </footer>
@@ -161,8 +161,8 @@
     <button type="button" class="rb-menu-btn" id="rb-abrir" aria-label="Abrir el menú" aria-haspopup="dialog"><i></i><i></i><i></i></button>
   </div>
   <div class="rb-cab-der">
-    <a class="rb-pill solo-grande" href="#carta">Ver la carta</a>
-    <a class="rb-pill lleno" href="#carta" data-pedir>Pedir ahora</a>
+    
+    <a class="rb-pill lleno" href="#carta" data-pedir>Ver menú</a>
   </div>
 </div></header>
   <div id="rb-centinela" aria-hidden="true" style="position:absolute;top:140px;left:0;width:1px;height:1px;pointer-events:none"></div>
@@ -304,6 +304,17 @@ document.querySelectorAll('[data-wa]').forEach(a => { a.href = wa(DEMO.waCliente
 ['ig', 'ig2'].forEach(i => document.getElementById(i).href = DEMO.instagram);
 { const fb = document.getElementById('fb'); if (fb) fb.href = DEMO.facebook; }
 P.pintarCarta('#carta-lista');
+/* Garra: al tocar «Ver menú» aparecen tres zarpazos y luego baja a la carta. Sin movimiento reducido, navega directo. */
+document.querySelectorAll('[data-pedir]').forEach(a => a.addEventListener('click', e => {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches || a.dataset.garra) return;
+  e.preventDefault(); a.dataset.garra = '1';
+  const g = document.createElement('div'); g.className = 'fx-garra'; g.setAttribute('aria-hidden', 'true');
+  g.innerHTML = '<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M6 0C32 28 62 62 84 100 56 70 28 38 6 0Z"/><path d="M34 0C58 26 84 54 104 90 78 64 52 36 34 0Z"/><path d="M-22 4C6 32 38 70 58 100 30 74 2 42 -22 4Z"/></svg>';
+  document.body.appendChild(g);
+  setTimeout(() => { const c = document.getElementById('carta'); if (c) c.scrollIntoView({ behavior: 'smooth' }); }, 260);
+  setTimeout(() => { g.remove(); delete a.dataset.garra; }, 1100);
+}));
+
 /* Premium: envío por sector (todo Ambato) y pedido programado. El precio real sale de la base; si no responde, los datos del cliente. */
 { const aplicar = ss => { DEMO.sectores = ss.map(z => ({ nombre: z.nombre, costo: RESTDATA.envio_por_confirmar ? null : z.costo_cent, ejemplo: !!RESTDATA.sectores_ejemplo })); DEMO.programar = true; };
   aplicar(RESTDATA.sectores); REST.rpc('carta').then(c => aplicar(c.sectores)).catch(() => {}); }

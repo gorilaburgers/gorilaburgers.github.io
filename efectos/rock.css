@@ -33,3 +33,14 @@
 /* Etiqueta torcida tipo sello de goma (por ejemplo «En vivo», «Edición limitada») */
 .fx-rock-sello { display: inline-block; transform: rotate(-4deg); padding: 4px 12px; border: 3px solid currentColor; border-radius: 4px; font: 900 .9rem/1 var(--fx-font-disp);
   text-transform: uppercase; letter-spacing: .12em; opacity: .92; }
+
+/* Garra: tres zarpazos que cruzan la pantalla al tocar el botón principal (solo transform y opacity; JS en la página, ver .fx-garra-boton).
+   Con «reducir movimiento» no aparece y el botón navega directo. */
+.fx-garra { position: fixed; inset: 0; z-index: 9999; pointer-events: none; overflow: hidden; }
+.fx-garra svg { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 0 10px color-mix(in srgb, var(--fx-accent) 70%, transparent)); }
+.fx-garra path { fill: var(--fx-accent); transform-box: fill-box; transform-origin: 0 0; transform: scale(0); opacity: 1; animation: fx-zarpazo .34s cubic-bezier(.2, .8, .2, 1) forwards, fx-zarpazo-fuera .45s ease-in .5s forwards; }
+.fx-garra path:nth-child(2) { animation-delay: .07s, .55s; }
+.fx-garra path:nth-child(3) { animation-delay: .14s, .6s; }
+@keyframes fx-zarpazo { to { transform: scale(1); } }
+@keyframes fx-zarpazo-fuera { to { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .fx-garra { display: none; } }
