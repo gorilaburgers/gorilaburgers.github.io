@@ -72,9 +72,33 @@
       try { await window.REST.rpc('venta_anular', { p_id: id, p_motivo: m.value.trim() }); aviso('Venta anulada: el stock volvió.'); await Promise.all([ventas(), stock()]); } catch (e) { aviso(e.message, true); } };
   }
 
+
+  /* ---------- premios del juego (módulo adicional): el código se canjea contra una venta real de hoy ---------- */
+  const fp = $('#rp-premio-form');
+  if (fp) {
+    const ok = $('#rp-premio-ok'), info = $('#rp-premio-info'), sel = $('#rp-premio-venta'), cod = $('#rp-codigo');
+    async function ventasParaCanje() {
+      try {
+        const min = (await window.REST.rpc('juego_estado')).compra_min_cent || 0, vs = (await window.REST.rpc('ventas_hoy')).filter(v => v.estado === 'confirmada' && v.total_cent >= min);
+        sel.innerHTML = vs.length ? vs.map(v => `<option value="${v.numero}">#${v.numero} · ${plata(v.total_cent)} · ${hhmm(v.creado)}</option>`).join('') : `<option value="">No hay ventas tuyas de hoy desde ${plata(min)}</option>`;
+      } catch (e) { /* se reintenta */ }
+    }
+    cod.oninput = async () => {
+      cod.value = cod.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); info.textContent = ''; ok.disabled = true;
+      if (cod.value.length !== 6) return;
+      try { const r = await window.REST.rpc('juego_codigo', { p_codigo: cod.value }); await ventasParaCanje();
+        info.innerHTML = `<p><b>${esc(r.premio)}</b> para ${esc(r.nombre)} (celular terminado en ${esc(r.telefono_fin)}) · ${r.estado === 'pendiente' ? 'listo para canjear' : esc(r.estado)}</p>`; ok.disabled = r.estado !== 'pendiente' || !sel.value; }
+      catch (e) { info.innerHTML = `<p class="rest-error">${esc(e.message)}</p>`; }
+    };
+    fp.onsubmit = async e => { e.preventDefault(); ok.disabled = true;
+      try { const r = await window.REST.rpc('juego_canjear', { p_codigo: cod.value, p_numero_venta: parseInt(sel.value, 10) }); aviso(`Premio entregado: ${r.premio} para ${r.nombre} (venta #${r.venta}).`); cod.value = ''; info.textContent = ''; }
+      catch (er) { aviso(er.message, true); ok.disabled = false; } };
+    $('#t-premios').addEventListener('click', ventasParaCanje);
+  }
+
   /* ---------- pestañas y arranque ---------- */
-  function pestana(k) { ['vender', 'pedidos', 'ventas'].forEach(t => { $('#t-' + t).setAttribute('aria-selected', t === k); $('#p-' + t).hidden = t !== k; }); if (k === 'pedidos') pedidos(); if (k === 'ventas') ventas(); history.replaceState(null, '', '#' + k); }
-  ['vender', 'pedidos', 'ventas'].forEach(k => $('#t-' + k).onclick = () => pestana(k));
+  function pestana(k) { ['vender', 'pedidos', 'ventas', 'premios'].filter(t => $('#t-' + t)).forEach(t => { $('#t-' + t).setAttribute('aria-selected', t === k); $('#p-' + t).hidden = t !== k; }); if (k === 'pedidos') pedidos(); if (k === 'ventas') ventas(); history.replaceState(null, '', '#' + k); }
+  ['vender', 'pedidos', 'ventas', 'premios'].filter(k => $('#t-' + k)).forEach(k => $('#t-' + k).onclick = () => pestana(k));
   $('#rp-salir').onclick = () => { window.REST.salir(); location.reload(); };
   function alEntrar(u) {
     yo = u; $('#rp-app').hidden = false; $('#rp-quien').textContent = `${u.nombre} · ${u.rol === 'admin' ? 'Dueño' : 'Ventas'}`; stock(); pedidos(); ventas(); pintarTicket();

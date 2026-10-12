@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="motor/pedido.css">
 <style>:root { --fx-bg: #F3EFD5; --fx-paper: #FBF8EA; --fx-accent: #D39B67; --fx-ink: #12324A; --fx-deep: #12324A; --fx-pop: #DCAF82; --fx-font: "Big Shoulders Text", "Arial Narrow", Arial, sans-serif; --fx-font-disp: "Big Shoulders Display", Impact, "Arial Narrow", sans-serif; --fx-font-txt: "Big Shoulders Text", "Arial Narrow", Arial, sans-serif; --fx-deep-2: #0A2234; --fx-line-deep: #295573; --fx-soft: #dfe5e8; --fx-soft-2: #b6c5cf; --fx-warm: #7a4a1f; --fx-chat: #e6ddd0; }</style>
 
-<link rel="stylesheet" href="modulos/restaurante/rest.css">
+<link rel="stylesheet" href="modulos/restaurante/rest.css"><link rel="stylesheet" href="modulos/restaurante/rest-juego.css">
 <link rel="preload" as="image" href="assets/corte-texas.webp" fetchpriority="high">
 <title>Gorila Burgers Ambato · Burgers bestiales en FICOA</title>
 <meta name="description" content="Gorila Burgers Ambato, en FICOA frente al Parque de los Quindes. Descubre qué Gorila eres hoy, arma tu pedido y envíalo listo por WhatsApp.">
@@ -105,7 +105,7 @@
 .demo-links { display: flex; flex-wrap: wrap; gap: 8px 18px; justify-content: center; margin-top: 22px; font-size: 1.02rem; }
 </style>
 </head>
-<body class="rb-pagina fx-rock-cartel" data-pagina="Landing (Pro)" data-secciones='["Vitrina de burgers (inicio)", "¿Qué Gorila eres hoy?", "Cómo pides", "Carta", "Galería", "Qué cambia", "Dónde estamos", "Cierre"]'>
+<body class="rb-pagina fx-rock-cartel" data-pagina="Landing (Pro)" data-secciones='["Vitrina de burgers (inicio)", "Mini juego Gorila arriba", "Cómo pides", "Carta", "Galería", "Qué cambia", "Dónde estamos", "Cierre"]'>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
   <symbol id="i-reloj" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
   <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6 7-11.5a7 7 0 0 0-14 0C5 15 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
@@ -141,7 +141,7 @@
   <nav><a href="#inicio">Inicio</a>
   <a href="#rb-detalle">Las burgers</a>
   <a href="#carta">Carta</a>
-  <a href="#diagnostico">¿Qué Gorila eres?</a>
+  <a href="#juego">Juega y espera</a>
   <a href="#como">Cómo pides</a>
   <a href="#donde">Dónde estamos</a>
   </nav>
@@ -194,13 +194,14 @@
   <div class="fila" id="rb-cats" style="margin-top:22px"></div></section>
 
 
-<section class="sec papel diag" id="diagnostico"><div class="wrap">
+<section class="sec papel" id="juego"><div class="wrap">
   <div data-reveal>
-    <h2 class="doble"><span>Aquí cada burger tiene personalidad</span>¿Qué Gorila eres hoy?</h2>
-    <p class="intro">Tres preguntas y te decimos cuál pedir. La agregas a tu pedido con un toque y eliges si es para llevar o a domicilio.</p>
+    <h2 class="doble"><span>Juega y</span>espera</h2>
+    <p class="intro">Sube por la parrilla esquivando las hamburguesas hasta la cerveza. Si llegas, el premio es tuyo. Solo 1 de cada 10 lo logra.</p>
   </div>
-  <div class="caja" id="caja-diag" aria-live="polite"></div>
+  <div id="juego-raiz" aria-live="polite"></div>
 </div></section>
+
 
 <section class="sec oscuro" id="como"><div class="wrap">
   <h2 class="doble" data-reveal><span>Así pides</span>sin pausas</h2>
@@ -297,6 +298,7 @@ Retiro: En 30 minutos</div>
 <script src="modulos/restaurante/rest-api.js"></script>
 <script src="motor/pedido.js"></script>
 <script src="modulos/restaurante/rest-burgers.js"></script>
+<script src="modulos/restaurante/rest-juego-nucleo.js"></script><script src="modulos/restaurante/rest-juego.js"></script>
 <script>
 const P = Pedido, esc = P.esc, plata = P.plata;
 const wa = (n, t) => `https://wa.me/${String(n).replace(/\D/g, '')}?text=${encodeURIComponent(t)}`;
@@ -320,41 +322,7 @@ document.querySelectorAll('[data-pedir]').forEach(a => a.addEventListener('click
   aplicar(RESTDATA.sectores); REST.rpc('carta').then(c => aplicar(c.sectores)).catch(() => {}); }
 { const q = new URLSearchParams(location.search).get('pedir'); if (q && P.items.has(q)) setTimeout(() => P.abrirProducto(q), 500); }   /* viene de la vitrina de burgers: «Pedir esta burger» */
 
-/* Diagnóstico: recomienda solo productos reales de la carta. Preguntas y reglas vienen de cliente.json → diag */
-const DIAG = {"titulo": "¿Qué Gorila eres hoy?", "sub": "3 preguntas · 30 segundos", "fino": "Aquí cada burger tiene personalidad", "intro": "Tres preguntas y te decimos cuál pedir. La agregas a tu pedido con un toque y eliges si es para llevar o a domicilio.", "hoy": "Hoy eres", "preguntas": [{"clave": "hambre", "texto": "¿Cuánta hambre traes?", "opciones": [{"valor": "antojo", "texto": "Un antojo", "detalle": "Algo rico sin exagerar"}, {"valor": "seria", "texto": "Hambre seria", "detalle": "Vengo a comer bien"}, {"valor": "campeonato", "texto": "Hambre de campeonato", "detalle": "Que no sobre nada"}]}, {"clave": "sabor", "texto": "¿Qué sabor te llama hoy?", "opciones": [{"valor": "clasico", "texto": "El clásico que no falla", "detalle": "Carne, queso y salsa Kong"}, {"valor": "tocino", "texto": "Tocino y BBQ", "detalle": "Ahumado y con fuego"}, {"valor": "smash", "texto": "Smash con cebolla caramelizada", "detalle": "Carne aplastada y queso derretido"}, {"valor": "dulce", "texto": "Dulce y atrevido", "detalle": "Con piña"}]}, {"clave": "quien", "texto": "¿Para quién es?", "opciones": [{"valor": "yo", "texto": "Para mí"}, {"valor": "peque", "texto": "Para un peque", "detalle": "Porción de su tamaño"}, {"valor": "compartir", "texto": "Para compartir", "detalle": "Vamos varios"}]}], "reglas": [{"si": {"quien": "peque", "hambre": "antojo"}, "id": "mini"}, {"si": {"quien": "peque"}, "id": "cheese"}, {"si": {"sabor": "dulce"}, "id": "hawayana"}, {"si": {"sabor": "smash"}, "id": "jam"}, {"si": {"sabor": "tocino", "hambre": "campeonato"}, "id": "texas"}, {"si": {"sabor": "tocino"}, "id": "tocino"}, {"si": {"hambre": "antojo"}, "id": "cheese"}], "defecto": "superguesa", "compartir": {"clave": "quien", "valor": "compartir", "id": "cbfries", "texto": "Para el centro de la mesa:"}};
-const preguntas = DIAG.preguntas.map(q => ({ k: q.clave, t: q.texto, ops: q.opciones.map(o => [o.valor, o.texto, o.detalle || '']) }));
-function recomendar(r) {
-  for (const g of DIAG.reglas) if (Object.entries(g.si).every(([k, v]) => r[k] === v)) return g.id;
-  return DIAG.defecto;
-}
-const s = { paso: 0, r: {} }, caja = document.getElementById('caja-diag'), N = preguntas.length;
-const cab = `<div class="caja-cab"><img src="assets/logo.webp" alt="" width="42" height="42"><div><b>${esc(DIAG.titulo)}</b><small>${esc(DIAG.sub)}</small></div></div>`;
-function pintar() {
-  if (s.paso < N) {
-    const q = preguntas[s.paso];
-    caja.innerHTML = `${cab}<div class="prog"><span>Paso ${s.paso + 1} de ${N}</span><div class="pista"><div style="width:${s.paso / N * 100}%"></div></div></div>
-      <div class="fx-paso" style="display:flex;flex-direction:column;gap:14px"><h3>${esc(q.t)}</h3>
-      <div class="ops">${q.ops.map(([v, t, d]) => `<button type="button" class="op" data-v="${esc(v)}"><span>${esc(t)}${d ? `<small>${esc(d)}</small>` : ''}</span></button>`).join('')}</div>
-      ${s.paso ? '<button type="button" class="enlace" id="volver">Volver</button>' : ''}</div>`;
-    requestAnimationFrame(() => requestAnimationFrame(() => { caja.querySelector('.pista div').style.width = ((s.paso + 1) / N * 100) + '%'; }));
-    caja.querySelectorAll('.op').forEach(b => b.onclick = () => { s.r[q.k] = b.dataset.v; s.paso++; pintar(); });
-    const v = document.getElementById('volver'); if (v) v.onclick = () => { s.paso--; pintar(); };
-  } else {
-    const id = recomendar(s.r), it = P.items.get(id);
-    const comp = s.r[DIAG.compartir.clave] === DIAG.compartir.valor ? P.items.get(DIAG.compartir.id) : null;
-    caja.innerHTML = `${cab}<div class="fx-paso" style="display:flex;flex-direction:column;gap:14px">
-      <div class="reco"><small>${esc(DIAG.hoy)}</small><b>${esc(it.nombre)}</b>${it.lema ? `<p><strong>${esc(it.lema)}.</strong></p>` : ''}
-        <p>${it.desc ? esc(it.desc) : '<span class="pend">[CONFIRMAR ingredientes]</span>'}</p><div class="precio">${plata(it.precio)}</div></div>
-      ${comp ? `<p>${esc(DIAG.compartir.texto)} <strong>${esc(comp.nombre)}</strong> por ${plata(comp.precio)}.</p>` : ''}
-      <button type="button" class="btn" id="add-reco">Agregar a mi pedido</button>
-      ${comp ? `<button type="button" class="btn btn-linea" id="add-comp">Sumar ${esc(comp.nombre)}</button>` : ''}
-      <div style="display:flex;gap:18px;flex-wrap:wrap"><a class="enlace" href="#carta">Ver toda la carta</a><button type="button" class="enlace" id="otra">Probar otra vez</button></div></div>`;
-    document.getElementById('add-reco').onclick = () => P.abrirProducto(id);
-    const c = document.getElementById('add-comp'); if (c) c.onclick = () => { P.abrirProducto(DIAG.compartir.id); c.disabled = true; c.textContent = 'Agregadas ✓'; };
-    document.getElementById('otra').onclick = () => { s.paso = 0; s.r = {}; pintar(); };
-  }
-}
-pintar();
+
 </script>
 <script src="fx.js"></script>
 

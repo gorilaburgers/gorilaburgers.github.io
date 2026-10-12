@@ -106,9 +106,26 @@
     catch (e) { vivo.classList.add('caido'); $('#rd-vivo-txt').textContent = 'Sin conexión: mostrando lo último'; c.classList.add('rd-atenuado'); if (/dueño|acceso|JWT|permission/i.test(e.message)) { window.REST.salir(); location.reload(); } }
   }
 
+
+  /* ---- mini juego (módulo adicional): partidas, ganadores, códigos sin canjear y ajustes del dueño ---- */
+  async function juego() {
+    const art = $('#rd-juego'); if (!art || document.hidden) return;
+    try {
+      const j = await window.REST.rpc('juego_resumen'), tasa = j.semana.partidas ? Math.round(j.semana.ganadores / j.semana.partidas * 1000) / 10 : null;
+      $('#rd-juego-cifras').innerHTML = [['Partidas hoy', num(j.hoy.partidas)], ['Ganadores hoy', `${num(j.hoy.ganadores)} de ${num(j.premios_dia_max)}`], ['Canjeados hoy', num(j.hoy.canjeados)],
+        ['Gana 1 de cada…', tasa ? String(Math.round(100 / tasa)) : '—']].map(([a, b]) => `<div><span class="rotulo">${a}</span><b>${b}</b></div>`).join('') +
+        (j.semana.invalidas ? `<div class="aviso"><span class="rotulo">Partidas sospechosas (7 días)</span><b>${num(j.semana.invalidas)}</b></div>` : '');
+      $('#rd-juego-sub').textContent = `Premio: ${j.premio}. La semana: ${num(j.semana.partidas)} partidas, ${num(j.semana.ganadores)} ganadores.`;
+      $('#rd-juego-pend').innerHTML = j.pendientes.length ? `<h3>Códigos por canjear</h3><ul>${j.pendientes.map(x => `<li><b>${esc(x.codigo)}</b> · ${esc(x.nombre)} · vence ${diaCorto(x.vence.slice(0, 10))}</li>`).join('')}</ul>` : '<p class="rest-sub">No hay premios esperando canje.</p>';
+      const f = $('#rd-juego-cfg'); if (!f.dataset.listo) { f.dia.value = j.premios_dia_max; f.dif.value = j.dificultad <= 0.85 ? '0.7' : j.dificultad >= 1.15 ? '1.3' : '1'; f.on.checked = j.activo; f.dataset.listo = '1'; }
+    } catch (e) { /* se reintenta */ }
+  }
+  const fj = $('#rd-juego-cfg');
+  if (fj) fj.onsubmit = async e => { e.preventDefault(); try { await window.REST.rpc('juego_config_guardar', { p_activo: fj.on.checked, p_premio: null, p_premios_dia: parseInt(fj.dia.value, 10) || 0, p_dificultad: parseFloat(fj.dif.value) }); aviso('Ajustes del juego guardados.'); juego(); } catch (er) { aviso(er.message, true); } };
+
   /* ---- acciones ---- */
   function alEntrar() {
-    $('#rd-app').hidden = false; cargar(); timer = setInterval(cargar, 4000);
+    $('#rd-app').hidden = false; cargar(); timer = setInterval(cargar, 4000); juego(); setInterval(juego, 15000);
     document.addEventListener('visibilitychange', () => { if (!document.hidden) cargar(); }); window.addEventListener('storage', cargar);
     if (window.REST.modo === 'demo') $('#rd-demo').hidden = false;
   }

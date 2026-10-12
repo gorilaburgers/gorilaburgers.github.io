@@ -60,6 +60,16 @@
           <article class="rest-tarjeta"><header><div><h2>Pedidos de la web</h2><small>Esperan confirmación del local</small></div></header><div id="rd-web"></div></article>
         </section>
 
+        <section class="rd-fila5" aria-label="Mini juego">
+          <article class="rest-tarjeta" id="rd-juego"><header><div><h2>Mini juego «Gorila arriba»</h2><small id="rd-juego-sub">Premio: cerveza para quien llegue arriba</small></div></header>
+            <div class="rd-juego-cifras" id="rd-juego-cifras"></div>
+            <div class="rd-juego-pend" id="rd-juego-pend"></div>
+            <form class="rd-juego-cfg" id="rd-juego-cfg"><label class="rest-campo">Premios por día<input name="dia" type="number" min="0" max="100" inputmode="numeric"></label>
+              <label class="rest-campo">Dificultad<select name="dif"><option value="0.7">Más fácil</option><option value="1">Normal (gana ~1 de 10)</option><option value="1.3">Más difícil</option></select></label>
+              <label class="rest-campo rd-juego-on"><input name="on" type="checkbox"> Juego encendido</label><button type="submit" class="rest-btn chico">Guardar</button></form>
+          </article>
+        </section>
+
         <div class="rd-demo" id="rd-demo" hidden>
           <span class="rest-chip-demo">Solo en la demo</span><span>Mira el dashboard moverse sin otro celular:</span>
           <button type="button" class="rest-btn chico" id="rd-sim">Simular una venta del local</button>

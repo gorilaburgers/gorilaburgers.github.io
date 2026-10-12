@@ -35,6 +35,7 @@
             <button type="button" role="tab" id="t-vender" aria-selected="true" aria-controls="p-vender">Vender</button>
             <button type="button" role="tab" id="t-pedidos" aria-selected="false" aria-controls="p-pedidos">Pedidos web <span class="n" id="rp-n" hidden>0</span></button>
             <button type="button" role="tab" id="t-ventas" aria-selected="false" aria-controls="p-ventas">Mis ventas</button>
+            <button type="button" role="tab" id="t-premios" aria-selected="false" aria-controls="p-premios">Premios</button>
           </div>
           <button type="button" class="rest-btn sec chico" id="rp-salir">Salir</button>
         </div>
@@ -51,6 +52,14 @@
 
       <section id="p-pedidos" role="tabpanel" aria-labelledby="t-pedidos" hidden><div class="rp-lista" id="rp-pedidos"></div></section>
       <section id="p-ventas" role="tabpanel" aria-labelledby="t-ventas" hidden><div class="rp-lista" id="rp-ventas"></div></section>
+      <section id="p-premios" role="tabpanel" aria-labelledby="t-premios" hidden>
+        <form class="rest-tarjeta rp-premio" id="rp-premio-form"><h2>Canjear un premio del juego</h2>
+          <p class="rest-sub">El cliente muestra su código. El premio se entrega junto con una compra de hoy: elige la venta que ya registraste.</p>
+          <label class="rest-campo">Código<input id="rp-codigo" maxlength="6" autocapitalize="characters" autocomplete="off" placeholder="G7K2PX"></label>
+          <div id="rp-premio-info" role="status"></div>
+          <label class="rest-campo">Venta de hoy que respalda el canje<select id="rp-premio-venta"></select></label>
+          <button type="submit" class="rest-btn" id="rp-premio-ok" disabled>Canjear premio</button>
+        </form></section>
     </div>
   </div>
 </main>
