@@ -202,8 +202,9 @@
     const c = $('#pd-totales', h); if (!c) return;
     const e = envioActual();
     if (datos.tipo !== 'domicilio' || !sectores()) { c.innerHTML = ''; return; }
-    c.innerHTML = `<p class="pd-fila">Envío${datos.sector ? ' a ' + esc(datos.sector) : ''} <b>${e == null ? 'elige tu sector' : plata(e)}</b></p>
-      <p class="pd-subtotal pd-total">Total <b>${e == null ? '—' : plata(subtotal() + e)}</b></p>`;
+    const sinCosto = !!datos.sector && e == null;   /* envío por confirmar: el costo se acuerda por WhatsApp */
+    c.innerHTML = `<p class="pd-fila">Envío${datos.sector ? ' a ' + esc(datos.sector) : ''} <b>${sinCosto ? 'te lo confirmamos por WhatsApp' : e == null ? 'elige tu sector' : plata(e)}</b></p>
+      <p class="pd-subtotal pd-total">${sinCosto ? 'Subtotal <b>' + plata(subtotal()) + ' + envío</b>' : 'Total <b>' + (e == null ? '—' : plata(subtotal() + e)) + '</b>'}</p>`;
   }
 
   function campo(id, etiqueta, extra = '') {
@@ -224,7 +225,7 @@
       (window.REST ? campo('celular', 'Tu celular', 'type="tel" inputmode="tel" autocomplete="tel" placeholder="09XXXXXXXX" required') : '') +
       (datos.tipo === 'llevar'
         ? `<label class="pd-campo"><span>¿Cuándo pasas?</span><select id="pd-retiro">${['Lo antes posible', 'En 30 minutos', 'En 1 hora'].map(o => `<option ${o === datos.retiro ? 'selected' : ''}>${o}</option>`).join('')}</select></label>`
-        : (sectores() ? `<label class="pd-campo"><span>Sector</span><select id="pd-sector"><option value="">Elige tu sector</option>${sectores().map(z => `<option ${z.nombre === datos.sector ? 'selected' : ''} value="${esc(z.nombre)}">${esc(z.nombre)} · envío ${plata(z.costo)}${z.ejemplo ? ' (ejemplo)' : ''}</option>`).join('')}</select></label>` : '') +
+        : (sectores() ? `<label class="pd-campo"><span>Sector</span><select id="pd-sector"><option value="">Elige tu sector</option>${sectores().map(z => `<option ${z.nombre === datos.sector ? 'selected' : ''} value="${esc(z.nombre)}">${esc(z.nombre)}${z.costo == null ? '' : ' · envío ' + plata(z.costo) + (z.ejemplo ? ' (ejemplo)' : '')}</option>`).join('')}</select></label>` : '') +
           campo('direccion', 'Dirección', 'autocomplete="street-address" required') +
           campo('referencia', 'Referencia (casa, color, junto a…)') +
           `<button type="button" class="pd-btn pd-btn-sec" id="pd-ubi">${datos.ubicacion ? 'Ubicación agregada ✓' : 'Usar mi ubicación'}</button><p class="pd-sub" id="pd-ubi-estado"></p>`) +
