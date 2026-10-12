@@ -1,6 +1,6 @@
 -- Módulo de restaurante · 006 datos de Gorila Burgers (generado por scripts/migraciones-modulo.py desde clientes/gorila-burgers/cliente.json).
 -- Se puede volver a correr: actualiza nombre y precio sin duplicar. Los precios están en centavos.
--- ATENCIÓN: los costos de envío por sector son DE EJEMPLO hasta que el cliente los confirme.
+-- Envío por confirmar: los sectores quedan en $0 y el costo se acuerda por WhatsApp. Cuando el cliente lo defina, el dueño los edita con sector_guardar().
 insert into gorila_burgers.productos (clave, nombre, categoria, precio_cent, lema, ingredientes, foto, cuenta_burger, controla_stock, activo, orden) values
   ('texas', 'Gorila Texas + papas', 'vip', 790, 'La campeona que domina', '2 carnes, 2 quesos cheddar, tocino, cebollas empanizadas, salsa BBQ y salsa Kong', null, true, true, true, 0),
   ('superguesa', 'SuperGuesa + papas', 'vip', 790, 'Nivel bestia activado', null, null, true, true, true, 1),
@@ -26,12 +26,12 @@ on conflict (clave) do update set nombre = excluded.nombre, categoria = excluded
   ingredientes = excluded.ingredientes, foto = excluded.foto, cuenta_burger = excluded.cuenta_burger, controla_stock = excluded.controla_stock, orden = excluded.orden;
 
 insert into gorila_burgers.sectores (nombre, costo_cent, orden) values
-  ('FICOA', 100, 0),
-  ('Atocha', 150, 1),
-  ('Miraflores', 150, 2),
-  ('Centro', 200, 3),
-  ('Huachi', 250, 4),
-  ('Izamba', 300, 5)
+  ('FICOA', 0, 0),
+  ('Atocha', 0, 1),
+  ('Miraflores', 0, 2),
+  ('Centro', 0, 3),
+  ('Huachi', 0, 4),
+  ('Izamba', 0, 5)
 on conflict (nombre) do update set costo_cent = excluded.costo_cent, orden = excluded.orden;
 
 -- Primer dueño: crea el usuario en Supabase › Authentication › Add user (con «Allow new users to sign up» DESACTIVADO, §4.10) y luego corre, con su correo:
