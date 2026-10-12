@@ -1,0 +1,37 @@
+/* Gorila arriba · estilos del juego (módulo adicional). Se carga solo en la página que lo usa. Solo transform/opacity en lo que se mueve; el tablero es un canvas. */
+.jg-tarjeta, .jg-juego { max-width: 920px; margin-top: 28px; }
+.jg-tarjeta { display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); gap: clamp(20px, 4vw, 48px); align-items: center; padding: clamp(16px, 3vw, 28px); border: 2px solid var(--fx-line-deep); border-radius: 18px; background: color-mix(in srgb, var(--fx-deep) 70%, var(--fx-deep-2)); }
+.jg-form, .jg-fin { grid-template-columns: minmax(0, 520px); }
+.jg-vista { position: relative; border-radius: 14px; overflow: hidden; border: 2px solid var(--fx-line-deep); background: var(--fx-deep-2); line-height: 0; }
+.jg-lienzo { width: 100%; height: auto; display: block; aspect-ratio: 3 / 4; touch-action: none; }
+.jg-texto h3 { font: 900 clamp(1.6rem, 4vw, 2.3rem)/1 var(--fx-font-disp); text-transform: uppercase; margin: 0 0 10px; color: var(--fx-bg); }
+.jg-texto p { margin: 0 0 14px; color: var(--fx-soft-2); }
+.jg-lista { list-style: none; padding: 0; margin: 0 0 18px; }
+.jg-lista li { display: inline-block; padding: 8px 14px; border: 2px solid var(--fx-accent); border-radius: 999px; font: 800 1rem/1 var(--fx-font-txt); letter-spacing: .08em; text-transform: uppercase; color: var(--fx-accent); }
+.jg-ir { min-height: 52px; }
+.jg-ir[disabled] { opacity: .5; }
+.jg-facil { display: flex; gap: 8px; align-items: center; margin-top: 16px; font-size: .92rem; color: var(--fx-soft-2); }
+.jg-nota { font-size: .9rem; color: var(--fx-soft-2); }
+.jg-error { min-height: 1.4em; color: #ff9b86; font-weight: 700; }
+.jg-form .pd-campo { display: block; margin-bottom: 12px; color: var(--fx-bg); }
+.jg-form .enlace, .jg-fin .enlace { margin-left: 12px; }
+.jg-juego { width: min(100%, 380px); margin-inline: auto; }
+.jg-juego .jg-vista { margin-bottom: 12px; }
+.jg-cuenta { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; font: 900 clamp(4rem, 22vw, 7rem)/1 var(--fx-font-disp); color: var(--fx-bg); text-shadow: 0 4px 0 var(--fx-deep); }
+.jg-juego { position: relative; }
+.jg-juego .jg-cuenta { bottom: auto; height: min(100vw, 380px); height: 506px; max-height: 70%; }
+.jg-mando { display: flex; justify-content: space-between; gap: 12px; user-select: none; -webkit-user-select: none; }
+.jg-dir, .jg-acc { display: flex; gap: 10px; }
+.jg-mando button { min-width: 52px; min-height: 60px; border-radius: 16px; border: 2px solid var(--fx-bg); background: transparent; color: var(--fx-bg); font: 900 1.4rem/1 var(--fx-font-disp); touch-action: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; transition: transform .08s; }
+.jg-mando button.on { transform: scale(.93); background: var(--fx-accent); color: var(--fx-deep); border-color: var(--fx-accent); }
+.jg-mando .jg-salto { background: var(--fx-accent); color: var(--fx-deep); border-color: var(--fx-accent); font-size: 1.05rem; text-transform: uppercase; letter-spacing: .06em; padding-inline: 10px; min-width: 76px; }
+.jg-pierde { animation: jg-sacude .35s; }
+@keyframes jg-sacude { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+.jg-gana { outline: 4px solid var(--fx-accent); }
+.jg-texto .jg-premio { font: 900 1.6rem/1 var(--fx-font-disp); text-transform: uppercase; color: var(--fx-accent); }
+.jg-texto .jg-codigo { display: inline-block; padding: 10px 22px; border: 3px dashed var(--fx-accent); border-radius: 12px; font: 900 2.4rem/1 var(--fx-font-disp); letter-spacing: .22em; color: var(--fx-bg); user-select: all; }
+@media (max-width: 760px) { .jg-tarjeta { grid-template-columns: 1fr; } .jg-vista { max-width: 360px; margin-inline: auto; } }
+@media (prefers-reduced-motion: reduce) { .jg-pierde { animation: none; } .jg-mando button { transition: none; } }
+
+/* Mientras se juega, el botón flotante de WhatsApp se esconde para no tapar los controles */
+body.jg-jugando .wa-flot { display: none; }
