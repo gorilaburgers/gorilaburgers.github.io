@@ -1,0 +1,35 @@
+/* efectos/rock.css · complemento OPCIONAL de estilo "rockero" (se elige con efectos.usar = ["rock"]). Se carga después del perfil.
+   Pensado para negocios con temática de rock/gorila: textura gastada, cinta de escenario, entradas de concierto y sello torcido.
+   TODO ESTÁTICO (sin animaciones nuevas), así que no suma a las 3 infinitas de la regla de efectos. Funciona con el dedo: nada depende de :hover.
+   Colores siempre de la marca (--fx-*). Las clases se usan por cliente; no duplicar estos estilos en la página. */
+:root { --fx-rock-ruido: .09; }
+
+/* Textura gastada: ruido + rayones finos sobre secciones oscuras (un mosaico SVG diminuto, sin imagen pesada) */
+.fx-rock-gastado { position: relative; isolation: isolate; }
+.fx-rock-gastado::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; mix-blend-mode: soft-light; opacity: var(--fx-rock-ruido);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3Cpath d='M12 40l90-6M130 150l80 4M30 190l60-9' stroke='%23fff' stroke-width='.6' opacity='.5'/%3E%3C/svg%3E"); }
+
+/* La caja recorta la cinta torcida para que no cree scroll horizontal */
+.fx-rock-caja { overflow: hidden; padding-block: 22px; }
+/* Cinta de escenario: franja torcida con rayas, entre secciones. El texto va en MAYÚSCULAS y se repite para llenar el ancho */
+.fx-rock-cinta { position: relative; z-index: 2; margin-block: 0; margin-inline: -2%; transform: rotate(-1.4deg); overflow: hidden; white-space: nowrap; user-select: none;
+  background: repeating-linear-gradient(-45deg, var(--fx-accent) 0 18px, var(--fx-deep) 18px 36px); border-block: 3px solid var(--fx-bg); }
+.fx-rock-cinta p { margin: 8px 0; padding: 6px 0; text-align: center; font: 900 clamp(1rem, 3.4vw, 1.5rem)/1 var(--fx-font-disp); text-transform: uppercase; letter-spacing: .14em;
+  color: var(--fx-bg); background: var(--fx-deep); transform: rotate(0deg); text-shadow: 0 2px 0 rgba(0, 0, 0, .35); }
+
+/* Entrada de concierto: tarjeta con muescas laterales y línea punteada (para sectores, resumen del pedido o horarios) */
+.fx-rock-entrada { position: relative; background: var(--fx-paper); color: var(--fx-ink); border-radius: 10px; padding: 18px 22px; border: 2px solid var(--fx-deep);
+  -webkit-mask: radial-gradient(circle 10px at 0 50%, #0000 98%, #000) left / 51% 100% no-repeat, radial-gradient(circle 10px at 100% 50%, #0000 98%, #000) right / 51% 100% no-repeat;
+  mask: radial-gradient(circle 10px at 0 50%, #0000 98%, #000) left / 51% 100% no-repeat, radial-gradient(circle 10px at 100% 50%, #0000 98%, #000) right / 51% 100% no-repeat; }
+.fx-rock-entrada .corte { border-top: 2px dashed color-mix(in srgb, var(--fx-deep) 40%, transparent); margin-block: 12px; }
+
+/* Setlist: las categorías de la carta se numeran como pistas del disco (01, 02…) */
+.fx-rock-setlist { counter-reset: pista; }
+.fx-rock-setlist .pd-cat h2::before { counter-increment: pista; content: "Pista " counter(pista, decimal-leading-zero) " · "; font: 700 .72em/1 var(--fx-font-txt); letter-spacing: .12em; text-transform: uppercase; color: var(--fx-accent); }
+
+/* Titulares de cartel de gira: línea fina arriba (en cursiva inclinada) y línea gruesa abajo */
+.fx-rock-cartel .doble span, .fx-rock-cartel .fino { font-style: italic; letter-spacing: .1em; }
+
+/* Etiqueta torcida tipo sello de goma (por ejemplo «En vivo», «Edición limitada») */
+.fx-rock-sello { display: inline-block; transform: rotate(-4deg); padding: 4px 12px; border: 3px solid currentColor; border-radius: 4px; font: 900 .9rem/1 var(--fx-font-disp);
+  text-transform: uppercase; letter-spacing: .12em; opacity: .92; }
