@@ -44,3 +44,7 @@
 @keyframes fx-zarpazo { to { transform: scale(1); } }
 @keyframes fx-zarpazo-fuera { to { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .fx-garra { display: none; } }
+
+/* Rayo: adorno de escenario, de un solo color (hereda el color del texto). Va en la cinta entre palabras y después de los titulares. */
+.fx-rock-rayo { display: inline-block; width: .5em; height: .8em; margin-inline: .7em; vertical-align: -.08em; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 100'%3E%3Cpath d='M38 0 6 56h20L18 100 54 38H33z'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 100'%3E%3Cpath d='M38 0 6 56h20L18 100 54 38H33z'/%3E%3C/svg%3E") center / contain no-repeat; }
+.fx-rock-cartel #carta h2::after, .fx-rock-cartel #juego h2::after { content: ""; display: inline-block; width: .42em; height: .75em; margin-left: .3em; background: var(--fx-accent); -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 100'%3E%3Cpath d='M38 0 6 56h20L18 100 54 38H33z'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 100'%3E%3Cpath d='M38 0 6 56h20L18 100 54 38H33z'/%3E%3C/svg%3E") center / contain no-repeat; transform: rotate(8deg); }

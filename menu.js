@@ -170,12 +170,12 @@ window.MENU = {
     }
   ],
   "temporada": {
-    "nombre": "Molotov",
+    "nombre": "Pig Floyd",
     "nota": "Hamburguesa de temporada",
     "precio": null,
-    "foto": "assets/molotov-mesa.webp",
-    "alt": "Hamburguesa Molotov: carne desmechada, queso fundido y brocheta de tocino con jalapeño",
-    "fotoW": 468,
-    "fotoH": 508
+    "foto": "assets/pig-floyd-cartel.webp",
+    "alt": "Cartel de la Pig Floyd, hamburguesa de temporada de Gorila Burgers: tocino, queso fundido y pan brioche frente a una fábrica con un cerdo volando",
+    "fotoW": 660,
+    "fotoH": 739
   }
 };
