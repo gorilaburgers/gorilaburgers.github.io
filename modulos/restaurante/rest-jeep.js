@@ -14,6 +14,7 @@
   const W = 360, H = 480, HOR = 170, DURACION = 40;
   const TIPOS = [{ n: 'Turista', pts: 10, ropa: '#e4572e', alto: 1 }, { n: 'Rockero', pts: 25, ropa: '#2a2f36', alto: 1.05 }, { n: 'Ciclista', pts: 40, ropa: '#2fb36b', alto: 0.9 }, { n: 'Chef', pts: 60, ropa: '#f4f1e8', alto: 1.1 }];
   let fin = () => {};
+  const logo = new Image(); logo.src = 'assets/logo.webp';   // el logo de Gorila va en el capó
 
   function portada() {
     const mejor = lee('gorila_jeep_mejor');
@@ -121,7 +122,7 @@
     c.fillStyle = capo; c.beginPath(); c.moveTo(52, H); c.lineTo(106, 368); c.lineTo(254, 368); c.lineTo(308, H); c.closePath(); c.fill();
     c.fillStyle = 'rgba(255,255,255,.22)'; c.beginPath(); c.moveTo(112, 372); c.lineTo(248, 372); c.lineTo(252, 380); c.lineTo(108, 380); c.closePath(); c.fill();   // brillo del borde del capó
     c.strokeStyle = 'rgba(20,28,10,.6)'; c.lineWidth = 2; c.beginPath(); c.moveTo(180, 372); c.lineTo(180, H); c.stroke();                                    // costura central
-    c.fillStyle = '#2a2f1c'; c.fillRect(170, 404, 20, 8); c.fillStyle = '#9aa46a'; c.fillRect(173, 406, 14, 2);                                                 // cierre del capó
+    if (logo.complete && logo.naturalWidth) { c.save(); c.translate(180, 387); c.scale(1, 0.66); c.globalAlpha = 0.95; c.shadowColor = 'rgba(0,0,0,.45)'; c.shadowBlur = 4; c.shadowOffsetY = 1.5; c.drawImage(logo, -21, -21, 42, 42); c.restore(); }   // logo en el capó
     for (const lx of [90, 270]) {                                                                                                                              // faros redondos con cromo
       const cr = c.createRadialGradient(lx - 4, 394, 2, lx, 398, 20); cr.addColorStop(0, '#fffbe6'); cr.addColorStop(0.6, '#e6d9a0'); cr.addColorStop(1, '#8c8456');
       c.fillStyle = cr; c.beginPath(); c.arc(lx, 398, 17, 0, 7); c.fill(); c.strokeStyle = '#c9ccd0'; c.lineWidth = 3.5; c.stroke(); c.strokeStyle = '#2a3318'; c.lineWidth = 1.2; c.stroke();
