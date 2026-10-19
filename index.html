@@ -75,6 +75,7 @@
 .paso b { font: 300 1.1rem var(--fx-font-disp); color: var(--fx-pop); }
 .paso h3 { font: 800 1.6rem/1 var(--fx-font-disp); text-transform: uppercase; margin: 2px 0 6px; }
 .paso p { color: var(--fx-soft); }
+.eventos-cta { margin-top: 38px; }
 
 /* Galería */
 .galeria { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); margin-top: 40px; }
@@ -105,7 +106,7 @@
 .demo-links { display: flex; flex-wrap: wrap; gap: 8px 18px; justify-content: center; margin-top: 22px; font-size: 1.02rem; }
 </style>
 </head>
-<body class="rb-pagina fx-rock-cartel" data-pagina="Landing (Pro)" data-secciones='["Vitrina de burgers (inicio)", "Mini juego Gorila arriba", "Cómo pides", "Carta", "Galería", "Qué cambia", "Dónde estamos", "Cierre"]'>
+<body class="rb-pagina fx-rock-cartel" data-pagina="Landing (Pro)" data-secciones='["Vitrina de burgers (inicio)", "Mini juego Gorila arriba", "Food truck y eventos", "Carta", "Galería", "Dónde estamos", "Cierre"]'>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
   <symbol id="i-reloj" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
   <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6 7-11.5a7 7 0 0 0-14 0C5 15 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
@@ -142,7 +143,7 @@
   <a href="#rb-detalle">Las burgers</a>
   <a href="#carta">Carta</a>
   <a href="#juego">Juega y espera</a>
-  <a href="#como">Cómo pides</a>
+  <a href="#eventos">Food truck y eventos</a>
   <a href="#donde">Dónde estamos</a>
   </nav>
   <footer>
@@ -203,14 +204,18 @@
 </div></section>
 
 
-<section class="sec oscuro" id="como"><div class="wrap">
-  <h2 class="doble" data-reveal><span>Así pides</span>sin pausas</h2>
+
+<section class="sec oscuro eventos" id="eventos"><div class="wrap">
+  <h2 class="doble" data-reveal><span>Gorila también va</span>a tu evento</h2>
+  <p class="intro" data-reveal>Tenemos food truck. Llevamos las burgers de Gorila a conciertos, ferias, fiestas y cualquier actividad. Cotiza y ten la mejor hamburguesa de Ambato en tu evento.</p>
   <div class="pasos" data-stagger>
-    <div class="paso"><span class="ico"><svg><use href="#i-burger"/></svg></span><div><b>1</b><h3>Elige tu burger</h3><p>Desde la carta o con “¿Qué Gorila eres hoy?”. Súmale los extras que quieras.</p></div></div>
-    <div class="paso"><span class="ico"><svg><use href="#i-bolsa"/></svg></span><div><b>2</b><h3>Llevar o domicilio</h3><p>Retiras en el local o te lo llevamos. Si es a domicilio, compartes tu ubicación con un toque.</p></div></div>
-    <div class="paso"><span class="ico"><svg><use href="#i-envio"/></svg></span><div><b>3</b><h3>Envías y listo</h3><p>Tu pedido llega a WhatsApp con todo: burgers, extras, total y dirección.</p></div></div>
+    <div class="paso"><span class="ico"><svg><use href="#i-estrella"/></svg></span><div><h3>Conciertos y festivales</h3><p>Burgers a la plancha para el público, los artistas y el equipo.</p></div></div>
+    <div class="paso"><span class="ico"><svg><use href="#i-copa"/></svg></span><div><h3>Cumpleaños y matrimonios</h3><p>Un menú para tus invitados, armado a tu medida.</p></div></div>
+    <div class="paso"><span class="ico"><svg><use href="#i-equipo"/></svg></span><div><h3>Ferias y eventos de empresa</h3><p>Para ferias, lanzamientos, colegios, universidades y equipos de trabajo.</p></div></div>
+    <div class="paso"><span class="ico"><svg><use href="#i-pin"/></svg></span><div><h3>Cualquier actividad</h3><p>Si hay gente con hambre, Gorila va. Cuéntanos fecha, lugar y cuántas personas.</p></div></div>
     
   </div>
+  <div class="acciones eventos-cta" data-reveal><a class="btn fx-brillo" data-wa="Hola Gorila, quiero cotizar el food truck para un evento. Tipo de evento, fecha, lugar y número de personas:">Cotizar mi evento</a></div>
 </div></section>
 
 <div class="fx-rock-caja" aria-hidden="true"><div class="fx-rock-cinta"><p><span>Gorila</span><i class="fx-rock-rayo"></i><span>Rock</span><i class="fx-rock-rayo"></i><span>Burgers</span><i class="fx-rock-rayo"></i><span>Gorila</span><i class="fx-rock-rayo"></i><span>Rock</span><i class="fx-rock-rayo"></i><span>Burgers</span><i class="fx-rock-rayo"></i><span>Gorila</span><i class="fx-rock-rayo"></i><span>Rock</span><i class="fx-rock-rayo"></i></p></div></div>
@@ -230,26 +235,7 @@
   </div>
 </div></section>
 
-<section class="sec papel" id="cambia"><div class="wrap">
-  <h2 class="doble" data-reveal><span>Tu pedido llega</span>completo a la primera</h2>
-  <p class="intro" data-reveal>Sin idas y vueltas por mensaje: la web arma el pedido por ti.</p>
-  <div class="cambia" data-stagger>
-    <div class="chat"><h3><span class="ico" style="width:40px;height:40px"><svg style="width:20px;height:20px"><use href="#i-chat"/></svg></span>Antes</h3>
-      <div class="burbuja yo">Hola, info</div><div class="burbuja yo">¿Precio de la Texas?</div><div class="burbuja">Hola 🦍 $7.90 con papas</div><div class="burbuja yo">¿Y hacen domicilio?</div><div class="burbuja yo">¿Qué extras tienen?</div>
-    </div>
-    <div class="chat despues"><h3><span class="ico" style="width:40px;height:40px"><svg style="width:20px;height:20px"><use href="#i-envio"/></svg></span>Ahora</h3>
-      <div class="burbuja yo">Hola Gorila Burgers, quiero hacer un pedido desde la web 🦍🍔
 
-1 × Gorila Texas + papas — $9.40
-   + Tocino
-1 × Lemon Sun — $1.90
-
-Total: $11.30
-Tipo: Para llevar
-Retiro: En 30 minutos</div>
-    </div>
-  </div>
-</div></section>
 
 <section class="sec arena" id="donde"><div class="wrap donde">
   <div data-reveal>

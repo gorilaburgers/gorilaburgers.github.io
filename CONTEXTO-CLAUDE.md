@@ -36,6 +36,7 @@ Supabase: proyecto **compartido** con Core Studio, Beer Club y Camelia (plan gra
 - [ ] Prueba de humo contra la base real: `python3 scripts/probar-supabase.py gorila-burgers` (en landing-base) o a mano en el sitio publicado; incluir una cuenta registrada que no es del equipo (debe recibir «sin permiso»).
 - [ ] **Cambiar la clave del dueño por una segura** (hoy es de prueba).
 - [ ] Confirmar con el cliente y reemplazar los textos neutros: **horas por día** (hoy «horas por WhatsApp»), **costo de envío por sector** (hoy «se confirma por WhatsApp»), ingredientes de SuperGuesa y Hawayana (hoy «Receta de la casa»), salsa e inclusiones de la Jam Smash, y el precio de la Pig Floyd de temporada.
+- [ ] Fotos del **food truck** y de eventos para la sección «Gorila también va a tu evento» (hoy solo lleva texto y el botón «Cotizar mi evento» a WhatsApp). Confirmar con el cliente qué tipos de evento atiende y si hay precios base.
 - [ ] Fotos originales de estudio y logo como archivo. Decidir la foto «This is Gorila» (mural de marca ajena).
 - [ ] Analítica activa y clics a WhatsApp como conversión (elegir herramienta).
 - [ ] Definir con el cliente si el mini juego cuenta como el módulo adicional del Premium o se cotiza aparte; número real de WhatsApp en `config.js` (hoy 593987188071; verificar).
