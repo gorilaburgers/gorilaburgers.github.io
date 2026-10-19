@@ -13,6 +13,7 @@
   const C = { bg: col('--fx-bg') || '#F3EFD5', deep: col('--fx-deep') || '#12324A', acc: col('--fx-accent') || '#D39B67' };
   const W = 360, H = 480, HOR = 170, DURACION = 40;
   const TIPOS = [{ n: 'Turista', pts: 10, ropa: '#e4572e', alto: 1 }, { n: 'Rockero', pts: 25, ropa: '#2a2f36', alto: 1.05 }, { n: 'Ciclista', pts: 40, ropa: '#2fb36b', alto: 0.9 }, { n: 'Chef', pts: 60, ropa: '#f4f1e8', alto: 1.1 }];
+  const CARRITO = { n: 'Carrito', pts: 100, alto: 1 };
   let fin = () => {};
   const logo = new Image(); logo.src = 'assets/logo.webp';   // el logo de Gorila va en el capó
 
@@ -28,7 +29,7 @@
     cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', 'Juego: un gorila maneja un jeep clásico y se lleva por delante a peatones de caricatura para sumar puntos.');
     cont.appendChild(cv); const ctx = cv.getContext('2d'); ctx.scale(dpr, dpr); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; return { cv, ctx };
   }
-  const estadoInicial = () => ({ t: 0, x: 0, giro: 0, dist: 0, vel: 1, puntos: 0, combo: 1, comboT: 0, gente: [], popups: [], sacude: 0, sig: 0.3 });
+  const estadoInicial = () => ({ t: 0, x: 0, giro: 0, dist: 0, vel: 1, puntos: 0, combo: 1, comboT: 0, gente: [], popups: [], parts: [], sacude: 0, sig: 0.3 });
 
   /* ---------- dibujo ---------- */
   const yDe = p => HOR + (H - HOR) * Math.pow(p, 1.7);                       // p: 0 horizonte … 1 frente al jeep
@@ -64,6 +65,7 @@
     c.restore();
     jeep(c, s, ahora);
     s.popups.forEach(q => { c.globalAlpha = Math.max(0, 1 - q.t / 0.9); c.font = '900 24px sans-serif'; c.textAlign = 'center'; c.lineWidth = 5; c.strokeStyle = '#12324A'; c.strokeText(q.txt, q.x, q.y - q.t * 60); c.fillStyle = C.bg; c.fillText(q.txt, q.x, q.y - q.t * 60); c.globalAlpha = 1; });
+    s.parts.forEach(q => { c.save(); c.globalAlpha = Math.max(0, 1 - q.t); c.translate(q.x, q.y); c.rotate(q.r); if (q.k === 0) { c.fillStyle = '#ffd36a'; c.fillRect(-2, -8, 4, 16); } else if (q.k === 1) { c.fillStyle = '#b0432a'; c.beginPath(); c.roundRect ? c.roundRect(-9, -3.5, 18, 7, 3.5) : c.rect(-9, -3.5, 18, 7); c.fill(); } else { c.fillStyle = '#fff3b0'; c.font = '900 16px sans-serif'; c.textAlign = 'center'; c.fillText('★', 0, 5); } c.restore(); });
     const vi = c.createRadialGradient(W / 2, H / 2, H * 0.35, W / 2, H / 2, H * 0.75); vi.addColorStop(0, 'rgba(0,0,0,0)'); vi.addColorStop(1, 'rgba(8,16,28,.5)'); c.fillStyle = vi; c.fillRect(0, 0, W, H);
     if (s.vel > 1.15) { c.strokeStyle = `rgba(255,255,255,${Math.min(0.25, (s.vel - 1.15) * 0.4)})`; c.lineWidth = 1.2; for (let i = 0; i < 10; i++) { const a = ((i * 37 + s.dist * 160) % 120) / 120, ang = i % 2 ? 1 : -1; c.beginPath(); c.moveTo(W / 2 + ang * (40 + a * 150), HOR + a * 80); c.lineTo(W / 2 + ang * (60 + a * 230), HOR + 30 + a * 150); c.stroke(); } }
     c.fillStyle = 'rgba(10,34,52,.8)'; c.fillRect(0, 0, W, 36);
@@ -71,8 +73,24 @@
     c.textAlign = 'center'; c.fillStyle = s.combo > 1 ? C.acc : C.bg; c.fillText(s.combo > 1 ? `COMBO x${s.combo}` : '', W / 2, 23);
     c.textAlign = 'right'; c.fillStyle = C.bg; c.fillText(Math.max(0, Math.ceil(DURACION - s.t)) + ' s', W - 12, 23);
   }
+  function carrito(c, g, a, ahora) {                                                   // carrito de comida callejera
+    if (g.golpe) { const k = g.t / 0.55; if (k < 1) { const r = a * (0.35 + k * 1.4), fl = c.createRadialGradient(0, -a * 0.5, 2, 0, -a * 0.5, r); fl.addColorStop(0, `rgba(255,248,200,${1 - k})`); fl.addColorStop(0.5, `rgba(255,150,40,${0.8 * (1 - k)})`); fl.addColorStop(1, 'rgba(255,60,20,0)'); c.fillStyle = fl; c.beginPath(); c.arc(0, -a * 0.5, r, 0, 7); c.fill(); c.strokeStyle = `rgba(255,236,190,${0.9 * (1 - k)})`; c.lineWidth = 3; c.beginPath(); c.arc(0, -a * 0.5, r * 0.9, 0, 7); c.stroke(); } return; }
+    c.fillStyle = 'rgba(0,0,0,.28)'; c.beginPath(); c.ellipse(0, 0, a * 0.5, a * 0.08, 0, 0, 7); c.fill();
+    c.fillStyle = '#2a2f36'; for (const wx of [-a * 0.32, a * 0.32]) { c.beginPath(); c.arc(wx, -a * 0.08, a * 0.1, 0, 7); c.fill(); c.fillStyle = '#9aa0a8'; c.beginPath(); c.arc(wx, -a * 0.08, a * 0.04, 0, 7); c.fill(); c.fillStyle = '#2a2f36'; }
+    const cu = c.createLinearGradient(0, -a * 0.6, 0, -a * 0.12); cu.addColorStop(0, '#e8643a'); cu.addColorStop(1, '#a93a1c'); c.fillStyle = cu; c.fillRect(-a * 0.45, -a * 0.6, a * 0.9, a * 0.48);
+    c.fillStyle = '#f1e3c4'; c.fillRect(-a * 0.5, -a * 0.64, a * 1, a * 0.07);
+    c.fillStyle = '#ffd36a'; c.fillRect(-a * 0.36, -a * 0.5, a * 0.72, a * 0.16);                                           // letrero
+    c.fillStyle = '#8c3a1c'; c.fillRect(-a * 0.3, -a * 0.46, a * 0.6, a * 0.03);
+    c.fillStyle = '#c9a07a'; c.beginPath(); c.roundRect ? c.roundRect(-a * 0.2, -a * 0.8, a * 0.4, a * 0.13, a * 0.06) : c.rect(-a * 0.2, -a * 0.8, a * 0.4, a * 0.13); c.fill();   // hot dog en el mostrador
+    c.fillStyle = '#b0432a'; c.fillRect(-a * 0.17, -a * 0.775, a * 0.34, a * 0.05);
+    c.fillStyle = '#555c66'; c.fillRect(a * 0.28, -a * 1.0, a * 0.06, a * 0.36);                                              // chimenea
+    c.fillStyle = 'rgba(220,220,220,.5)'; c.beginPath(); c.arc(a * 0.31 + Math.sin(ahora * 3) * a * 0.03, -a * 1.08, a * 0.06, 0, 7); c.fill();
+    for (let i = 0; i < 6; i++) { c.fillStyle = i % 2 ? '#fff' : '#e23b3b'; c.beginPath(); c.moveTo(0, -a * 1.06); c.arc(0, -a * 0.66, a * 0.62, Math.PI * (1 + i / 6), Math.PI * (1 + (i + 1) / 6)); c.closePath(); c.fill(); }   // sombrilla a rayas
+    c.strokeStyle = '#555c66'; c.lineWidth = Math.max(1, a * 0.03); c.beginPath(); c.moveTo(0, -a * 1.06); c.lineTo(0, -a * 0.64); c.stroke();
+  }
   function persona(c, s, g, ahora) {
     const p = 1 - g.z, y = yDe(p), esc_ = 0.12 + 0.88 * Math.pow(p, 1.3), cx = px(s, g.x, y, p), a = 112 * esc_ * g.tipo.alto;
+    if (g.carrito) { c.save(); c.translate(cx, y); carrito(c, g, a * 1.05, ahora); c.restore(); return; }
     c.save(); c.translate(cx + (g.dx || 0), y - (g.dy || 0));
     if (!g.golpe) { c.fillStyle = 'rgba(0,0,0,.28)'; c.beginPath(); c.ellipse(0, 0, a * 0.3, a * 0.07, 0, 0, 7); c.fill(); }
     if (g.golpe) c.rotate(g.rot);
@@ -172,16 +190,19 @@
       s.x = Math.max(-1.35, Math.min(1.35, s.x));
       const meta = s.arrastre != null ? Math.max(-1, Math.min(1, (s.arrastre * 1.4 - s.x) * 2)) : dir; s.giro += (meta - s.giro) * Math.min(1, dt * 7);
       s.sacude = Math.max(0, s.sacude - dt * 3); s.comboT -= dt; if (s.comboT <= 0) s.combo = 1;
-      s.sig -= dt; if (s.sig <= 0) { s.sig = 0.35 + Math.random() * 0.5 / s.vel; const tipo = TIPOS[Math.random() < 0.5 ? 0 : Math.floor(Math.random() * TIPOS.length)]; s.gente.push({ x: (Math.random() * 2 - 1) * 1.45, z: 1, tipo, fase: Math.random() * 6, vx: (Math.random() - 0.5) * 0.3 }); }
+      s.sig -= dt; if (s.sig <= 0) { s.sig = 0.35 + Math.random() * 0.5 / s.vel; const tipo = TIPOS[Math.random() < 0.5 ? 0 : Math.floor(Math.random() * TIPOS.length)]; const car = Math.random() < 0.13; s.gente.push({ carrito: car, x: (Math.random() * 2 - 1) * 1.45, z: 1, tipo: car ? CARRITO : tipo, fase: Math.random() * 6, vx: (Math.random() - 0.5) * 0.3 }); }
       for (const g of s.gente) {
-        if (g.golpe) { g.t += dt; g.dx += g.vxv * dt; g.dy += g.vyv * dt; g.vyv -= 520 * dt; g.rot += 9 * dt; g.z -= dt * 0.25; continue; }
+        if (g.golpe) { g.t += dt; if (!g.carrito) { g.dx += g.vxv * dt; g.dy += g.vyv * dt; g.vyv -= 520 * dt; g.rot += 9 * dt; } g.z -= dt * 0.25; continue; }
         g.z -= dt * 0.42 * s.vel; g.x += g.vx * dt;
-        if (g.z < 0.11 && g.z > -0.02 && Math.abs(g.x - s.x) < 0.26) {
+        if (g.z < 0.11 && g.z > -0.02 && Math.abs(g.x - s.x) < (g.carrito ? 0.36 : 0.26)) {
           g.golpe = true; g.t = 0; g.dx = 0; g.dy = 0; g.vxv = (g.x < s.x ? -1 : 1) * 170; g.vyv = 260; g.rot = 0;
-          s.combo = Math.min(5, s.combo + (s.comboT > 0 ? 1 : 0)); s.comboT = 2; const pts = g.tipo.pts * s.combo; s.puntos += pts; s.sacude = 1;
-          s.popups.push({ txt: `¡PUM! +${pts}`, x: W / 2 + g.x * 70, y: 270, t: 0 }); navigator.vibrate?.(15);
+          s.combo = Math.min(5, s.combo + (s.comboT > 0 ? 1 : 0)); s.comboT = 2; const pts = g.tipo.pts * s.combo; s.puntos += pts; s.sacude = g.carrito ? 1.7 : 1;
+          const py = yDe(1 - g.z), pcx = px(s, g.x, py, 1 - g.z);
+          if (g.carrito) { for (let i = 0; i < 18; i++) { const an = Math.random() * 7, v = 120 + Math.random() * 260; s.parts.push({ x: pcx, y: py - 40, vx: Math.cos(an) * v, vy: Math.sin(an) * v - 160, t: 0, k: i % 3, r: Math.random() * 6 }); } }
+          s.popups.push({ txt: `${g.carrito ? '¡BOOM!' : '¡PUM!'} +${pts}`, x: W / 2 + g.x * 70, y: 270, t: 0 }); navigator.vibrate?.(g.carrito ? [20, 30, 40] : 15);
         }
       }
+      s.parts.forEach(q => { q.t += dt; q.x += q.vx * dt; q.y += q.vy * dt; q.vy += 520 * dt; q.r += dt * 9; }); s.parts = s.parts.filter(q => q.t < 1);
       s.popups.forEach(p => { p.t += dt; }); s.popups = s.popups.filter(p => p.t < 0.9);
       s.gente = s.gente.filter(g => g.z > -0.3 && !(g.golpe && g.t > 0.8));
     }
