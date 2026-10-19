@@ -22,14 +22,14 @@
     raiz.innerHTML = `<div class="jg-tarjeta"><div class="jg-vista"></div><div class="jg-texto"><h3>${esc(T.lleva)}</h3><p>${esc(T.regla)}</p>
       ${mejor ? `<p class="jg-nota">${esc(T.mejor)}: ${mejor}</p>` : ''}<button type="button" class="btn jg-ir" id="jg-jugar">${esc(T.jugar)}</button></div></div>`;
     const cv = lienzo(raiz.querySelector('.jg-vista')); dibujar(cv.ctx, estadoInicial(), 0);
-    raiz.querySelector('#jg-jugar').onclick = jugar;
+    raiz.querySelector('#jg-jugar').onclick = () => intro(() => partida());
   }
   function lienzo(cont) {
     const dpr = Math.min(3, Math.max(2, window.devicePixelRatio || 2)), cv = document.createElement('canvas'); cv.width = W * dpr; cv.height = H * dpr; cv.className = 'jg-lienzo';
     cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', 'Juego: un gorila maneja un jeep clásico y se lleva por delante a peatones de caricatura para sumar puntos.');
     cont.appendChild(cv); const ctx = cv.getContext('2d'); ctx.scale(dpr, dpr); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; return { cv, ctx };
   }
-  const estadoInicial = () => ({ t: 0, x: 0, giro: 0, dist: 0, vel: 1, puntos: 0, combo: 1, comboT: 0, gente: [], popups: [], parts: [], sacude: 0, sig: 0.3 });
+  const estadoInicial = () => ({ t: 0, x: 0, giro: 0, dist: 0, vel: 1, puntos: 0, combo: 1, comboT: 0, gente: [], popups: [], parts: [], sacude: 0, sig: 0.9, fade: 1, final: null });
 
   /* ---------- dibujo ---------- */
   const yDe = p => HOR + (H - HOR) * Math.pow(p, 1.7);                       // p: 0 horizonte … 1 frente al jeep
@@ -72,6 +72,91 @@
     c.fillStyle = C.bg; c.font = '800 15px sans-serif'; c.textAlign = 'left'; c.fillText(`${T.puntos}: ${s.puntos}`, 12, 23);
     c.textAlign = 'center'; c.fillStyle = s.combo > 1 ? C.acc : C.bg; c.fillText(s.combo > 1 ? `COMBO x${s.combo}` : '', W / 2, 23);
     c.textAlign = 'right'; c.fillStyle = C.bg; c.fillText(Math.max(0, Math.ceil(DURACION - s.t)) + ' s', W - 12, 23);
+    if (s.final != null) final(c, s);
+    if (s.fade > 0) { c.fillStyle = `rgba(0,0,0,${s.fade})`; c.fillRect(0, 0, W, H); }
+  }
+  /* ---------- sello y cierre ---------- */
+  function sello(c, cx, cy, r, alfa, rot) {                                               // sello de goma: aros, texto en círculo y el logo de Gorila al centro
+    c.save(); c.translate(cx, cy); c.rotate(rot); c.globalAlpha = alfa;
+    c.fillStyle = 'rgba(14,38,58,.88)'; c.beginPath(); c.arc(0, 0, r, 0, 7); c.fill();
+    c.strokeStyle = C.bg; c.lineWidth = r * 0.05; c.beginPath(); c.arc(0, 0, r * 0.96, 0, 7); c.stroke(); c.lineWidth = r * 0.02; c.beginPath(); c.arc(0, 0, r * 0.66, 0, 7); c.stroke();
+    const txt = 'TERRITORIO CONQUISTADO ★ GORILA BURGERS ★ ', n = txt.length; c.fillStyle = C.acc; c.font = `900 ${r * 0.15}px sans-serif`; c.textAlign = 'center';
+    for (let i = 0; i < n; i++) { c.save(); c.rotate((i / n) * Math.PI * 2 - Math.PI / 2); c.translate(0, -r * 0.8); c.fillText(txt[i], 0, 0); c.restore(); }
+    if (logo.complete && logo.naturalWidth) c.drawImage(logo, -r * 0.55, -r * 0.55, r * 1.1, r * 1.1);
+    c.restore();
+  }
+  function final(c, s) {                                                                  // «Territorio conquistado» + el sello cae con un golpe
+    const f = s.final, osc = Math.min(0.55, f * 1.2); c.fillStyle = `rgba(6,14,26,${osc})`; c.fillRect(0, 0, W, H);
+    const a = Math.min(1, f / 0.4); c.globalAlpha = a; c.textAlign = 'center'; c.font = '900 30px sans-serif'; c.lineWidth = 6; c.strokeStyle = '#12324A'; c.strokeText('TERRITORIO', W / 2, 150 - (1 - a) * 20); c.fillStyle = C.bg; c.fillText('TERRITORIO', W / 2, 150 - (1 - a) * 20);
+    c.font = '900 38px sans-serif'; c.strokeText('CONQUISTADO', W / 2, 192 - (1 - a) * 20); c.fillStyle = C.acc; c.fillText('CONQUISTADO', W / 2, 192 - (1 - a) * 20); c.globalAlpha = 1;
+    if (f > 0.7) { const k = Math.min(1, (f - 0.7) / 0.28), e = 1 - Math.pow(1 - k, 3); sello(c, W / 2, 330, 92 * (2.2 - 1.2 * e), Math.min(1, k * 1.6), -0.22 + (1 - e) * 0.5); if (f > 0.97 && f < 1.1) c.fillStyle = `rgba(255,255,255,${(1.1 - f) * 2})`, c.fillRect(0, 0, W, H); }
+  }
+  /* ---------- introducción: la tele, la misión y la carrera hasta el jeep ---------- */
+  function gorilaCuerpo(c, x, y, k, t, corre) {                                           // gorila de cuerpo entero, de lado, para la introducción
+    c.save(); c.translate(x, y); c.scale(k, k); const sw = corre ? Math.sin(t * 14) : 0;
+    c.fillStyle = '#14141a'; c.save(); c.rotate(sw * 0.7); c.beginPath(); c.roundRect ? c.roundRect(-9, 0, 15, 42, 7) : c.rect(-9, 0, 15, 42); c.fill(); c.restore();
+    c.save(); c.rotate(-sw * 0.7); c.beginPath(); c.roundRect ? c.roundRect(-3, 0, 15, 42, 7) : c.rect(-3, 0, 15, 42); c.fill(); c.restore();
+    const cu = c.createRadialGradient(-6, -20, 6, 0, -14, 52); cu.addColorStop(0, '#3a3a44'); cu.addColorStop(1, '#101015'); c.fillStyle = cu; c.beginPath(); c.ellipse(2, -16, 30, 38, corre ? 0.25 : 0, 0, 7); c.fill();
+    c.fillStyle = '#4a4650'; c.beginPath(); c.ellipse(12, -14, 15, 22, 0.2, 0, 7); c.fill();                                       // pecho
+    c.save(); c.rotate(corre ? -sw * 1.0 + 0.5 : 0.4); c.fillStyle = '#16161b'; c.beginPath(); c.roundRect ? c.roundRect(-8, -40, 17, 62, 8) : c.rect(-8, -40, 17, 62); c.fill(); c.fillStyle = '#3e3a43'; c.beginPath(); c.arc(0, 24, 10, 0, 7); c.fill(); c.restore();   // brazo largo
+    cara(c, 16, -52, 19); c.restore();
+  }
+  function intro(alTerminar) {
+    raiz.innerHTML = `<div class="jg-juego"><div class="jg-vista"></div><button type="button" class="btn btn-linea jg-saltar" id="jg-saltar">Saltar</button></div>`;
+    const { ctx: c } = lienzo(raiz.querySelector('.jg-vista')); let t0 = performance.now(), vivo = true;
+    const salir = () => { if (!vivo) return; vivo = false; alTerminar(); };
+    raiz.querySelector('#jg-saltar').onclick = salir; raiz.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    const SALA = 3.6, CALLE = 2.8;
+    function sala(t) {
+      c.fillStyle = lin(c, 0, H, '#1c2144', '#2a2f55'); c.fillRect(0, 0, W, H);
+      c.fillStyle = '#2b1f1a'; c.fillRect(0, 392, W, H - 392); c.fillStyle = '#7a2f2f'; c.fillRect(30, 404, 300, 44);
+      c.fillStyle = '#ffd36a'; c.beginPath(); c.arc(318, 90, 14, 0, 7); c.fill(); c.fillStyle = 'rgba(255,211,106,.15)'; c.beginPath(); c.arc(318, 90, 40, 0, 7); c.fill();         // lámpara
+      c.fillStyle = '#5a4a3a'; c.fillRect(10, 300, 170, 92); c.fillStyle = '#6d5a47'; c.fillRect(10, 264, 36, 128); c.fillRect(144, 264, 36, 128);                              // sillón
+      gorilaSentado(c, t);
+      c.fillStyle = '#1a1a1f'; c.fillRect(214, 168, 124, 100); c.fillStyle = '#2b2b33'; c.fillRect(222, 176, 108, 82); c.fillRect(262, 268, 28, 28); c.fillRect(246, 292, 60, 8);       // tele
+      const pa = Math.min(1, t / 0.6), flick = 0.82 + Math.sin(t * 40) * 0.05; c.fillStyle = `rgba(${t < 1 ? '200,220,255' : '255,70,60'},${0.9 * flick})`; c.fillRect(222, 176, 108, 82);
+      if (t < 1.2) { for (let i = 0; i < 40; i++) { c.fillStyle = `rgba(${(i * 53) % 255},${(i * 91) % 255},255,.35)`; c.fillRect(222 + ((i * 37 + t * 300) % 100), 176 + ((i * 17) % 76), 8, 5); } }
+      else { c.fillStyle = '#fff'; c.font = '900 13px sans-serif'; c.textAlign = 'center'; c.fillText('ÚLTIMA HORA', 276, 208); c.font = '800 11px sans-serif'; c.fillText('¿QUÉ PASA EN', 276, 228); c.fillText('LA CIUDAD?', 276, 244); }
+      c.fillStyle = `rgba(255,70,60,${0.1 + pa * 0.12 * flick})`; c.beginPath(); c.moveTo(214, 268); c.lineTo(120, 420); c.lineTo(350, 420); c.closePath(); c.fill();   // luz de la tele sobre la sala
+      if (t > 1.5) { const k = Math.min(1, (t - 1.5) / 0.35), pop = 1 + (1 - k) * 0.25; c.save(); c.translate(W / 2, 110); c.scale(pop, pop); c.globalAlpha = k;
+        c.fillStyle = 'rgba(8,20,32,.92)'; c.beginPath(); c.roundRect ? c.roundRect(-150, -48, 300, 96, 14) : c.rect(-150, -48, 300, 96); c.fill(); c.strokeStyle = C.acc; c.lineWidth = 3; c.stroke();
+        c.fillStyle = '#ffd36a'; c.font = '800 12px sans-serif'; c.textAlign = 'center'; c.fillText('★ MISIÓN ★', 0, -26); c.fillStyle = C.bg; c.font = '900 22px sans-serif'; c.fillText('NUEVO TERRITORIO', 0, 2); c.fillText('POR CONQUISTAR', 0, 28); c.restore(); }
+    }
+    function gorilaSentado(c, t) {
+      c.save(); c.translate(96, 330); const sw = Math.sin(t * 2) * 1.5;
+      c.fillStyle = '#14141a'; c.beginPath(); c.roundRect ? c.roundRect(10, 8, 66, 22, 10) : c.rect(10, 8, 66, 22); c.fill();                                                    // piernas hacia la tele
+      const cu = c.createRadialGradient(-6, -26, 6, 0, -14, 60); cu.addColorStop(0, '#3a3a44'); cu.addColorStop(1, '#101015'); c.fillStyle = cu; c.beginPath(); c.ellipse(0, -8, 38, 44, 0.15, 0, 7); c.fill();
+      c.fillStyle = '#4a4650'; c.beginPath(); c.ellipse(10, -4, 18, 26, 0.2, 0, 7); c.fill();
+      c.fillStyle = '#16161b'; c.beginPath(); c.roundRect ? c.roundRect(14, -22 + sw, 52, 16, 8) : c.rect(14, -22, 52, 16); c.fill();                                                // brazo hacia la hamburguesa
+      c.fillStyle = '#d99a4a'; c.beginPath(); c.arc(70, -16 + sw, 11, Math.PI, 0); c.fill(); c.fillStyle = '#4a2412'; c.fillRect(59, -16 + sw, 22, 5); c.fillStyle = '#d99a4a'; c.fillRect(60, -11 + sw, 20, 4);   // hamburguesa
+      cara(c, 14, -62, 24); c.restore();
+    }
+    function calle(t) {
+      c.fillStyle = lin(c, 0, 360, '#0e2b44', '#e9a678'); c.fillRect(0, 0, W, 360);
+      c.fillStyle = '#0a2234'; for (let i = 0; i < 9; i++) { const bh = 90 + (i * 41) % 90; c.fillRect(i * 44 - t * 20, 360 - bh, 40, bh); }
+      c.fillStyle = '#35404a'; c.fillRect(0, 360, W, H - 360); c.fillStyle = '#f3efd5'; for (let i = 0; i < 6; i++) c.fillRect(((i * 70 - t * 40) % 420 + 420) % 420 - 30, 440, 40, 4);
+      const salto = Math.max(0, t - 1.5), jx = 150, jy = 392, rueda = (x, y) => { c.fillStyle = '#16181c'; c.beginPath(); c.arc(x, y, 24, 0, 7); c.fill(); c.fillStyle = '#9aa0a8'; c.beginPath(); c.arc(x, y, 10, 0, 7); c.fill(); };
+      const salida = t > 2.2 ? (t - 2.2) * 160 : 0; c.save(); c.translate(salida, 0);                                                                                                // el jeep arranca
+      c.fillStyle = 'rgba(0,0,0,.3)'; c.beginPath(); c.ellipse(jx + 60, jy + 30, 100, 10, 0, 0, 7); c.fill();
+      c.fillStyle = '#4d5f2a'; c.beginPath(); c.roundRect ? c.roundRect(jx - 30, jy - 62, 190, 62, 10) : c.rect(jx - 30, jy - 62, 190, 62); c.fill();
+      c.fillStyle = '#5d7035'; c.fillRect(jx + 74, jy - 62, 86, 18); c.fillStyle = '#17191d'; c.fillRect(jx + 56, jy - 106, 6, 46); c.fillRect(jx + 56, jy - 108, 60, 6);
+      c.fillStyle = 'rgba(140,190,220,.35)'; c.beginPath(); c.moveTo(jx + 62, jy - 102); c.lineTo(jx + 112, jy - 102); c.lineTo(jx + 122, jy - 62); c.lineTo(jx + 62, jy - 62); c.closePath(); c.fill();
+      c.fillStyle = '#e6d9a0'; c.beginPath(); c.arc(jx + 154, jy - 34, 10, 0, 7); c.fill();
+      if (logo.complete && logo.naturalWidth) c.drawImage(logo, jx + 4, jy - 52, 40, 40);
+      rueda(jx + 10, jy); rueda(jx + 130, jy);
+      if (salto > 0.5) { gorilaCuerpo(c, jx + 66, jy - 62, 0.7, t, false); c.fillStyle = '#17191d'; c.fillRect(jx + 56, jy - 64, 60, 10); }                                          // ya sentado al volante
+      c.restore();
+      if (t > 2) { c.fillStyle = 'rgba(210,210,210,.45)'; for (let i = 0; i < 4; i++) { c.beginPath(); c.arc(jx - 34 - i * 14 + salida, jy - 8 - i * 4, 8 + i * 3, 0, 7); c.fill(); } }
+      if (salto <= 0.5) { const gx = -50 + Math.min(1, t / 1.5) * (jx + 30), hop = salto > 0 ? Math.sin(salto / 0.5 * Math.PI) * 60 : 0; gorilaCuerpo(c, gx, jy - 20 - hop, 0.8, t, salto <= 0); }
+    }
+    function ciclo(ahora) {
+      if (!vivo) return; const t = (ahora - t0) / 1000;
+      if (t < SALA) sala(t); else if (t < SALA + CALLE) calle(t - SALA); else { salir(); return; }
+      const fin = SALA + CALLE; if (t > fin - 0.5) { c.fillStyle = `rgba(0,0,0,${Math.min(1, (t - (fin - 0.5)) / 0.5)})`; c.fillRect(0, 0, W, H); }
+      if (t < 0.4) { c.fillStyle = `rgba(0,0,0,${1 - t / 0.4})`; c.fillRect(0, 0, W, H); }
+      requestAnimationFrame(ciclo);
+    }
+    requestAnimationFrame(ciclo);
   }
   function carrito(c, g, a, ahora) {                                                   // carrito de comida callejera
     if (g.golpe) { const k = g.t / 0.55; if (k < 1) { const r = a * (0.35 + k * 1.4), fl = c.createRadialGradient(0, -a * 0.5, 2, 0, -a * 0.5, r); fl.addColorStop(0, `rgba(255,248,200,${1 - k})`); fl.addColorStop(0.5, `rgba(255,150,40,${0.8 * (1 - k)})`); fl.addColorStop(1, 'rgba(255,60,20,0)'); c.fillStyle = fl; c.beginPath(); c.arc(0, -a * 0.5, r, 0, 7); c.fill(); c.strokeStyle = `rgba(255,236,190,${0.9 * (1 - k)})`; c.lineWidth = 3; c.beginPath(); c.arc(0, -a * 0.5, r * 0.9, 0, 7); c.stroke(); } return; }
@@ -163,7 +248,7 @@
   }
 
   /* ---------- partida ---------- */
-  function jugar() {
+  function partida() {
     raiz.innerHTML = `<div class="jg-juego"><div class="jg-vista"></div>
       <div class="jg-mando" aria-label="Controles"><div class="jg-dir"><button type="button" data-k="izq" aria-label="Izquierda"><svg viewBox="0 0 24 24" aria-hidden="true" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><button type="button" data-k="der" aria-label="Derecha"><svg viewBox="0 0 24 24" aria-hidden="true" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button></div></div>
       <p class="jg-nota">${esc(T.mando)}</p></div>`;
@@ -182,15 +267,16 @@
     ['pointerup', 'pointercancel'].forEach(ev => lienzoEl.addEventListener(ev, () => { s.arrastre = null; }));
     document.body.classList.add('jg-jugando');
     const terminar = () => { if (!activo) return; activo = false; document.body.classList.remove('jg-jugando'); removeEventListener('keydown', kd); removeEventListener('keyup', ku); resultado(s.puntos); };
-    fin = terminar;
+    fin = terminar; window.GorilaJeep.cerrar = () => { s.t = DURACION; };   // gancho para pruebas: salta al final de los 40 s
     function paso(dt) {
-      s.t += dt; s.vel = 1 + Math.min(0.7, s.t / 60); s.dist += dt * s.vel;
+      if (s.final == null) { s.t += dt; s.vel = 1 + Math.min(0.7, s.t / 60); } else { s.final += dt; s.vel = Math.max(0.25, s.vel - dt * 0.7); }
+      s.dist += dt * s.vel; if (s.fade > 0) s.fade = Math.max(0, s.fade - dt * 1.6);
       const dir = (k.der ? 1 : 0) - (k.izq ? 1 : 0);
       if (s.arrastre != null) s.x += (Math.max(-1.1, Math.min(1.1, s.arrastre * 1.4)) - s.x) * Math.min(1, dt * 9); else s.x += dir * dt * 1.9;
       s.x = Math.max(-1.35, Math.min(1.35, s.x));
       const meta = s.arrastre != null ? Math.max(-1, Math.min(1, (s.arrastre * 1.4 - s.x) * 2)) : dir; s.giro += (meta - s.giro) * Math.min(1, dt * 7);
       s.sacude = Math.max(0, s.sacude - dt * 3); s.comboT -= dt; if (s.comboT <= 0) s.combo = 1;
-      s.sig -= dt; if (s.sig <= 0) { s.sig = 0.35 + Math.random() * 0.5 / s.vel; const tipo = TIPOS[Math.random() < 0.5 ? 0 : Math.floor(Math.random() * TIPOS.length)]; const car = Math.random() < 0.13; s.gente.push({ carrito: car, x: (Math.random() * 2 - 1) * 1.45, z: 1, tipo: car ? CARRITO : tipo, fase: Math.random() * 6, vx: (Math.random() - 0.5) * 0.3 }); }
+      s.sig -= dt; if (s.sig <= 0 && s.final == null) { s.sig = 0.35 + Math.random() * 0.5 / s.vel; const tipo = TIPOS[Math.random() < 0.5 ? 0 : Math.floor(Math.random() * TIPOS.length)]; const car = Math.random() < 0.13; s.gente.push({ carrito: car, x: (Math.random() * 2 - 1) * 1.45, z: 1, tipo: car ? CARRITO : tipo, fase: Math.random() * 6, vx: (Math.random() - 0.5) * 0.3 }); }
       for (const g of s.gente) {
         if (g.golpe) { g.t += dt; if (!g.carrito) { g.dx += g.vxv * dt; g.dy += g.vyv * dt; g.vyv -= 520 * dt; g.rot += 9 * dt; } g.z -= dt * 0.25; continue; }
         g.z -= dt * 0.42 * s.vel; g.x += g.vx * dt;
@@ -210,7 +296,8 @@
       if (!activo) return;
       const dt = Math.min(0.05, (ahora - previo) / 1000); previo = ahora;
       paso(dt); dibujar(ctx, s, ahora / 1000);
-      if (s.t >= DURACION) { terminar(); return; }
+      if (s.t >= DURACION && s.final == null) { s.final = 0; s.sacude = 0; }
+      if (s.final != null && s.final > 3) { terminar(); return; }
       requestAnimationFrame(ciclo);
     }
     raiz.scrollIntoView({ block: 'center', behavior: 'smooth' });
@@ -218,10 +305,13 @@
   }
   function resultado(puntos) {
     const mejor = lee('gorila_jeep_mejor') || 0, nuevo = puntos > mejor; if (nuevo) guarda('gorila_jeep_mejor', puntos);
-    raiz.innerHTML = `<div class="jg-tarjeta jg-fin"><div class="jg-texto" role="status"><h3>${esc(T.fin)}</h3><p class="jg-premio">${puntos} ${esc(T.puntos.toLowerCase())}</p>
+    raiz.innerHTML = `<div class="jg-tarjeta jg-fin"><div class="jg-vista jg-sello-caja"></div><div class="jg-texto" role="status"><h3>Territorio conquistado</h3><p class="jg-premio">${puntos} ${esc(T.puntos.toLowerCase())}</p>
       <p>${nuevo && puntos > 0 ? esc(T.nuevo) : `${esc(T.mejor)}: ${Math.max(mejor, puntos)}`}</p>
-      <button type="button" class="btn jg-ir" id="jg-otra">${esc(T.otra)}</button> <a class="btn btn-linea jg-ir" href="#carta">${esc(T.pide)}</a></div></div>`;
-    raiz.querySelector('#jg-otra').onclick = jugar;
+      <p>El food truck de Gorila también conquista tu evento.</p>
+      <a class="btn jg-ir" href="#eventos">Llevar el food truck a mi evento</a> <button type="button" class="btn btn-linea jg-ir" id="jg-otra">${esc(T.otra)}</button> <a class="enlace" href="#carta">${esc(T.pide)}</a></div></div>`;
+    const { ctx: cs } = lienzo(raiz.querySelector('.jg-sello-caja')); cs.fillStyle = lin(cs, 0, H, '#12324A', '#0a2234'); cs.fillRect(0, 0, W, H); sello(cs, W / 2, H / 2, 140, 1, -0.2);
+    const redibuja = () => { sello(cs, W / 2, H / 2, 140, 1, -0.2); }; if (!logo.complete) logo.addEventListener('load', () => { cs.fillStyle = lin(cs, 0, H, '#12324A', '#0a2234'); cs.fillRect(0, 0, W, H); redibuja(); }, { once: true });
+    raiz.querySelector('#jg-otra').onclick = () => partida();
   }
   window.GorilaJeep = { terminar: () => fin() };   // gancho para las pruebas automáticas
   portada();

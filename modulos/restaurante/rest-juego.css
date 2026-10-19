@@ -35,3 +35,8 @@
 
 /* Mientras se juega, el botón flotante de WhatsApp se esconde para no tapar los controles */
 body.jg-jugando .wa-flot { display: none; }
+
+/* introducción del jeep: botón para saltarla */
+.jg-saltar { position: absolute; right: 10px; top: 10px; min-height: 36px; padding: 0 14px; font-size: .8rem; z-index: 2; }
+.jg-juego .jg-vista { position: relative; }
+.jg-sello-caja { max-width: 320px; }
