@@ -16,8 +16,8 @@ window.MENU = {
           "foto": {
             "src": "assets/carta-texas.webp",
             "alt": "Gorila Texas: doble carne con cheddar, tocino y la banderita de Gorila",
-            "w": 720,
-            "h": 492
+            "w": 560,
+            "h": 383
           }
         },
         {
@@ -29,8 +29,8 @@ window.MENU = {
           "foto": {
             "src": "assets/carta-superguesa.webp",
             "alt": "SuperGuesa: doble carne con doble cheddar y tocino",
-            "w": 720,
-            "h": 534
+            "w": 560,
+            "h": 415
           }
         },
         {
@@ -42,8 +42,8 @@ window.MENU = {
           "foto": {
             "src": "assets/carta-jam.webp",
             "alt": "Jam Smash: doble carne smash con queso fundido y cebolla caramelizada",
-            "w": 720,
-            "h": 492
+            "w": 560,
+            "h": 383
           }
         }
       ]
@@ -63,8 +63,8 @@ window.MENU = {
           "foto": {
             "src": "assets/carta-hawayana.webp",
             "alt": "Hawayana: carne con cheddar y piña a la plancha en pan brioche",
-            "w": 720,
-            "h": 492
+            "w": 560,
+            "h": 383
           }
         },
         {
@@ -76,8 +76,8 @@ window.MENU = {
           "foto": {
             "src": "assets/carta-tocino-bbq.webp",
             "alt": "Tocino BBQ: carne, cheddar, tocino y salsa BBQ con papas",
-            "w": 720,
-            "h": 492
+            "w": 560,
+            "h": 383
           }
         }
       ]
@@ -97,8 +97,8 @@ window.MENU = {
           "foto": {
             "src": "assets/carta-cheese.webp",
             "alt": "Cheese Burger: carne con queso cheddar derretido y vegetales",
-            "w": 720,
-            "h": 492
+            "w": 560,
+            "h": 383
           }
         },
         {
@@ -110,8 +110,8 @@ window.MENU = {
           "foto": {
             "src": "assets/carta-mini.webp",
             "alt": "Mini Gorila: carne con queso y salsa en pan con ajonjolí negro",
-            "w": 720,
-            "h": 492
+            "w": 560,
+            "h": 383
           }
         }
       ]

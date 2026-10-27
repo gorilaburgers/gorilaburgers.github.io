@@ -8,7 +8,11 @@
   /* la primera burger ya viene en el HTML (es lo que más tarda en pintarse): se conserva y solo se agregan las demás */
   const estatica = slides.querySelector('.rb-slide');
   if (estatica) estatica.setAttribute('aria-label', `1 de ${V.length}`);
-  slides.insertAdjacentHTML('beforeend', V.map((b, n) => estatica && n === 0 ? '' : `<div class="rb-slide" data-n="${n}" role="group" aria-roledescription="diapositiva" aria-label="${n + 1} de ${V.length}"><img src="${esc(b.corte)}" alt="${esc(b.alt)}" ${n ? 'loading="lazy"' : ''}></div>`).join(''));
+  slides.insertAdjacentHTML('beforeend', V.map((b, n) => estatica && n === 0 ? '' : `<div class="rb-slide" data-n="${n}" role="group" aria-roledescription="diapositiva" aria-label="${n + 1} de ${V.length}">${n ? '' : `<img src="${esc(b.corte)}" alt="${esc(b.alt)}" decoding="async">`}</div>`).join(''));
+  /* Las demás burgers se bajan después de la primera pintura (o al primer toque), para que la primera carga siga liviana */
+  const cargarSlides = () => { $$('.rb-slide', slides).forEach((s, k) => { if (k && !s.firstChild) { const i = new Image(); i.alt = V[k].alt; i.decoding = 'async'; i.src = V[k].corte; s.appendChild(i); } }); };
+  ['pointerdown', 'keydown', 'touchstart'].forEach(e => addEventListener(e, cargarSlides, { once: true, passive: true }));
+  setTimeout(cargarSlides, 3500);
   glows.innerHTML = V.map(b => `<div class="rb-glow" style="--g:${esc(b.glow)}"></div>`).join('');
 
   const quedan = id => carta && (carta.productos.find(p => p.clave === id) || {}).quedan;
