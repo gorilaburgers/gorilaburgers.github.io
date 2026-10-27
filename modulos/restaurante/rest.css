@@ -92,6 +92,9 @@ body.rest-oscuro { background: var(--fx-deep-2); color: var(--fx-bg); padding-bo
 .rb-cat { scroll-snap-align: start; text-decoration: none; color: var(--fx-bg); }
 .rb-cat .foto { height: clamp(150px, 20vw, 220px); border: 2px solid var(--fx-bg); border-radius: 22px; background: color-mix(in srgb, var(--fx-deep) 70%, var(--fx-deep-2)); display: grid; place-items: center; overflow: hidden; }
 .rb-cat .foto img { height: 88%; width: auto; object-fit: contain; filter: drop-shadow(0 14px 16px rgba(0, 0, 0, .5)); }
+.rb-cat .foto { position: relative; }
+.rb-cat .foto img { max-width: 92%; max-height: 92%; }
+.rb-cat .foto img.cubre { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; object-fit: cover; filter: none; }
 .rb-cat .foto .marca-agua { height: 46%; width: auto; opacity: .35; filter: grayscale(.4); }
 .rb-cat h3 { margin-top: 12px; font: 900 1.5rem/1 var(--fx-font-disp); text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
 .rb-cat h3 svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.6; }

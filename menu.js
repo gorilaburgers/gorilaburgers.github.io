@@ -46,7 +46,8 @@ window.MENU = {
             "h": 383
           }
         }
-      ]
+      ],
+      "foto": "assets/carta-texas.webp"
     },
     {
       "id": "especiales",
@@ -80,7 +81,8 @@ window.MENU = {
             "h": 383
           }
         }
-      ]
+      ],
+      "foto": "assets/carta-hawayana.webp"
     },
     {
       "id": "peques",
@@ -114,7 +116,8 @@ window.MENU = {
             "h": 383
           }
         }
-      ]
+      ],
+      "foto": "assets/carta-cheese.webp"
     },
     {
       "id": "papas",
