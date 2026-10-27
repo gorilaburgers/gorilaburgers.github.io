@@ -12,21 +12,39 @@ window.MENU = {
           "nombre": "Gorila Texas + papas",
           "precio": 790,
           "lema": "La campeona que domina",
-          "desc": "2 carnes, 2 quesos cheddar, tocino, cebollas empanizadas, salsa BBQ y salsa Kong"
+          "desc": "2 carnes, 2 quesos cheddar, tocino, cebollas empanizadas, salsa BBQ y salsa Kong",
+          "foto": {
+            "src": "assets/carta-texas.webp",
+            "alt": "Gorila Texas: doble carne con cheddar, tocino y la banderita de Gorila",
+            "w": 720,
+            "h": 492
+          }
         },
         {
           "id": "superguesa",
           "nombre": "SuperGuesa + papas",
           "precio": 790,
           "lema": "Nivel bestia activado",
-          "desc": "Receta de la casa."
+          "desc": "Receta de la casa.",
+          "foto": {
+            "src": "assets/carta-superguesa.webp",
+            "alt": "SuperGuesa: doble carne con doble cheddar y tocino",
+            "w": 720,
+            "h": 534
+          }
         },
         {
           "id": "jam",
           "nombre": "Jam Smash",
           "precio": 499,
           "lema": "La que cambia el juego",
-          "desc": "2 carnes smash, 2 quesos cheddar, cebollas caramelizadas y salsa smash"
+          "desc": "2 carnes smash, 2 quesos cheddar, cebollas caramelizadas y salsa smash",
+          "foto": {
+            "src": "assets/carta-jam.webp",
+            "alt": "Jam Smash: doble carne smash con queso fundido y cebolla caramelizada",
+            "w": 720,
+            "h": 492
+          }
         }
       ]
     },
@@ -41,14 +59,26 @@ window.MENU = {
           "nombre": "Hawayana + papas",
           "precio": 590,
           "lema": "Dulce, atrevida y peligrosa",
-          "desc": "Receta de la casa."
+          "desc": "Receta de la casa.",
+          "foto": {
+            "src": "assets/carta-hawayana.webp",
+            "alt": "Hawayana: carne con cheddar y piña a la plancha en pan brioche",
+            "w": 720,
+            "h": 492
+          }
         },
         {
           "id": "tocino",
           "nombre": "Tocino BBQ + papas",
           "precio": 590,
           "lema": "Puro fuego en cada mordida",
-          "desc": "Carne, queso cheddar, tocino, salsa BBQ, salsa Kong y vegetales"
+          "desc": "Carne, queso cheddar, tocino, salsa BBQ, salsa Kong y vegetales",
+          "foto": {
+            "src": "assets/carta-tocino-bbq.webp",
+            "alt": "Tocino BBQ: carne, cheddar, tocino y salsa BBQ con papas",
+            "w": 720,
+            "h": 492
+          }
         }
       ]
     },
@@ -63,14 +93,26 @@ window.MENU = {
           "nombre": "Cheese Burger + papas",
           "precio": 550,
           "lema": "El clásico que nunca falla",
-          "desc": "Carne, queso cheddar, salsa Kong y vegetales"
+          "desc": "Carne, queso cheddar, salsa Kong y vegetales",
+          "foto": {
+            "src": "assets/carta-cheese.webp",
+            "alt": "Cheese Burger: carne con queso cheddar derretido y vegetales",
+            "w": 720,
+            "h": 492
+          }
         },
         {
           "id": "mini",
           "nombre": "Mini Gorila + papas",
           "precio": 490,
           "lema": "Pequeña pero con carácter",
-          "desc": "Carne, salsa Kong y vegetales"
+          "desc": "Carne, salsa Kong y vegetales",
+          "foto": {
+            "src": "assets/carta-mini.webp",
+            "alt": "Mini Gorila: carne con queso y salsa en pan con ajonjolí negro",
+            "w": 720,
+            "h": 492
+          }
         }
       ]
     },
