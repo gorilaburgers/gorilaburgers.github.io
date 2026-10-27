@@ -126,18 +126,26 @@
   }
 
   function abrirExtras(it) {
-    const sel = new Set();
-    const total = () => it.precio + [...sel].reduce((s, x) => s + extras.get(x).precio, 0);
+    const sel = new Set(), bebidas = (M.categorias.find(c => c.bebida) || { items: [] }).items;
+    let bebida = '';
+    const total = () => it.precio + [...sel].reduce((s, x) => s + extras.get(x).precio, 0) + (bebida ? items.get(bebida).precio : 0);
     abrirHoja(`
       <h2 class="pd-hoja-tit">${esc(it.nombre)}</h2>
       <p class="pd-sub">¿Le subimos el nivel? Extras opcionales</p>
       <div class="pd-extras">${M.extras.map(x => `
         <label class="pd-chip"><input type="checkbox" value="${x.id}"><span>${esc(x.nombre)} <b>+${plata(x.precio)}</b></span></label>`).join('')}
       </div>
+      ${bebidas.length ? `<p class="pd-sub">¿Qué quieres para tomar?</p>
+      <div class="pd-extras" role="radiogroup" aria-label="Bebida">
+        <label class="pd-chip"><input type="radio" name="pd-bebida" value="" checked><span>Sin bebida</span></label>${bebidas.map(b => `
+        <label class="pd-chip"><input type="radio" name="pd-bebida" value="${b.id}"><span>${esc(b.nombre)} <b>+${plata(b.precio)}</b></span></label>`).join('')}
+      </div>` : ''}
       <button type="button" class="pd-btn pd-btn-full" id="pd-ok">Agregar · <span id="pd-tot">${plata(it.precio)}</span></button>`,
       h => {
-        h.querySelectorAll('input').forEach(c => c.onchange = () => { c.checked ? sel.add(c.value) : sel.delete(c.value); $('#pd-tot', h).textContent = plata(total()); });
-        $('#pd-ok', h).onclick = () => { agregar(it.id, [...sel]); h.close(); };
+        const pintar = () => { $('#pd-tot', h).textContent = plata(total()); };
+        h.querySelectorAll('input[type=checkbox]').forEach(c => c.onchange = () => { c.checked ? sel.add(c.value) : sel.delete(c.value); pintar(); });
+        h.querySelectorAll('input[type=radio]').forEach(r => r.onchange = () => { bebida = r.value; pintar(); });
+        $('#pd-ok', h).onclick = () => { agregar(it.id, [...sel]); if (bebida) agregar(bebida, []); h.close(); };
       });
   }
 

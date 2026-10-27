@@ -169,7 +169,8 @@ window.MENU = {
           "lema": null,
           "desc": null
         }
-      ]
+      ],
+      "bebida": true
     }
   ],
   "extras": [
