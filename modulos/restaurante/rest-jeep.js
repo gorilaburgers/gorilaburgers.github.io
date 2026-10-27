@@ -5,7 +5,7 @@
   const raiz = document.getElementById('juego-raiz');
   if (!raiz) return;
   const T = Object.assign({ jugar: 'Manejar', lleva: 'Maneja el jeep del Gorila', regla: 'Cada peatón de caricatura que choques suma puntos, y los combos los multiplican. Tienes 40 segundos.',
-    fin: '¡Se acabó el tiempo!', puntos: 'Puntos', mejor: 'Tu mejor marca', otra: 'Manejar otra vez', pide: 'Armar mi pedido', nuevo: '¡Nuevo récord!', mando: 'Mueve con las flechas, A y D, o los botones.' }, window.RESTDATA && window.RESTDATA.juego_txt || {});
+    fin: '¡Se acabó el tiempo!', puntos: 'Puntos', mejor: 'Tu mejor marca', otra: 'Manejar otra vez', pide: 'Armar mi pedido', nuevo: '¡Nuevo récord!', mando: 'Desliza la barra (o el dedo sobre el juego) para girar. En computador: flechas o A y D.' }, window.RESTDATA && window.RESTDATA.juego_txt || {});
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const lee = k => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } };
   const guarda = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* sin almacenamiento */ } };
@@ -274,17 +274,18 @@
   /* ---------- partida ---------- */
   function partida() {
     raiz.innerHTML = `<div class="jg-juego"><div class="jg-vista"></div>
-      <div class="jg-mando" aria-label="Controles"><div class="jg-dir"><button type="button" data-k="izq" aria-label="Izquierda"><svg viewBox="0 0 24 24" aria-hidden="true" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><button type="button" data-k="der" aria-label="Derecha"><svg viewBox="0 0 24 24" aria-hidden="true" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button></div></div>
+      <div class="jg-barra" id="jg-barra" role="slider" aria-label="Volante: desliza para girar" aria-valuemin="-100" aria-valuemax="100" aria-valuenow="0"><span class="jg-pista"></span><span class="jg-perilla" id="jg-perilla"></span><span class="jg-flecha izq">‹</span><span class="jg-flecha der">›</span></div>
       <p class="jg-nota">${esc(T.mando)}</p></div>`;
     const { ctx } = lienzo(raiz.querySelector('.jg-vista')), s = estadoInicial(), k = { izq: false, der: false };
     let activo = true, previo = performance.now(), t0 = previo;
     const teclas = { ArrowLeft: 'izq', a: 'izq', A: 'izq', ArrowRight: 'der', d: 'der', D: 'der' };
     const kd = e => { const q = teclas[e.key]; if (q) { k[q] = true; e.preventDefault(); } }, ku = e => { const q = teclas[e.key]; if (q) k[q] = false; };
     addEventListener('keydown', kd); addEventListener('keyup', ku);
-    raiz.querySelectorAll('.jg-mando button').forEach(b => {
-      b.addEventListener('pointerdown', e => { e.preventDefault(); try { b.setPointerCapture(e.pointerId); } catch (x) { /* nada */ } k[b.dataset.k] = true; b.classList.add('on'); });
-      const suelta = () => { k[b.dataset.k] = false; b.classList.remove('on'); }; ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => b.addEventListener(ev, suelta));
-    });
+    const barra = raiz.querySelector('#jg-barra'), perilla = raiz.querySelector('#jg-perilla');
+    const mueve = e => { const r = barra.getBoundingClientRect(); s.arrastre = Math.max(-1, Math.min(1, ((e.clientX - r.left) / r.width) * 2 - 1)); };
+    barra.addEventListener('pointerdown', e => { e.preventDefault(); try { barra.setPointerCapture(e.pointerId); } catch (x) { /* nada */ } barra.classList.add('on'); mueve(e); });
+    barra.addEventListener('pointermove', e => { if (barra.classList.contains('on')) mueve(e); });
+    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => barra.addEventListener(ev, () => { barra.classList.remove('on'); s.arrastre = null; }));
     const lienzoEl = raiz.querySelector('.jg-lienzo');
     lienzoEl.addEventListener('pointerdown', e => { const r = lienzoEl.getBoundingClientRect(); s.arrastre = (e.clientX - r.left) / r.width * 2 - 1; });
     lienzoEl.addEventListener('pointermove', e => { if (s.arrastre != null && e.buttons) { const r = lienzoEl.getBoundingClientRect(); s.arrastre = (e.clientX - r.left) / r.width * 2 - 1; } });
@@ -322,6 +323,7 @@
       if (!activo) return;
       const dt = Math.min(0.05, (ahora - previo) / 1000); previo = ahora;
       paso(dt); dibujar(ctx, s, ahora / 1000);
+      const pos = s.arrastre != null ? s.arrastre : s.giro; perilla.style.transform = `translateX(${(Math.max(-1, Math.min(1, pos)) * (barra.clientWidth / 2 - 30)).toFixed(1)}px)`;
       if (s.t >= DURACION && s.final == null) { s.final = 0; s.sacude = 0; }
       if (s.final != null && s.final > 3) { terminar(); return; }
       requestAnimationFrame(ciclo);

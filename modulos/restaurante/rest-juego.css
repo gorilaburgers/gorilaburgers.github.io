@@ -40,3 +40,12 @@ body.jg-jugando .wa-flot { display: none; }
 .jg-saltar { position: absolute; right: 10px; top: 10px; min-height: 36px; padding: 0 14px; font-size: .8rem; z-index: 2; }
 .jg-juego .jg-vista { position: relative; }
 .jg-sello-caja { max-width: 320px; }
+
+/* barra de giro del jeep: se desliza con el dedo; la perilla sigue al volante */
+.jg-barra { position: relative; height: 56px; border-radius: 999px; border: 2px solid var(--fx-bg); background: color-mix(in srgb, var(--fx-deep) 70%, #000); touch-action: none; user-select: none; -webkit-user-select: none; cursor: ew-resize; display: grid; place-items: center; overflow: hidden; }
+.jg-pista { position: absolute; left: 18px; right: 18px; top: 50%; height: 4px; margin-top: -2px; border-radius: 4px; background: color-mix(in srgb, var(--fx-bg) 25%, transparent); }
+.jg-flecha { position: absolute; top: 50%; margin-top: -.62em; font: 900 1.7rem/1 var(--fx-font-disp); color: var(--fx-soft-2); pointer-events: none; } .jg-flecha.izq { left: 16px; } .jg-flecha.der { right: 16px; }
+.jg-perilla { position: absolute; left: calc(50% - 22px); top: 50%; width: 44px; height: 44px; margin-top: -22px; border-radius: 50%; background: var(--fx-accent); border: 3px solid var(--fx-deep); box-shadow: 0 3px 0 rgba(0,0,0,.35); pointer-events: none; will-change: transform; }
+.jg-perilla::before { content: ''; position: absolute; inset: 12px; border-radius: 50%; border: 3px solid var(--fx-deep); border-bottom-color: transparent; }
+.jg-barra.on { border-color: var(--fx-accent); }
+.jg-barra:focus-visible { outline: 3px solid var(--fx-pop); outline-offset: 3px; }
