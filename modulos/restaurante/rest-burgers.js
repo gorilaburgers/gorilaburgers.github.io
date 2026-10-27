@@ -60,7 +60,7 @@
 
   /* ---------- categorías en fila ---------- */
   const cats = R.categorias.map(c => { const v = V.find(b => b.id && c.ids.includes(b.id)); return { ...c, corte: v && v.corte, alt: v && v.alt }; }).filter(c => c.foto || c.corte);
-  $('#rb-cats').innerHTML = cats.map(c => `<a class="rb-cat" href="#cat-${esc(c.id)}"><div class="foto">${c.foto ? `<img class="cubre" src="${esc(c.foto)}" alt="" loading="lazy">` : c.corte ? `<img src="${esc(c.corte)}" alt="" loading="lazy">` : `<img class="marca-agua" src="${esc(R.logo)}" alt="" loading="lazy">`}</div>
+  if ($('#rb-cats')) $('#rb-cats').innerHTML = cats.map(c => `<a class="rb-cat" href="#cat-${esc(c.id)}"><div class="foto">${c.foto ? `<img class="cubre" src="${esc(c.foto)}" alt="" loading="lazy">` : c.corte ? `<img src="${esc(c.corte)}" alt="" loading="lazy">` : `<img class="marca-agua" src="${esc(R.logo)}" alt="" loading="lazy">`}</div>
     <h3>${esc(c.nombre)} <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18L18 6M8 6h10v10"/></svg></h3><p>${esc(c.sub)}</p></a>`).join('');
 
   /* ---------- contador LED ---------- */
