@@ -76,6 +76,12 @@
 .paso h3 { font: 800 1.6rem/1 var(--fx-font-disp); text-transform: uppercase; margin: 2px 0 6px; }
 .paso p { color: var(--fx-soft); }
 .eventos-cta { margin-top: 38px; }
+.evento-grid { display: grid; gap: 30px; margin-top: 44px; }
+.evento-grid .pasos { margin-top: 0; grid-template-columns: 1fr; }
+.evento-foto { margin: 0; position: relative; border-radius: 20px; overflow: hidden; border: 3px solid var(--fx-bg); background: var(--fx-deep-2, #0a2234); }
+.evento-foto img { display: block; width: 100%; height: auto; }
+.evento-foto figcaption { position: absolute; left: 12px; bottom: 12px; right: 12px; font: 800 1rem/1.15 var(--fx-font-disp); text-transform: uppercase; color: var(--fx-bg); text-shadow: 0 2px 8px rgba(0,0,0,.8); }
+@media (min-width: 900px) { .evento-grid.con-foto { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); align-items: center; gap: 48px; } }
 
 /* Galería */
 .galeria { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); margin-top: 40px; }
@@ -197,7 +203,7 @@
 <section class="sec papel" id="juego"><div class="wrap">
   <div data-reveal>
     <h2 class="doble"><span>Juega y</span>espera</h2>
-    <p class="intro">Mientras esperas tu pedido, maneja el jeep del Gorila: cada peatón de caricatura que choques suma puntos y los combos los multiplican.</p>
+    <p class="intro">Mientras esperas tu pedido, maneja el jeep del Gorila con el food truck a cuestas: cada peatón de caricatura que choques suma puntos, y el Gorila se toma su cerveza en el camino.</p>
   </div>
   <div id="juego-raiz" aria-live="polite"></div>
 </div></section>
@@ -207,12 +213,15 @@
 <section class="sec oscuro eventos" id="eventos"><div class="wrap">
   <h2 class="doble" data-reveal><span>Gorila también va</span>a tu evento</h2>
   <p class="intro" data-reveal>Tenemos food truck. Llevamos las burgers de Gorila a conciertos, ferias, fiestas y cualquier actividad. Cotiza y ten la mejor hamburguesa de Ambato en tu evento.</p>
-  <div class="pasos" data-stagger>
+  <div class="evento-grid con-foto">
+    <figure class="evento-foto" data-reveal><img src="assets/foodtruck-jungla.webp" alt="Food truck de Gorila Burgers con la frase Welcome to the Jungle, listo para un evento" width="807" height="587" loading="lazy"><figcaption>Welcome to the jungle</figcaption></figure>
+    <div class="pasos" data-stagger>
     <div class="paso"><span class="ico"><svg><use href="#i-estrella"/></svg></span><div><h3>Conciertos y festivales</h3><p>Burgers a la plancha para el público, los artistas y el equipo.</p></div></div>
     <div class="paso"><span class="ico"><svg><use href="#i-copa"/></svg></span><div><h3>Cumpleaños y matrimonios</h3><p>Un menú para tus invitados, armado a tu medida.</p></div></div>
     <div class="paso"><span class="ico"><svg><use href="#i-equipo"/></svg></span><div><h3>Ferias y eventos de empresa</h3><p>Para ferias, lanzamientos, colegios, universidades y equipos de trabajo.</p></div></div>
     <div class="paso"><span class="ico"><svg><use href="#i-pin"/></svg></span><div><h3>Cualquier actividad</h3><p>Si hay gente con hambre, Gorila va. Cuéntanos fecha, lugar y cuántas personas.</p></div></div>
     
+    </div>
   </div>
   <div class="acciones eventos-cta" data-reveal><a class="btn fx-brillo" data-wa="Hola Gorila, quiero cotizar el food truck para un evento. Tipo de evento, fecha, lugar y número de personas:">Cotizar mi evento</a></div>
 </div></section>

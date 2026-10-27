@@ -29,7 +29,7 @@
     cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', 'Juego: un gorila maneja un jeep clásico y se lleva por delante a peatones de caricatura para sumar puntos.');
     cont.appendChild(cv); const ctx = cv.getContext('2d'); ctx.scale(dpr, dpr); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; return { cv, ctx };
   }
-  const estadoInicial = () => ({ t: 0, x: 0, giro: 0, dist: 0, vel: 1, puntos: 0, combo: 1, comboT: 0, gente: [], popups: [], parts: [], sacude: 0, sig: 0.9, fade: 1, final: null });
+  const estadoInicial = () => ({ t: 0, x: 0, giro: 0, dist: 0, vel: 1, puntos: 0, combo: 1, comboT: 0, gente: [], popups: [], parts: [], sacude: 0, sig: 0.9, fade: 1, final: null, rem: 0, beb: null, proxBeb: 3.2, salud: false });
 
   /* ---------- dibujo ---------- */
   const yDe = p => HOR + (H - HOR) * Math.pow(p, 1.7);                       // p: 0 horizonte … 1 frente al jeep
@@ -137,7 +137,8 @@
       c.fillStyle = '#35404a'; c.fillRect(0, 360, W, H - 360); c.fillStyle = '#f3efd5'; for (let i = 0; i < 6; i++) c.fillRect(((i * 70 - t * 40) % 420 + 420) % 420 - 30, 440, 40, 4);
       const salto = Math.max(0, t - 1.5), jx = 150, jy = 392, rueda = (x, y) => { c.fillStyle = '#16181c'; c.beginPath(); c.arc(x, y, 24, 0, 7); c.fill(); c.fillStyle = '#9aa0a8'; c.beginPath(); c.arc(x, y, 10, 0, 7); c.fill(); };
       const salida = t > 2.2 ? (t - 2.2) * 160 : 0; c.save(); c.translate(salida, 0);                                                                                                // el jeep arranca
-      c.fillStyle = 'rgba(0,0,0,.3)'; c.beginPath(); c.ellipse(jx + 60, jy + 30, 100, 10, 0, 0, 7); c.fill();
+      c.fillStyle = 'rgba(0,0,0,.3)'; c.beginPath(); c.ellipse(jx + 20, jy + 30, 150, 10, 0, 0, 7); c.fill();
+      remolque(c, jx - 92, jy + 24, 96, Math.sin(t * 9) * 0.01);                                                                                                               // el food truck va enganchado atrás
       c.fillStyle = '#4d5f2a'; c.beginPath(); c.roundRect ? c.roundRect(jx - 30, jy - 62, 190, 62, 10) : c.rect(jx - 30, jy - 62, 190, 62); c.fill();
       c.fillStyle = '#5d7035'; c.fillRect(jx + 74, jy - 62, 86, 18); c.fillStyle = '#17191d'; c.fillRect(jx + 56, jy - 106, 6, 46); c.fillRect(jx + 56, jy - 108, 60, 6);
       c.fillStyle = 'rgba(140,190,220,.35)'; c.beginPath(); c.moveTo(jx + 62, jy - 102); c.lineTo(jx + 112, jy - 102); c.lineTo(jx + 122, jy - 62); c.lineTo(jx + 62, jy - 62); c.closePath(); c.fill();
@@ -218,6 +219,26 @@
     c.strokeStyle = 'rgba(0,0,0,.45)'; c.lineWidth = 1; for (let i = 0; i < 7; i++) { c.beginPath(); c.moveTo(-14 + i * 4.5, 12); c.lineTo(-12 + i * 4.5, 2); c.stroke(); }  // pelaje
     c.restore();
   }
+  function remolque(c, x, y, w, ang) {                                                      // el food truck de Gorila: caja oscura con palmas naranjas, el logo y «Welcome to the jungle»
+    const h = w * 0.7; c.save(); c.translate(x, y); c.rotate(ang || 0);
+    c.fillStyle = '#111'; c.beginPath(); c.arc(0, -w * 0.1, w * 0.1, 0, 7); c.fill(); c.fillStyle = '#6b7078'; c.beginPath(); c.arc(0, -w * 0.1, w * 0.04, 0, 7); c.fill();
+    c.fillStyle = '#2a221e'; c.beginPath(); c.roundRect ? c.roundRect(-w / 2, -h - w * 0.12, w, h, w * 0.03) : c.rect(-w / 2, -h - w * 0.12, w, h); c.fill();
+    c.strokeStyle = '#8b8e94'; c.lineWidth = Math.max(1, w * 0.012); c.stroke();
+    c.save(); c.beginPath(); c.rect(-w / 2, -h - w * 0.12, w, h); c.clip();
+    c.fillStyle = '#c4632a'; for (let i = 0; i < 6; i++) { c.save(); c.translate(-w * 0.4 + i * w * 0.15, -w * 0.2); c.rotate(-0.9 + (i % 3) * 0.55); c.beginPath(); c.ellipse(0, -w * 0.09, w * 0.035, w * 0.12, 0, 0, 7); c.fill(); c.restore(); }
+    c.textAlign = 'center'; c.fillStyle = '#e7d8b8'; c.font = `900 ${w * 0.115}px sans-serif`; c.fillText('WELCOME', -w * 0.14, -h * 0.9); c.fillText('TO THE', -w * 0.14, -h * 0.72);
+    c.fillStyle = '#d9692a'; c.font = `900 ${w * 0.15}px sans-serif`; c.fillText('JUNGLE', -w * 0.14, -h * 0.52);
+    if (logo.complete && logo.naturalWidth) { c.beginPath(); c.arc(w * 0.3, -h * 0.62, w * 0.14, 0, 7); c.fillStyle = '#f2d7b8'; c.fill(); c.drawImage(logo, w * 0.3 - w * 0.13, -h * 0.62 - w * 0.13, w * 0.26, w * 0.26); }
+    c.restore(); c.strokeStyle = '#17191d'; c.lineWidth = Math.max(1.5, w * 0.025); c.beginPath(); c.moveTo(w / 2, -w * 0.2); c.lineTo(w / 2 + w * 0.14, -w * 0.2); c.stroke(); c.restore();
+  }
+  function botella(c, x, y, ang, k) {                                                         // botella de la «Cerveza de Gorila»
+    c.save(); c.translate(x, y); c.rotate(ang); c.scale(k, k);
+    const g = c.createLinearGradient(-11, 0, 11, 0); g.addColorStop(0, '#5a2e0a'); g.addColorStop(0.35, '#b8691b'); g.addColorStop(1, '#4a2508'); c.fillStyle = g;
+    c.beginPath(); c.roundRect ? c.roundRect(-11, -10, 22, 48, 5) : c.rect(-11, -10, 22, 48); c.fill(); c.beginPath(); c.roundRect ? c.roundRect(-5, -36, 10, 30, 4) : c.rect(-5, -36, 10, 30); c.fill();
+    c.fillStyle = '#d4a73a'; c.fillRect(-6, -40, 12, 6); c.fillStyle = '#f0e2bb'; c.fillRect(-11, 8, 22, 16);
+    if (logo.complete && logo.naturalWidth) c.drawImage(logo, -7, 9, 14, 14);
+    c.fillStyle = 'rgba(255,255,255,.35)'; c.fillRect(-8, -6, 3, 36); c.restore();
+  }
   function jeep(c, s, ahora) {
     const sh = s.sacude > 0 ? Math.sin(ahora * 70) * s.sacude * 7 : 0, bob = Math.sin(ahora * 14 * s.vel) * 0.9;
     c.save(); c.translate(W / 2 + sh - s.giro * 5, H); c.rotate(s.giro * 0.028); c.translate(-W / 2, -H + bob);                  // el jeep se inclina hacia donde gira
@@ -236,14 +257,17 @@
     c.fillStyle = '#0d0e10'; c.beginPath(); c.roundRect ? c.roundRect(W / 2 - 52, 300, 104, 58, 12) : c.rect(W / 2 - 52, 300, 104, 58); c.fill();                                                                    // retrovisor
     c.strokeStyle = '#8b9096'; c.lineWidth = 2; c.stroke(); c.fillStyle = '#2d3a46'; c.beginPath(); c.roundRect ? c.roundRect(W / 2 - 47, 305, 94, 48, 9) : c.rect(W / 2 - 47, 305, 94, 48); c.fill();
     c.save(); c.beginPath(); c.rect(W / 2 - 47, 305, 94, 48); c.clip(); const cielo = c.createLinearGradient(0, 305, 0, 353); cielo.addColorStop(0, '#3a5870'); cielo.addColorStop(1, '#6a5a52'); c.fillStyle = cielo; c.fillRect(W / 2 - 47, 305, 94, 48);
-    c.fillStyle = '#17191d'; c.beginPath(); c.ellipse(W / 2, 372, 40, 30, 0, 0, 7); c.fill(); cara(c, W / 2, 337, 17); c.restore();                                                                        // el gorila se ve atrás en el retrovisor
+    c.fillStyle = '#34383e'; c.fillRect(W / 2 - 47, 340, 94, 13); remolque(c, W / 2 + s.rem * 16, 349, 54, s.rem * 0.07 + (s.sacude ? Math.sin(ahora * 60) * 0.03 * s.sacude : 0)); c.restore();                                                   // el food truck se ve atrás, en el retrovisor
     c.strokeStyle = '#8b9096'; c.lineWidth = 3; c.beginPath(); c.moveTo(W / 2, 300); c.lineTo(W / 2, 292); c.stroke();
     c.save(); c.translate(W / 2, 430); c.scale(1.08, 1.08); c.rotate(s.giro * 1.15);                                                                                                                                      // volante: gira de verdad
     c.strokeStyle = '#08080a'; c.lineWidth = 11; c.beginPath(); c.ellipse(0, 0, 58, 26, 0, 0, 7); c.stroke();
     c.strokeStyle = '#3b3d44'; c.lineWidth = 3; c.beginPath(); c.ellipse(0, -1.5, 58, 25, 0, Math.PI * 1.05, Math.PI * 1.9); c.stroke();
     c.strokeStyle = '#0d0d10'; c.lineWidth = 6; c.beginPath(); c.moveTo(-54, 2); c.lineTo(-8, 5); c.moveTo(54, 2); c.lineTo(8, 5); c.moveTo(0, 8); c.lineTo(0, 26); c.stroke();
     c.fillStyle = '#c9a24a'; c.beginPath(); c.ellipse(0, 6, 12, 8, 0, 0, 7); c.fill(); c.fillStyle = '#5b4818'; c.beginPath(); c.ellipse(0, 6, 6, 4, 0, 0, 7); c.fill();
-    mano(c, -50, 2, -0.22, 1); mano(c, 50, 2, 0.22, -1); c.restore();
+    const beb = s.beb == null ? 0 : s.beb < 0.5 ? s.beb / 0.5 : s.beb < 1.9 ? 1 : Math.max(0, (2.4 - s.beb) / 0.5), tilt = beb * beb;
+    mano(c, -50, 2, -0.22, 1); if (beb < 0.15) mano(c, 50, 2, 0.22, -1); c.restore();
+    const bx = 322 + (W / 2 + 8 - 322) * beb, by = 458 + (404 - 458) * beb; botella(c, bx, by, tilt * 2.25, 1.35 + beb * 0.5);      // la cerveza: en el portavasos, o al aire cuando el Gorila toma
+    if (beb > 0.05) { mano(c, bx + (1 - tilt) * 14, by + 14, 0.6 * tilt - 0.3, -1); if (tilt > 0.6) { c.fillStyle = 'rgba(255,230,150,.8)'; for (let i = 0; i < 6; i++) { const q = ((ahora * 1.4 + i * 0.37) % 1); c.beginPath(); c.arc(W / 2 + 20 + i * 6 - 12, 470 - q * 50, 2.2 - q, 0, 7); c.fill(); } } }
     c.restore();
   }
 
@@ -275,6 +299,8 @@
       if (s.arrastre != null) s.x += (Math.max(-1.1, Math.min(1.1, s.arrastre * 1.4)) - s.x) * Math.min(1, dt * 9); else s.x += dir * dt * 1.9;
       s.x = Math.max(-1.35, Math.min(1.35, s.x));
       const meta = s.arrastre != null ? Math.max(-1, Math.min(1, (s.arrastre * 1.4 - s.x) * 2)) : dir; s.giro += (meta - s.giro) * Math.min(1, dt * 7);
+      s.rem += (s.giro - s.rem) * Math.min(1, dt * 2.5);
+      if (s.final == null) { if (s.beb != null) { s.beb += dt; if (s.beb > 1.1 && !s.salud) { s.salud = true; s.popups.push({ txt: '¡SALUD!', x: W / 2 + 50, y: 330, t: 0 }); } if (s.beb > 2.4) { s.beb = null; s.salud = false; } } else { s.proxBeb -= dt; if (s.proxBeb <= 0) { s.beb = 0; s.proxBeb = 5.5 + Math.random() * 3; } } }
       s.sacude = Math.max(0, s.sacude - dt * 3); s.comboT -= dt; if (s.comboT <= 0) s.combo = 1;
       s.sig -= dt; if (s.sig <= 0 && s.final == null) { s.sig = 0.35 + Math.random() * 0.5 / s.vel; const tipo = TIPOS[Math.random() < 0.5 ? 0 : Math.floor(Math.random() * TIPOS.length)]; const car = Math.random() < 0.13; s.gente.push({ carrito: car, x: (Math.random() * 2 - 1) * 1.45, z: 1, tipo: car ? CARRITO : tipo, fase: Math.random() * 6, vx: (Math.random() - 0.5) * 0.3 }); }
       for (const g of s.gente) {
