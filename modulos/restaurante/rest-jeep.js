@@ -14,7 +14,7 @@
   const W = 360, H = 480, HOR = 170, DURACION = 40;
   const TIPOS = [{ n: 'Turista', pts: 10, ropa: '#e4572e', alto: 1 }, { n: 'Rockero', pts: 25, ropa: '#2a2f36', alto: 1.05 }, { n: 'Ciclista', pts: 40, ropa: '#2fb36b', alto: 0.9 }, { n: 'Chef', pts: 60, ropa: '#f4f1e8', alto: 1.1 }];
   const CARRITO = { n: 'Carrito', pts: 100, alto: 1 };
-  let fin = () => {};
+  let fin = () => {}, ruido = null;
   const logo = new Image(); logo.src = 'assets/logo.webp';   // el logo de Gorila va en el capó
 
   function portada() {
@@ -29,7 +29,7 @@
     cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', 'Juego: un gorila maneja un jeep clásico y se lleva por delante a peatones de caricatura para sumar puntos.');
     cont.appendChild(cv); const ctx = cv.getContext('2d'); ctx.scale(dpr, dpr); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; return { cv, ctx };
   }
-  const estadoInicial = () => ({ t: 0, x: 0, giro: 0, dist: 0, vel: 1, puntos: 0, combo: 1, comboT: 0, gente: [], popups: [], parts: [], sacude: 0, sig: 0.9, fade: 1, final: null, rem: 0, beb: null, proxBeb: 3.2, salud: false, props: [], sigP: 0, nP: 0, mostrado: 0, flash: 0, rings: [] });
+  const estadoInicial = () => ({ t: 0, x: 0, giro: 0, dist: 0, vel: 1, puntos: 0, combo: 1, comboT: 0, gente: [], popups: [], parts: [], sacude: 0, sig: 0.9, fade: 1, final: null, rem: 0, beb: null, proxBeb: 3.2, salud: false, tit: 0, punch: 0, props: [], sigP: 0, nP: 0, mostrado: 0, flash: 0, rings: [] });
 
   /* ---------- dibujo ---------- */
   const yDe = p => HOR + (H - HOR) * Math.pow(p, 1.7);                       // p: 0 horizonte … 1 frente al jeep
@@ -39,7 +39,7 @@
   const px = (s, mundoX, y, p) => W / 2 + (mundoX - s.x) * mitadCalle(y) + desvio(s, p);
   const lin = (c, y0, y1, a, b) => { const g = c.createLinearGradient(0, y0, 0, y1); g.addColorStop(0, a); g.addColorStop(1, b); return g; };
   function dibujar(c, s, ahora) {
-    c.save(); c.translate(W / 2, H); c.rotate(-s.giro * 0.018); c.translate(-W / 2, -H);       // el mundo se inclina al girar
+    c.save(); const zm = 1 + s.punch * 0.03 + Math.max(0, s.vel - 1) * 0.03; c.translate(W / 2, HOR); c.scale(zm, zm); c.translate(-W / 2, -HOR); c.translate(W / 2, H); c.rotate(-s.giro * 0.018); c.translate(-W / 2, -H);       // el mundo se inclina al girar
     const par = -s.x * 26 - curva(s) * 70 - s.giro * 10;
     c.fillStyle = lin(c, 0, HOR, '#0e2b44', '#e9a678'); c.fillRect(-30, -30, W + 60, HOR + 30);
     const sol = c.createRadialGradient(W * 0.72 + par * 0.3, HOR - 6, 2, W * 0.72 + par * 0.3, HOR - 6, 70); sol.addColorStop(0, 'rgba(255,236,190,.95)'); sol.addColorStop(1, 'rgba(255,200,140,0)'); c.fillStyle = sol; c.fillRect(0, 70, W, HOR - 70);
@@ -74,9 +74,13 @@
     });
     s.parts.forEach(q => { c.save(); c.globalAlpha = Math.max(0, 1 - q.t); c.translate(q.x, q.y); c.rotate(q.r); if (q.k === 0) { c.fillStyle = '#ffd36a'; c.fillRect(-2, -8, 4, 16); } else if (q.k === 1) { c.fillStyle = '#b0432a'; c.beginPath(); c.roundRect ? c.roundRect(-9, -3.5, 18, 7, 3.5) : c.rect(-9, -3.5, 18, 7); c.fill(); } else { c.fillStyle = '#fff3b0'; c.font = '900 16px sans-serif'; c.textAlign = 'center'; c.fillText('★', 0, 5); } c.restore(); });
     s.rings.forEach(r => { const k = r.t / 0.45; c.save(); c.globalAlpha = Math.max(0, 1 - k); c.strokeStyle = '#fff3b0'; c.lineWidth = 5 * (1 - k) + 1; c.beginPath(); c.ellipse(r.x, r.y, 12 + k * 120, 6 + k * 60, 0, 0, 7); c.stroke(); c.restore(); });
-    c.globalCompositeOperation = 'soft-light'; const gr = lin(c, 0, H, 'rgba(40,110,170,.5)', 'rgba(255,150,70,.5)'); c.fillStyle = gr; c.fillRect(0, 0, W, H); c.globalCompositeOperation = 'source-over';
+    c.globalCompositeOperation = 'soft-light'; const gr = lin(c, 0, H, 'rgba(40,110,170,.34)', 'rgba(255,150,70,.18)'); c.fillStyle = gr; c.fillRect(0, 0, W, H); c.globalCompositeOperation = 'source-over';
     const vi = c.createRadialGradient(W / 2, H / 2, H * 0.35, W / 2, H / 2, H * 0.75); vi.addColorStop(0, 'rgba(0,0,0,0)'); vi.addColorStop(1, 'rgba(8,16,28,.5)'); c.fillStyle = vi; c.fillRect(0, 0, W, H);
     if (s.vel > 1.15) { c.strokeStyle = `rgba(255,255,255,${Math.min(0.25, (s.vel - 1.15) * 0.4)})`; c.lineWidth = 1.2; for (let i = 0; i < 10; i++) { const a = ((i * 37 + s.dist * 160) % 120) / 120, ang = i % 2 ? 1 : -1; c.beginPath(); c.moveTo(W / 2 + ang * (40 + a * 150), HOR + a * 80); c.lineTo(W / 2 + ang * (60 + a * 230), HOR + 30 + a * 150); c.stroke(); } }
+    c.save(); c.globalCompositeOperation = 'lighter'; for (let i = 0; i < 18; i++) { const ey = H - ((ahora * (14 + (i % 4) * 8) + i * 47) % H), ex = (i * 53 + Math.sin(ahora * 0.8 + i) * 22 + W * 2) % W, al = 0.55 * Math.sin(Math.PI * ey / H); c.fillStyle = `rgba(255,${150 + (i % 3) * 25},80,${Math.max(0, al)})`; c.beginPath(); c.arc(ex, ey, 0.9 + (i % 3) * 0.6, 0, 7); c.fill(); } c.restore();      // brasas flotando
+    if (s.combo >= 3) { c.save(); c.globalCompositeOperation = 'lighter'; const gl = c.createRadialGradient(W / 2, H / 2, H * 0.3, W / 2, H / 2, H * 0.72), pu = 0.2 + Math.sin(ahora * 8) * 0.06; gl.addColorStop(0, 'rgba(255,110,40,0)'); gl.addColorStop(1, `rgba(255,110,40,${pu})`); c.fillStyle = gl; c.fillRect(0, 0, W, H); c.restore(); }
+    if (!ruido) { ruido = document.createElement('canvas'); ruido.width = ruido.height = 96; const rc = ruido.getContext('2d'), im = rc.createImageData(96, 96); for (let i = 0; i < im.data.length; i += 4) { const v = Math.random() * 255; im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 255; } rc.putImageData(im, 0, 0); }
+    c.save(); c.globalAlpha = 0.08; c.globalCompositeOperation = 'overlay'; c.translate(Math.random() * 96, Math.random() * 96); c.fillStyle = c.createPattern(ruido, 'repeat'); c.fillRect(-96, -96, W + 96, H + 96); c.restore();                           // grano de película
     if (s.flash > 0) { c.fillStyle = `rgba(255,246,214,${s.flash * 0.5})`; c.fillRect(0, 0, W, H); }
     c.save(); c.fillStyle = 'rgba(8,20,32,.72)'; c.strokeStyle = C.acc; c.lineWidth = 1.6; rr(c, 10, 9, 132, 36, 18); c.fill(); c.stroke();
     if (logo.complete && logo.naturalWidth) c.drawImage(logo, 14, 12, 30, 30);
@@ -87,6 +91,8 @@
     c.fillStyle = C.bg; c.font = '900 13px sans-serif'; c.textAlign = 'center'; c.fillText(Math.ceil(resto), rx, ry + 5);
     if (s.combo > 1) { const pop = 1 + Math.max(0, s.comboT - 1.7) * 1.2; c.translate(W / 2 + 6, 26); c.scale(pop, pop); c.fillStyle = C.acc; rr(c, -48, -15, 96, 30, 15); c.fill(); c.fillStyle = '#12324A'; c.font = '900 15px sans-serif'; c.fillText(`COMBO x${s.combo}`, 0, 5); c.fillStyle = '#fff'; c.fillRect(-40, 11, 80 * Math.max(0, Math.min(1, s.comboT / 2)), 3); }
     c.restore();
+    if (s.tit < 2.6) { const ab = Math.min(1, Math.max(0, (s.tit - 1.0) / 0.8)), bh = 46 * (1 - ab * ab * (3 - 2 * ab)); c.fillStyle = '#05080c'; c.fillRect(0, 0, W, bh); c.fillRect(0, H - bh, W, bh);
+      const ta = s.tit < 0.4 ? s.tit / 0.4 : s.tit > 1.9 ? Math.max(0, (2.6 - s.tit) / 0.7) : 1; if (ta > 0) { c.save(); c.globalAlpha = ta; c.textAlign = 'center'; c.letterSpacing = '6px'; c.font = '800 13px sans-serif'; c.fillStyle = C.acc; c.fillText('GORILA BURGERS', W / 2, H / 2 - 36 + (1 - ta) * 10); c.letterSpacing = '0px'; c.font = '900 44px sans-serif'; c.lineWidth = 7; c.lineJoin = 'round'; c.strokeStyle = '#05080c'; c.strokeText('AL VOLANTE', W / 2, H / 2 + 4); c.fillStyle = C.bg; c.fillText('AL VOLANTE', W / 2, H / 2 + 4); c.font = '700 12px sans-serif'; c.letterSpacing = '3px'; c.fillStyle = '#fff'; c.fillText('LLEVA EL FOOD TRUCK A TODO LADO', W / 2, H / 2 + 30); c.restore(); } }
     if (s.final != null) final(c, s);
     if (s.fade > 0) { c.fillStyle = `rgba(0,0,0,${s.fade})`; c.fillRect(0, 0, W, H); }
   }
@@ -101,7 +107,7 @@
     c.restore();
   }
   function final(c, s) {                                                                  // «Territorio conquistado» + el sello cae con un golpe
-    const f = s.final, osc = Math.min(0.55, f * 1.2); c.fillStyle = `rgba(6,14,26,${osc})`; c.fillRect(0, 0, W, H);
+    const f = s.final, osc = Math.min(0.55, f * 1.2), bh = Math.min(46, f * 90); c.fillStyle = '#05080c'; c.fillRect(0, 0, W, bh); c.fillRect(0, H - bh, W, bh); c.fillStyle = `rgba(6,14,26,${osc})`; c.fillRect(0, 0, W, H);
     const a = Math.min(1, f / 0.4); c.globalAlpha = a; c.textAlign = 'center'; c.font = '900 30px sans-serif'; c.lineWidth = 6; c.strokeStyle = '#12324A'; c.strokeText('TERRITORIO', W / 2, 150 - (1 - a) * 20); c.fillStyle = C.bg; c.fillText('TERRITORIO', W / 2, 150 - (1 - a) * 20);
     c.font = '900 38px sans-serif'; c.strokeText('CONQUISTADO', W / 2, 192 - (1 - a) * 20); c.fillStyle = C.acc; c.fillText('CONQUISTADO', W / 2, 192 - (1 - a) * 20); c.globalAlpha = 1;
     if (f > 0.7) { const k = Math.min(1, (f - 0.7) / 0.28), e = 1 - Math.pow(1 - k, 3); sello(c, W / 2, 330, 92 * (2.2 - 1.2 * e), Math.min(1, k * 1.6), -0.22 + (1 - e) * 0.5); if (f > 0.97 && f < 1.1) c.fillStyle = `rgba(255,255,255,${(1.1 - f) * 2})`, c.fillRect(0, 0, W, H); }
@@ -150,12 +156,12 @@
       c.fillStyle = lin(c, 0, 360, '#0e2b44', '#e9a678'); c.fillRect(0, 0, W, 360);
       c.fillStyle = '#0a2234'; for (let i = 0; i < 9; i++) { const bh = 90 + (i * 41) % 90; c.fillRect(i * 44 - t * 20, 360 - bh, 40, bh); }
       c.fillStyle = '#35404a'; c.fillRect(0, 360, W, H - 360); c.fillStyle = '#f3efd5'; for (let i = 0; i < 6; i++) c.fillRect(((i * 70 - t * 40) % 420 + 420) % 420 - 30, 440, 40, 4);
-      const salto = Math.max(0, t - 1.5), jx = 150, jy = 392, rueda = (x, y) => { c.fillStyle = '#16181c'; c.beginPath(); c.arc(x, y, 24, 0, 7); c.fill(); c.fillStyle = '#9aa0a8'; c.beginPath(); c.arc(x, y, 10, 0, 7); c.fill(); };
+      const salto = Math.max(0, t - 1.5), jx = 150, jy = 392, rueda = (x, y) => { c.fillStyle = '#0c0d0f'; c.beginPath(); c.arc(x, y, 26, 0, 7); c.fill(); c.strokeStyle = '#2b2d31'; c.lineWidth = 4; c.setLineDash([5, 4]); c.beginPath(); c.arc(x, y, 23, 0, 7); c.stroke(); c.setLineDash([]); c.fillStyle = '#1f2227'; c.beginPath(); c.arc(x, y, 14, 0, 7); c.fill(); c.fillStyle = '#9aa0a8'; c.beginPath(); c.arc(x, y, 5, 0, 7); c.fill(); };
       const salida = t > 2.2 ? (t - 2.2) * 160 : 0; c.save(); c.translate(salida, 0);                                                                                                // el jeep arranca
       c.fillStyle = 'rgba(0,0,0,.3)'; c.beginPath(); c.ellipse(jx + 20, jy + 30, 150, 10, 0, 0, 7); c.fill();
-      remolque(c, jx - 92, jy + 24, 96, Math.sin(t * 9) * 0.01);                                                                                                               // el food truck va enganchado atrás
-      c.fillStyle = '#4d5f2a'; c.beginPath(); c.roundRect ? c.roundRect(jx - 30, jy - 62, 190, 62, 10) : c.rect(jx - 30, jy - 62, 190, 62); c.fill();
-      c.fillStyle = '#5d7035'; c.fillRect(jx + 74, jy - 62, 86, 18); c.fillStyle = '#17191d'; c.fillRect(jx + 56, jy - 106, 6, 46); c.fillRect(jx + 56, jy - 108, 60, 6);
+      remolque3q(c, jx - 80, jy + 24, 108, Math.sin(t * 9) * 0.01);                                                                                                               // el food truck va enganchado atrás
+      c.fillStyle = '#17191d'; c.beginPath(); c.roundRect ? c.roundRect(jx - 30, jy - 62, 190, 62, 10) : c.rect(jx - 30, jy - 62, 190, 62); c.fill();
+      c.fillStyle = '#25282e'; c.fillRect(jx + 74, jy - 62, 86, 18); c.fillStyle = 'rgba(255,255,255,.16)'; c.fillRect(jx + 76, jy - 61, 82, 3); c.strokeStyle = '#4f5560'; c.lineWidth = 1.2; c.strokeRect(jx - 30, jy - 62, 190, 62); c.fillStyle = '#2b2f36'; c.fillRect(jx + 56, jy - 106, 6, 46); c.fillRect(jx + 56, jy - 108, 60, 6); c.fillRect(jx - 16, jy - 112, 5, 52); c.fillRect(jx - 16, jy - 114, 74, 5);
       c.fillStyle = 'rgba(140,190,220,.35)'; c.beginPath(); c.moveTo(jx + 62, jy - 102); c.lineTo(jx + 112, jy - 102); c.lineTo(jx + 122, jy - 62); c.lineTo(jx + 62, jy - 62); c.closePath(); c.fill();
       c.fillStyle = '#e6d9a0'; c.beginPath(); c.arc(jx + 154, jy - 34, 10, 0, 7); c.fill();
       if (logo.complete && logo.naturalWidth) c.drawImage(logo, jx + 4, jy - 52, 40, 40);
@@ -275,6 +281,23 @@
     if (logo.complete && logo.naturalWidth) { c.beginPath(); c.arc(w * 0.3, -h * 0.62, w * 0.14, 0, 7); c.fillStyle = '#f2d7b8'; c.fill(); c.drawImage(logo, w * 0.3 - w * 0.13, -h * 0.62 - w * 0.13, w * 0.26, w * 0.26); }
     c.restore(); c.strokeStyle = '#17191d'; c.lineWidth = Math.max(1.5, w * 0.025); c.beginPath(); c.moveTo(w / 2, -w * 0.2); c.lineTo(w / 2 + w * 0.14, -w * 0.2); c.stroke(); c.restore();
   }
+  function remolque3q(c, x, y, w, ang) {                                                   // food truck de lado, como en la foto: panel grande con «Welcome to the jungle» y panel angosto con el logo
+    const h = w * 0.74, pw = w * 0.8, nw = w * 0.2; c.save(); c.translate(x, y); c.rotate(ang || 0);
+    c.fillStyle = '#0b0b0d'; c.beginPath(); c.arc(-w * 0.1, -w * 0.1, w * 0.115, 0, 7); c.fill(); c.fillStyle = '#6b7078'; c.beginPath(); c.arc(-w * 0.1, -w * 0.1, w * 0.04, 0, 7); c.fill();
+    const y0 = -h - w * 0.12;
+    c.fillStyle = '#241c18'; c.beginPath(); c.moveTo(-w / 2, y0); c.lineTo(-w / 2 + pw, y0 - w * 0.03); c.lineTo(-w / 2 + pw, -w * 0.12 - w * 0.03); c.lineTo(-w / 2, -w * 0.12); c.closePath(); c.fill();
+    c.fillStyle = '#1a1411'; c.beginPath(); c.moveTo(-w / 2 + pw, y0 - w * 0.03); c.lineTo(-w / 2 + pw + nw, y0 + w * 0.02); c.lineTo(-w / 2 + pw + nw, -w * 0.12 + w * 0.02); c.lineTo(-w / 2 + pw, -w * 0.12 - w * 0.03); c.closePath(); c.fill();
+    c.strokeStyle = '#9ca0a6'; c.lineWidth = Math.max(1, w * 0.012); c.beginPath(); c.moveTo(-w / 2, y0); c.lineTo(-w / 2 + pw, y0 - w * 0.03); c.lineTo(-w / 2 + pw + nw, y0 + w * 0.02); c.stroke();
+    c.save(); c.beginPath(); c.moveTo(-w / 2, y0); c.lineTo(-w / 2 + pw, y0 - w * 0.03); c.lineTo(-w / 2 + pw, -w * 0.15); c.lineTo(-w / 2, -w * 0.12); c.closePath(); c.clip();
+    c.strokeStyle = '#e7d8b8'; c.lineWidth = w * 0.012; c.globalAlpha = 0.5; c.beginPath(); c.ellipse(w * 0.22, y0 + h * 0.4, w * 0.15, w * 0.17, 0, 0, 7); c.stroke(); c.beginPath(); c.moveTo(w * 0.1, y0 + h * 0.34); c.lineTo(w * 0.34, y0 + h * 0.34); c.stroke(); c.fillStyle = '#e7d8b8'; for (const ex of [0.16, 0.28]) { c.beginPath(); c.arc(w * ex, y0 + h * 0.42, w * 0.018, 0, 7); c.fill(); } c.globalAlpha = 1;   // cara de gorila en línea, como el vinil
+    c.fillStyle = '#c4632a'; for (let i = 0; i < 9; i++) { c.save(); c.translate(-w * 0.44 + i * w * 0.09, -w * 0.14); c.rotate(-1.0 + (i % 4) * 0.5); c.beginPath(); c.ellipse(0, -w * 0.1, w * 0.032, w * 0.13, 0, 0, 7); c.fill(); c.restore(); }
+    c.textAlign = 'left'; c.fillStyle = '#e7d8b8'; c.font = `900 ${w * 0.12}px sans-serif`; c.fillText('WELCOME', -w * 0.44, y0 + h * 0.22); c.fillText('TO THE', -w * 0.44, y0 + h * 0.36); c.fillStyle = '#d9692a'; c.font = `900 ${w * 0.17}px sans-serif`; c.fillText('JUNGLE', -w * 0.44, y0 + h * 0.54);
+    c.restore();
+    c.save(); c.beginPath(); c.moveTo(-w / 2 + pw, y0 - w * 0.03); c.lineTo(-w / 2 + pw + nw, y0 + w * 0.02); c.lineTo(-w / 2 + pw + nw, -w * 0.1); c.lineTo(-w / 2 + pw, -w * 0.15); c.closePath(); c.clip();
+    if (logo.complete && logo.naturalWidth) { c.fillStyle = '#f2d7b8'; c.beginPath(); c.arc(-w / 2 + pw + nw * 0.5, y0 + h * 0.3, nw * 0.42, 0, 7); c.fill(); c.drawImage(logo, -w / 2 + pw + nw * 0.5 - nw * 0.4, y0 + h * 0.3 - nw * 0.4, nw * 0.8, nw * 0.8); }
+    c.fillStyle = '#e7d8b8'; c.font = `900 ${w * 0.04}px sans-serif`; c.textAlign = 'center'; c.fillText('THE BEAST', -w / 2 + pw + nw * 0.5, y0 + h * 0.62); c.restore();
+    c.strokeStyle = '#17191d'; c.lineWidth = Math.max(1.5, w * 0.025); c.beginPath(); c.moveTo(w / 2, -w * 0.18); c.lineTo(w / 2 + w * 0.12, -w * 0.18); c.stroke(); c.restore();
+  }
   function botella(c, x, y, ang, k) {                                                         // botella de la «Cerveza de Gorila»
     c.save(); c.translate(x, y); c.rotate(ang); c.scale(k, k);
     const g = c.createLinearGradient(-11, 0, 11, 0); g.addColorStop(0, '#5a2e0a'); g.addColorStop(0.35, '#b8691b'); g.addColorStop(1, '#4a2508'); c.fillStyle = g;
@@ -286,16 +309,19 @@
   function jeep(c, s, ahora) {
     const sh = s.sacude > 0 ? Math.sin(ahora * 70) * s.sacude * 7 : 0, bob = Math.sin(ahora * 14 * s.vel) * 0.9;
     c.save(); c.translate(W / 2 + sh - s.giro * 5, H); c.rotate(s.giro * 0.028); c.translate(-W / 2, -H + bob);                  // el jeep se inclina hacia donde gira
-    const capo = c.createLinearGradient(0, 360, 0, H); capo.addColorStop(0, '#6f8440'); capo.addColorStop(0.5, '#4d5f2a'); capo.addColorStop(1, '#2f3b1b');
+    const capo = c.createLinearGradient(0, 360, 0, H); capo.addColorStop(0, '#34373e'); capo.addColorStop(0.5, '#141619'); capo.addColorStop(1, '#060708');
     c.fillStyle = capo; c.beginPath(); c.moveTo(52, H); c.lineTo(106, 368); c.lineTo(254, 368); c.lineTo(308, H); c.closePath(); c.fill();
-    c.save(); c.beginPath(); c.moveTo(52, H); c.lineTo(106, 368); c.lineTo(254, 368); c.lineTo(308, H); c.closePath(); c.clip(); const bri = c.createLinearGradient(70, 380, 300, 470); bri.addColorStop(0, 'rgba(255,255,255,0)'); bri.addColorStop(0.45, 'rgba(255,255,255,.16)'); bri.addColorStop(0.6, 'rgba(255,255,255,0)'); c.fillStyle = bri; c.fillRect(0, 360, W, 130); c.fillStyle = 'rgba(0,0,0,.35)'; for (const rx of [118, 242]) { c.beginPath(); c.arc(rx, 382, 2.2, 0, 7); c.fill(); } c.restore();
+    c.save(); c.beginPath(); c.moveTo(52, H); c.lineTo(106, 368); c.lineTo(254, 368); c.lineTo(308, H); c.closePath(); c.clip(); const bri = c.createLinearGradient(70, 380, 300, 470); bri.addColorStop(0, 'rgba(255,255,255,0)'); bri.addColorStop(0.45, 'rgba(255,255,255,.17)'); bri.addColorStop(0.6, 'rgba(255,255,255,0)'); c.fillStyle = bri; c.fillRect(0, 360, W, 130); c.fillStyle = 'rgba(0,0,0,.35)'; for (const rx of [118, 242]) { c.beginPath(); c.arc(rx, 382, 2.2, 0, 7); c.fill(); } c.restore();
+    c.strokeStyle = 'rgba(130,175,255,.38)'; c.lineWidth = 1.6; c.beginPath(); c.moveTo(52, H); c.lineTo(106, 368); c.lineTo(254, 368); c.lineTo(308, H); c.stroke();                      // luz de borde: recorta el capó negro contra la calle
+    const nar = c.createLinearGradient(0, 368, 0, 420); nar.addColorStop(0, 'rgba(255,150,70,.1)'); nar.addColorStop(1, 'rgba(255,150,70,0)'); c.fillStyle = nar; c.beginPath(); c.moveTo(106, 368); c.lineTo(254, 368); c.lineTo(290, 420); c.lineTo(70, 420); c.closePath(); c.fill();
     c.fillStyle = 'rgba(255,255,255,.22)'; c.beginPath(); c.moveTo(112, 372); c.lineTo(248, 372); c.lineTo(252, 380); c.lineTo(108, 380); c.closePath(); c.fill();   // brillo del borde del capó
-    c.strokeStyle = 'rgba(20,28,10,.6)'; c.lineWidth = 2; c.beginPath(); c.moveTo(180, 372); c.lineTo(180, H); c.stroke();                                    // costura central
+    c.strokeStyle = 'rgba(0,0,0,.7)'; c.lineWidth = 2; c.beginPath(); c.moveTo(180, 372); c.lineTo(180, H); c.stroke();                                    // costura central
     if (logo.complete && logo.naturalWidth) { c.save(); c.translate(180, 387); c.scale(1, 0.66); c.globalAlpha = 0.95; c.shadowColor = 'rgba(0,0,0,.45)'; c.shadowBlur = 4; c.shadowOffsetY = 1.5; c.drawImage(logo, -21, -21, 42, 42); c.restore(); }   // logo en el capó
     for (const lx of [90, 270]) {                                                                                                                              // faros redondos con cromo
       const cr = c.createRadialGradient(lx - 4, 394, 2, lx, 398, 20); cr.addColorStop(0, '#fffbe6'); cr.addColorStop(0.6, '#e6d9a0'); cr.addColorStop(1, '#8c8456');
       c.fillStyle = cr; c.beginPath(); c.arc(lx, 398, 17, 0, 7); c.fill(); c.strokeStyle = '#c9ccd0'; c.lineWidth = 3.5; c.stroke(); c.strokeStyle = '#2a3318'; c.lineWidth = 1.2; c.stroke();
     }
+    for (const lado of [-1, 1]) { const x0 = W / 2 + lado * 150; c.strokeStyle = '#0c0d10'; c.lineWidth = 9; c.lineCap = 'round'; c.beginPath(); c.moveTo(x0, 300); c.lineTo(W / 2 + lado * 188, 150); c.stroke(); c.strokeStyle = 'rgba(160,190,230,.3)'; c.lineWidth = 1.6; c.beginPath(); c.moveTo(x0 - lado * 3, 300); c.lineTo(W / 2 + lado * 188 - lado * 3, 150); c.stroke(); }     // jaula antivuelco
     c.fillStyle = '#17191d'; c.beginPath(); c.moveTo(0, 296); c.lineTo(W, 296); c.lineTo(W, H); c.lineTo(342, H); c.lineTo(318, 312); c.lineTo(42, 312); c.lineTo(18, H); c.lineTo(0, H); c.closePath(); c.fill();   // marco del parabrisas
     c.fillStyle = 'rgba(255,255,255,.1)'; c.beginPath(); c.moveTo(60, 314); c.lineTo(120, 314); c.lineTo(90, 366); c.lineTo(48, 366); c.closePath(); c.fill();                                                  // reflejo en el vidrio
     c.fillStyle = lin(c, 436, H, '#2b2e34', '#15171a'); c.fillRect(0, 436, W, H - 436);                                                                                                            // tablero
@@ -346,7 +372,7 @@
       if (s.arrastre != null) s.x += (Math.max(-1.1, Math.min(1.1, s.arrastre * 1.4)) - s.x) * Math.min(1, dt * 9); else s.x += dir * dt * 1.9;
       s.x = Math.max(-1.35, Math.min(1.35, s.x));
       const meta = s.arrastre != null ? Math.max(-1, Math.min(1, (s.arrastre * 1.4 - s.x) * 2)) : dir; s.giro += (meta - s.giro) * Math.min(1, dt * 7);
-      s.rem += (s.giro - s.rem) * Math.min(1, dt * 2.5); s.mostrado += (s.puntos - s.mostrado) * Math.min(1, dt * 9); s.flash = Math.max(0, s.flash - dt * 3);
+      s.rem += (s.giro - s.rem) * Math.min(1, dt * 2.5); s.mostrado += (s.puntos - s.mostrado) * Math.min(1, dt * 9); s.flash = Math.max(0, s.flash - dt * 3); s.tit += dt; s.punch = Math.max(0, s.punch - dt * 4.5);
       s.sigP -= dt * s.vel; if (s.sigP <= 0) { s.nP++; const r = Math.random(); s.props.push({ k: r < 0.5 ? 'farola' : r < 0.85 ? 'palma' : 'cartel', x: (s.nP % 2 ? 1 : -1) * (1.7 + Math.random() * 0.35), z: 1, fase: Math.random() * 6 }); s.sigP = 0.26 + Math.random() * 0.22; }
       s.props.forEach(o => { o.z -= dt * 0.42 * s.vel; }); s.props = s.props.filter(o => o.z > -0.25); s.rings.forEach(r => { r.t += dt; }); s.rings = s.rings.filter(r => r.t < 0.45);
       if (s.final == null) { if (s.beb != null) { s.beb += dt; if (s.beb > 1.1 && !s.salud) { s.salud = true; s.popups.push({ txt: '¡SALUD!', x: W / 2 + 50, y: 330, t: 0 }); } if (s.beb > 2.4) { s.beb = null; s.salud = false; } } else { s.proxBeb -= dt; if (s.proxBeb <= 0) { s.beb = 0; s.proxBeb = 5.5 + Math.random() * 3; } } }
@@ -358,7 +384,7 @@
         if (g.z < 0.11 && g.z > -0.02 && Math.abs(g.x - s.x) < (g.carrito ? 0.36 : 0.26)) {
           g.golpe = true; g.t = 0; g.dx = 0; g.dy = 0; g.vxv = (g.x < s.x ? -1 : 1) * 170; g.vyv = 260; g.rot = 0;
           s.combo = Math.min(5, s.combo + (s.comboT > 0 ? 1 : 0)); s.comboT = 2; const pts = g.tipo.pts * s.combo; s.puntos += pts; s.sacude = g.carrito ? 1.7 : 1;
-          const py = yDe(1 - g.z), pcx = px(s, g.x, py, 1 - g.z); s.flash = g.carrito ? 0.7 : 0.4; s.rings.push({ x: pcx, y: py - 20, t: 0 }); if (!g.carrito) for (let i = 0; i < 7; i++) { const an = Math.random() * 7, v = 90 + Math.random() * 200; s.parts.push({ x: pcx, y: py - 40, vx: Math.cos(an) * v, vy: Math.sin(an) * v - 120, t: 0, k: i % 2 ? 2 : 0, r: Math.random() * 6 }); }
+          const py = yDe(1 - g.z), pcx = px(s, g.x, py, 1 - g.z); s.flash = g.carrito ? 0.7 : 0.4; s.punch = g.carrito ? 1.4 : 1; s.rings.push({ x: pcx, y: py - 20, t: 0 }); if (!g.carrito) for (let i = 0; i < 7; i++) { const an = Math.random() * 7, v = 90 + Math.random() * 200; s.parts.push({ x: pcx, y: py - 40, vx: Math.cos(an) * v, vy: Math.sin(an) * v - 120, t: 0, k: i % 2 ? 2 : 0, r: Math.random() * 6 }); }
           if (g.carrito) { for (let i = 0; i < 18; i++) { const an = Math.random() * 7, v = 120 + Math.random() * 260; s.parts.push({ x: pcx, y: py - 40, vx: Math.cos(an) * v, vy: Math.sin(an) * v - 160, t: 0, k: i % 3, r: Math.random() * 6 }); } }
           s.popups.push({ txt: `${g.carrito ? '¡BOOM!' : '¡PUM!'} +${pts}`, x: W / 2 + g.x * 70, y: 270, t: 0 }); navigator.vibrate?.(g.carrito ? [20, 30, 40] : 15);
         }
