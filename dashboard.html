@@ -60,6 +60,26 @@
           <article class="rest-tarjeta"><header><div><h2>Pedidos de la web</h2><small>Esperan confirmación del local</small></div></header><div id="rd-web"></div></article>
         </section>
 
+        <section class="rd-fila6" id="rd-bodega" aria-label="Bodega, consumo y recetas">
+          <article class="rest-tarjeta"><header><div><h2>Bodega <span class="rd-n" id="bo-n" hidden>0</span></h2><small id="bo-sub">Cada venta descuenta lo que lleva la receta.</small></div><button type="button" class="rest-btn chico" id="bo-abrir">Entró · Conté · Se perdió</button></header>
+            <form id="bo-form" class="bo-form" hidden>
+              <label class="rest-campo">Insumo<select id="bo-insumo" name="insumo"></select></label>
+              <label class="rest-campo">Qué pasó<select id="bo-tipo" name="tipo"><option value="compra">Entró mercadería</option><option value="conteo">Hice un conteo</option><option value="merma">Se perdió o dañó</option></select></label>
+              <label class="rest-campo">Cantidad<input id="bo-cantidad" name="cantidad" type="number" min="0" step="any" inputmode="decimal" required></label>
+              <label class="rest-campo">En<select id="bo-unidad" name="unidad"></select></label>
+              <label class="rest-campo bo-nota">Nota (obligatoria si se perdió)<input name="nota" maxlength="200" placeholder="Ej.: compra del proveedor, se cayó al piso"></label>
+              <p class="rest-sub bo-ayuda" id="bo-ayuda">Cuánto entró (se suma a lo que hay).</p>
+              <div class="pie"><button type="submit" class="rest-btn">Guardar</button><button type="button" class="rest-btn sec" id="bo-x">Cancelar</button></div>
+            </form>
+            <div style="overflow-x:auto"><table class="rd-prod bo-tabla"><thead><tr><th>Insumo</th><th>Salió hoy</th><th>Queda</th><th>Alcanza</th></tr></thead><tbody id="bo-tabla"></tbody></table></div></article>
+          <article class="rest-tarjeta"><header><div><h2>Qué salió</h2><small>Todo lo que se usó, desglosado por hamburguesa</small></div>
+              <div class="co-periodos" role="group" aria-label="Período"><button type="button" class="rest-btn sec chico" data-periodo="hoy" aria-pressed="true">Hoy</button><button type="button" class="rest-btn sec chico" data-periodo="semana" aria-pressed="false">7 días</button><button type="button" class="rest-btn sec chico" data-periodo="mes" aria-pressed="false">Este mes</button></div></header>
+            <ul class="co-lista" id="co-lista"></ul>
+            <div class="re-caja"><button type="button" class="rest-btn sec chico" id="re-abrir">Ver y editar recetas</button>
+              <form id="re-form" class="re-form" hidden><label class="rest-campo">Producto<select id="re-producto" name="producto"></select></label><div class="re-campos" id="re-campos"></div>
+                <p class="rest-sub">Cantidad que lleva UNA unidad. Déjalo vacío si no lo usa. Vale solo para las ventas nuevas: las anteriores conservan su receta.</p><button type="submit" class="rest-btn">Guardar receta</button></form></div></article>
+        </section>
+
         
 
         <div class="rd-demo" id="rd-demo" hidden>
@@ -78,6 +98,7 @@
 <script src="modulos/restaurante/rest-ui.js"></script>
 
 <script src="modulos/restaurante/rest-api.js"></script>
+<script src="modulos/restaurante/rest-insumos.js"></script>
 <script src="modulos/restaurante/rest-dashboard.js"></script>
 
 </body>

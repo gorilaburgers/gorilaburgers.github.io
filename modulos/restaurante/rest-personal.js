@@ -40,9 +40,10 @@
   const mapsOk = u => /^https:\/\/(www\.google\.com\/maps|maps\.google\.com|maps\.app\.goo\.gl|goo\.gl\/maps)([/?#]|$)/.test(u || '');
   async function pedidos() {
     try {
-      const ps = await window.REST.rpc('pedidos_pendientes'), n = $('#rp-n'); n.hidden = !ps.length; n.textContent = ps.length;
+      const ps = await window.REST.rpc('pedidos_pendientes'), n = $('#rp-n'), dg = window.INS ? await window.INS.pendientes() : null; n.hidden = !ps.length; n.textContent = ps.length;
       $('#rp-pedidos').innerHTML = ps.length ? ps.map(p => `<article class="rest-tarjeta rp-item"><header><h3>#${p.numero} · ${esc(p.cliente)}</h3><span><span class="rp-tag ${p.canal}">${canalTxt(p.canal)}</span>${p.vencido ? ' <span class="rp-tag vencido">De otro día</span>' : ''}</span></header>
         <p><b>${p.lineas.map(l => `${l.cantidad}× ${esc(l.nombre)}`).join(' · ')}</b></p>
+        ${dg && dg.get(p.id) ? window.INS.html(dg.get(p.id), true) : ''}
         <p>Total <b>${plata(p.total_cent)}</b>${p.envio_cent ? ` (incluye envío ${plata(p.envio_cent)})` : ''} · llegó ${hace(p.creado)}${p.programado ? ` · para las ${hhmm(p.programado)}` : ''}</p>
         ${p.canal === 'domicilio' ? `<p>${esc(p.sector)} · ${esc(p.direccion)} ${mapsOk(p.maps_url) ? `· <a class="enlace" href="${esc(p.maps_url)}" target="_blank" rel="noopener">Abrir en Google Maps</a>` : ''}</p>` : ''}
         ${p.nota ? `<p>Nota: ${esc(p.nota)}</p>` : ''}
@@ -61,9 +62,11 @@
       const vs = await window.REST.rpc('ventas_hoy');
       $('#rp-ventas').innerHTML = vs.length ? vs.map(v => `<article class="rest-tarjeta rp-item"><header><h3>#${v.numero} · ${plata(v.total_cent)}</h3><span><span class="rp-tag ${v.estado === 'anulada' ? 'anulada' : v.canal}">${v.estado === 'anulada' ? 'Anulada' : canalTxt(v.canal)}</span></span></header>
         <p>${v.lineas.map(l => `${l.cantidad}× ${esc(l.nombre)}`).join(' · ')}</p><p>${hhmm(v.creado)}${yo.rol === 'admin' && v.quien ? ' · ' + esc(v.quien) : ''}</p>
+        ${window.INS ? window.INS.boton(v.id) + window.INS.bloque(v.id) : ''}
         ${v.puede_anular ? `<div class="acc"><button type="button" class="rest-btn peligro chico" data-anular="${v.id}">Anular</button></div>` : ''}</article>`).join('')
         : '<p class="rest-sub">Todavía no hay ventas hoy.</p>';
       $$('[data-anular]').forEach(b => b.onclick = () => anular(+b.dataset.anular));
+      $$('[data-ins]', $('#rp-ventas')).forEach(b => b.onclick = async () => { await window.INS.alternar(+b.dataset.ins); ventas(); });
     } catch (e) { /* se reintenta */ }
   }
   function anular(id) {

@@ -22,7 +22,7 @@ Página con vitrina de burgers, carta y pedido (llevar o domicilio en todo Ambat
 
 ## Base de datos (Supabase)
 1. Crear el proyecto. Authentication › **desactivar «Allow new users to sign up»**. Settings › API › **Exposed schemas**: agregar `gorila_burgers`.
-2. Correr `supabase/migrations/001` a `007` **en orden** (SQL Editor). La 007 es el mini juego «Gorila arriba».
+2. Correr `supabase/migrations/001` a `006` **en orden** (SQL Editor), y después `008_insumos.sql` y `009_semilla_insumos.sql` (recetas y bodega). Mientras la 008 no esté corrida, el dashboard funciona igual y la sección de bodega queda oculta.
 3. Poner la URL y la clave **anon** del proyecto en `modulos/restaurante/restaurante-datos.js` (o en la configuración de producción de la agencia y regenerar). **Nunca la clave `service_role`.**
 
 ## Dar de alta al personal
@@ -31,7 +31,10 @@ Página con vitrina de burgers, carta y pedido (llevar o domicilio en todo Ambat
 3. Después el dueño da de alta a cada empleado desde su sesión: `select gorila_burgers.equipo_guardar('correo@ejemplo.com', 'Nombre', 'vendedor');` (rol `vendedor` = empleado, `admin` = dueño).
 4. Empleados entran en `personal.html`; el dueño, en `dashboard.html`. Cada día el dueño carga el stock en el dashboard («Cargar stock de hoy»).
 
-## Mini juego «Gorila arriba»
+## Recetas, bodega y desglose por venta
+Cada venta (o pedido de la web confirmado) descuenta de la bodega todo lo que lleva el producto según su receta: carne, queso, pan, cebollas, tocino, salsas y papas (150 gr por plato, la Jam Smash va sin papas, funda de 2.500 gr; Cheese Bacon Fries: 2 tocinos, 50 gr de salsa cheddar y 200 gr de papas). En `dashboard.html` › **Bodega** el dueño carga lo que hay (**Conté**), registra compras (**Entró**) y pérdidas (**Se perdió**) y ve cuánto queda y para cuántos días alcanza; en **Qué salió** ve el consumo por día, semana o mes y de qué hamburguesa salió cada insumo; y en «Movimientos en vivo» cada venta tiene **Ver lo que salió**. En la pantalla de ventas, los pedidos de la web traen su ticket de cocina. Las recetas se editan en el dashboard («Ver y editar recetas») y valen para las ventas nuevas.
+
+## Mini juego «Gorila al volante»
 Está en la sección «Juega y espera» de la página. Es solo para pasar el rato mientras llega el pedido: no pide datos, no tiene premio y no usa la base de datos.
 
 ## Contador público (opcional)

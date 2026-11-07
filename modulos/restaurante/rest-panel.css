@@ -178,3 +178,37 @@ dialog.rest-dialogo .acc { display: flex; gap: 10px; margin-top: 14px; justify-c
 .rd-juego-pend h3 { font-size: 1rem; margin: 8px 0; } .rd-juego-pend ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
 .rd-juego-cfg { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; margin-top: 14px; }
 .rd-juego-on { display: flex; gap: 8px; align-items: center; }
+
+/* ====================== INSUMOS: bodega, qué salió, recetas y desglose por venta (módulo adicional) ====================== */
+.rd-fila6 { display: grid; gap: 14px; margin-top: 14px; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
+@media (max-width: 1000px) { .rd-fila6 { grid-template-columns: 1fr; } }
+.rd-n { display: inline-block; min-width: 24px; padding: 3px 8px; margin-left: 6px; border-radius: 999px; background: var(--d-aviso); color: var(--fx-deep); font: 800 .85rem/1.1 var(--fx-font-txt); text-align: center; vertical-align: middle; }
+.bo-tabla td.num, .bo-tabla th:nth-child(2), .bo-tabla th:nth-child(4) { text-align: right; white-space: nowrap; }
+.bo-tabla td.num small { font-weight: 400; } .mut { color: var(--d-mut); font-weight: 400; }
+.bo-tabla .rd-stock { min-width: 170px; }
+.bo-form { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 190px), 1fr)); margin: 4px 0 14px; padding: 16px; border-radius: 12px; background: var(--d-card-2); border: 1px dashed var(--d-line); }
+.bo-form .bo-nota, .bo-form .bo-ayuda, .bo-form .pie { grid-column: 1 / -1; } .bo-form .pie { display: flex; gap: 10px; flex-wrap: wrap; }
+.co-periodos { display: flex; gap: 6px; flex-wrap: wrap; } .co-periodos [aria-pressed="true"] { background: var(--fx-accent); color: var(--fx-deep); border-color: var(--fx-accent); }
+.co-lista { display: grid; gap: 0; margin-bottom: 14px; list-style: none; padding: 0; }
+.co-lista > li { border-top: 1px solid var(--d-line); } .co-lista > li:first-child { border-top: 0; }
+.co-fila { width: 100%; display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 11px 0; background: none; border: 0; color: var(--fx-bg); font: 600 1.05rem/1.2 var(--fx-font-txt); text-align: left; cursor: pointer; min-height: 44px; }
+.co-fila::after { content: '▾'; margin-left: 6px; color: var(--d-mut); transition: transform .15s; } .co-fila[aria-expanded="true"]::after { transform: rotate(180deg); }
+.co-fila b { margin-left: auto; font-size: 1.15rem; } .co-fila small { font-weight: 400; color: var(--d-mut); }
+.co-det { display: grid; gap: 6px; padding: 0 0 12px 14px; margin: 0; list-style: none; }
+.co-det li { display: flex; justify-content: space-between; gap: 10px; font: 400 1rem/1.2 var(--fx-font-txt); color: var(--d-mut); } .co-det b { color: var(--fx-bg); }
+.re-caja { border-top: 1px solid var(--d-line); padding-top: 14px; display: grid; gap: 12px; }
+.re-form { display: grid; gap: 12px; } .re-campos { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); max-height: 340px; overflow: auto; padding: 2px; }
+.re-campos .rest-campo { font-size: .92rem; min-width: 0; } .re-campos .rest-campo input { min-height: 42px; min-width: 0; width: 100%; box-sizing: border-box; }
+/* desglose de una venta */
+.ins-ver { margin-top: 6px; min-height: 36px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--d-line, var(--fx-line-deep)); background: transparent; color: var(--fx-accent); font: 700 .92rem/1 var(--fx-font-txt); cursor: pointer; }
+.ins-ver:hover, .ins-ver:focus-visible { background: color-mix(in srgb, var(--fx-accent) 14%, transparent); }
+.rd-feed li .ins-fila { grid-column: 1 / -1; }
+.ins-desglose { display: grid; gap: 10px; margin-top: 10px; padding: 12px 14px; border-radius: 12px; background: var(--d-card-2, rgba(255,255,255,.05)); border: 1px solid var(--d-line, var(--fx-line-deep)); }
+.ins-desglose.compacto { margin-top: 2px; }
+.ins-tit { font: 800 .8rem/1 var(--fx-font-txt); text-transform: uppercase; letter-spacing: .06em; color: var(--d-mut, var(--fx-soft-2)); }
+.ins-linea h4, .ins-total h4 { font: 800 1rem/1.1 var(--fx-font-txt); margin: 0 0 6px; }
+.ins-total { padding-top: 8px; border-top: 1px dashed var(--d-line, var(--fx-line-deep)); }
+.ins-chips { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; padding: 0; margin: 0; }
+.ins-chips li { padding: 5px 9px; border-radius: 999px; background: color-mix(in srgb, var(--fx-bg) 10%, transparent); font: 500 .95rem/1.1 var(--fx-font-txt); } .ins-chips li b { color: var(--fx-accent); }
+.ins-total .ins-chips li { background: color-mix(in srgb, var(--fx-accent) 16%, transparent); }
+.ins-vacio { color: var(--d-mut, var(--fx-soft-2)); font-size: .95rem; margin: 0; }

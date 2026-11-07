@@ -76,8 +76,10 @@
   function pintarFeed(d) {
     const html = d.ultimas.map(v => { const nuevo = !primera && !vistos.has(v.id + v.estado); vistos.add(v.id + v.estado);
       return `<li class="${v.estado === 'anulada' ? 'anulada' : ''}${nuevo ? ' nuevo' : ''}"><span class="hora">${hhmm(v.creado)}</span><span><i class="rd-canalpunto" style="background:${CAN[v.canal]}"></i>${v.lineas.map(l => `${l.cantidad}× ${esc(l.nombre)}`).join(' · ')}</span><b>${plata(v.total_cent)}</b>
-        <span class="det">#${v.numero} · ${canalTxt(v.canal)}${v.sector ? ' · ' + esc(v.sector) : ''}${v.quien ? ' · ' + esc(v.quien) : ''}${v.estado === 'anulada' ? ' · ANULADA' : ''}</span></li>`; }).join('');
+        <span class="det">#${v.numero} · ${canalTxt(v.canal)}${v.sector ? ' · ' + esc(v.sector) : ''}${v.quien ? ' · ' + esc(v.quien) : ''}${v.estado === 'anulada' ? ' · ANULADA' : ''}</span>${window.INS ? `<div class="ins-fila">${window.INS.boton(v.id)}${window.INS.bloque(v.id)}</div>` : ''}</li>`; }).join('');
+    const sc = $('#rd-feed').scrollTop;
     $('#rd-feed').innerHTML = html || '<li><span class="det" style="grid-column:1/-1">Aún no hay ventas hoy.</span></li>';
+    $('#rd-feed').scrollTop = sc;
   }
   function pintarSemana(d) {
     const max = Math.max(1, ...d.semana.map(x => x.hamburguesas));
@@ -126,9 +128,11 @@
   /* ---- acciones ---- */
   function alEntrar() {
     $('#rd-app').hidden = false; cargar(); timer = setInterval(cargar, 4000); juego(); setInterval(juego, 15000);
+    if (window.INS && window.INS.arrancar) window.INS.arrancar();
     document.addEventListener('visibilitychange', () => { if (!document.hidden) cargar(); }); window.addEventListener('storage', cargar);
     if (window.REST.modo === 'demo') $('#rd-demo').hidden = false;
   }
+  $('#rd-feed').addEventListener('click', async e => { const b = e.target.closest('[data-ins]'); if (!b) return; await window.INS.alternar(+b.dataset.ins); if (D) pintarFeed(D); });
   $('#rd-salir').onclick = () => { window.REST.salir(); location.reload(); };
   $('#rd-stock-abrir').onclick = () => { const f = $('#rd-editor'); f.hidden = !f.hidden; editando = !f.hidden; if (!f.hidden) { f.dataset.hecho = ''; armarEditor(D); $('input', f).focus(); } };
   $('#rd-editor').onsubmit = async e => {
