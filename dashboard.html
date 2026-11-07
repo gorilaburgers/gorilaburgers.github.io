@@ -32,13 +32,15 @@
         <h1 id="rd-titulo">Hoy en Gorila<small id="rd-fecha"></small></h1>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="rd-vivo" id="rd-vivo" role="status"><i></i><span id="rd-vivo-txt">Conectando…</span></span><button type="button" class="rest-btn sec chico" id="rd-salir">Salir</button></div>
       </div>
+      <nav class="rd-nav" id="rd-nav" role="tablist" aria-label="Secciones del dashboard"><button type="button" role="tab" class="rd-tab" id="rd-tab-hoy" data-p="hoy" aria-selected="false" aria-controls="rd-p-hoy" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="tx">Hoy</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-stock" data-p="stock" aria-selected="false" aria-controls="rd-p-stock" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11h16a8 7 0 0 1-16 0zM5 8c1-3 13-3 14 0M4 15h16"/></svg><span class="tx">Productos y stock</span><span class="tc">Stock</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-bodega" data-p="bodega" aria-selected="false" aria-controls="rd-p-bodega" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-5 9 5v10H3zM9 19v-6h6v6"/></svg><span class="tx">Bodega</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-semana" data-p="semana" aria-selected="false" aria-controls="rd-p-semana" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span class="tx">Semana y equipo</span><span class="tc">Semana</span><span class="n" hidden></span></button></nav>
       <div id="rd-cuerpo">
+<section class="rd-panel" id="rd-p-hoy" role="tabpanel" aria-labelledby="rd-tab-hoy">
+                    <div class="rd-alertas" id="rd-alertas" aria-live="polite"></div>
         <section class="rd-fila1" aria-label="Resumen de hoy">
           <article class="rest-tarjeta rd-heroe"><span class="rotulo">Hamburguesas vendidas hoy</span><span class="cifra" id="rd-hero">—</span><span class="rd-delta" id="rd-delta" hidden></span>
             <div class="rd-meta"><div class="pista"><i id="rd-rec-barra" style="transform:scaleX(0)"></i></div><p id="rd-rec-txt"></p></div></article>
           <div class="rd-kpis" id="rd-kpis"></div>
         </section>
-
         <section class="rd-fila2">
           <article class="rest-tarjeta"><header><div><h2>Hamburguesas por hora</h2><small>Hoy frente al mismo día de la semana pasada</small></div><button type="button" class="rd-vistatabla" data-tabla="horas" aria-pressed="false">Ver tabla</button></header>
             <div class="rd-leyenda" style="margin-bottom:6px"><span><i style="background:var(--fx-accent)"></i>Hoy</span><span><i class="linea" style="background:var(--d-mut)"></i>Semana pasada</span></div>
@@ -46,20 +48,22 @@
           <article class="rest-tarjeta"><header><div><h2>Cómo te piden</h2><small>Hamburguesas de hoy por canal</small></div></header>
             <div class="rd-canal" id="rd-canal" role="img" aria-label="Reparto por canal"></div><div class="rd-canal-lista" id="rd-canal-lista"></div></article>
         </section>
-
-        <section class="rd-fila3">
+        <section class="rd-fila3 rd-hoy3">
+          <article class="rest-tarjeta"><header><div><h2>Movimientos en vivo</h2><small>Ventas del local y pedidos confirmados</small></div></header><ul class="rd-feed" id="rd-feed" aria-live="polite"></ul></article>
+          <article class="rest-tarjeta"><header><div><h2>Pedidos de la web</h2><small>Esperan confirmación del local</small></div></header><div id="rd-web"></div></article>
+        </section>
+        </section>
+<section class="rd-panel" id="rd-p-stock" role="tabpanel" aria-labelledby="rd-tab-stock" hidden>
+          <header class="rd-ph"><h2>Productos y stock</h2><p>Qué se vende más y cuánto queda de cada hamburguesa. Carga el stock cada mañana.</p></header>
+        <section class="rd-una">
           <article class="rest-tarjeta"><header><div><h2>Qué se vende y qué queda</h2><small id="rd-stock-sub">Stock del día cargado por el dueño; baja solo con cada venta.</small></div><button type="button" class="rest-btn chico" id="rd-stock-abrir">Cargar stock de hoy</button></header>
             <form id="rd-editor" class="rd-editor" hidden></form>
             <div style="overflow-x:auto"><table class="rd-prod"><thead><tr><th>Producto</th><th>Vendidas hoy</th><th>Stock</th></tr></thead><tbody id="rd-prod"></tbody></table></div></article>
-          <article class="rest-tarjeta"><header><div><h2>Movimientos en vivo</h2><small>Ventas del local y pedidos confirmados</small></div></header><ul class="rd-feed" id="rd-feed" aria-live="polite"></ul></article>
         </section>
-
-        <section class="rd-fila4">
-          <article class="rest-tarjeta"><header><div><h2>Últimos 7 días</h2><small>Hamburguesas por día</small></div><button type="button" class="rd-vistatabla" data-tabla="semana" aria-pressed="false">Ver tabla</button></header><div class="rd-semana" id="rd-semana"></div><div id="rd-semana-tabla" class="rd-tabla-vista" hidden></div></article>
-          <article class="rest-tarjeta"><header><div><h2>Equipo hoy</h2><small>Ventas registradas en el local</small></div></header><div class="rd-equipo" id="rd-equipo"></div></article>
-          <article class="rest-tarjeta"><header><div><h2>Pedidos de la web</h2><small>Esperan confirmación del local</small></div></header><div id="rd-web"></div></article>
         </section>
-
+<section class="rd-panel" id="rd-p-bodega" role="tabpanel" aria-labelledby="rd-tab-bodega" hidden>
+          <header class="rd-ph"><h2>Bodega e insumos</h2><p>Lo que hay en la cocina, lo que se gasta con cada venta y para cuántos días alcanza.</p></header>
+        <section class="rd-bod-kpis" id="bo-kpis" aria-label="Resumen de bodega"></section>
         <section class="rd-fila6" id="rd-bodega" aria-label="Bodega, consumo y recetas">
           <article class="rest-tarjeta"><header><div><h2>Bodega <span class="rd-n" id="bo-n" hidden>0</span></h2><small id="bo-sub">Cada venta descuenta lo que lleva la receta.</small></div><button type="button" class="rest-btn chico" id="bo-abrir">Entró · Conté · Se perdió</button></header>
             <form id="bo-form" class="bo-form" hidden>
@@ -71,6 +75,7 @@
               <p class="rest-sub bo-ayuda" id="bo-ayuda">Cuánto entró (se suma a lo que hay).</p>
               <div class="pie"><button type="submit" class="rest-btn">Guardar</button><button type="button" class="rest-btn sec" id="bo-x">Cancelar</button></div>
             </form>
+            <div class="bo-filtros" id="bo-filtros" role="group" aria-label="Filtrar insumos"><button type="button" class="rd-chipf" data-f="todo" aria-pressed="true">Todo</button><button type="button" class="rd-chipf" data-f="atencion" aria-pressed="false">Poco o agotado</button><button type="button" class="rd-chipf" data-f="sin_cargar" aria-pressed="false">Sin cargar</button></div>
             <div style="overflow-x:auto"><table class="rd-prod bo-tabla"><thead><tr><th>Insumo</th><th>Salió hoy</th><th>Queda</th><th>Alcanza</th></tr></thead><tbody id="bo-tabla"></tbody></table></div></article>
           <article class="rest-tarjeta"><header><div><h2>Qué salió</h2><small>Todo lo que se usó, desglosado por hamburguesa</small></div>
               <div class="co-periodos" role="group" aria-label="Período"><button type="button" class="rest-btn sec chico" data-periodo="hoy" aria-pressed="true">Hoy</button><button type="button" class="rest-btn sec chico" data-periodo="semana" aria-pressed="false">7 días</button><button type="button" class="rest-btn sec chico" data-periodo="mes" aria-pressed="false">Este mes</button></div></header>
@@ -79,8 +84,15 @@
               <form id="re-form" class="re-form" hidden><label class="rest-campo">Producto<select id="re-producto" name="producto"></select></label><div class="re-campos" id="re-campos"></div>
                 <p class="rest-sub">Cantidad que lleva UNA unidad. Déjalo vacío si no lo usa. Vale solo para las ventas nuevas: las anteriores conservan su receta.</p><button type="submit" class="rest-btn">Guardar receta</button></form></div></article>
         </section>
+        </section>
+<section class="rd-panel" id="rd-p-semana" role="tabpanel" aria-labelledby="rd-tab-semana" hidden>
+          <header class="rd-ph"><h2>Semana y equipo</h2><p>Cómo vienen los últimos 7 días y quién vendió hoy en el local.</p></header>
+        <section class="rd-fila4 rd-sem2">
+          <article class="rest-tarjeta"><header><div><h2>Últimos 7 días</h2><small>Hamburguesas por día</small></div><button type="button" class="rd-vistatabla" data-tabla="semana" aria-pressed="false">Ver tabla</button></header><div class="rd-semana" id="rd-semana"></div><div id="rd-semana-tabla" class="rd-tabla-vista" hidden></div></article>
+          <article class="rest-tarjeta"><header><div><h2>Equipo hoy</h2><small>Ventas registradas en el local</small></div></header><div class="rd-equipo" id="rd-equipo"></div></article>
+        </section>
+        </section>
 
-        
 
         <div class="rd-demo" id="rd-demo" hidden>
           <span class="rest-chip-demo">Solo en la demo</span><span>Mira el dashboard moverse sin otro celular:</span>

@@ -97,8 +97,43 @@
       <p class="rest-sub">Ya confirmados hoy: <b style="color:var(--fx-bg)">${num(r.llevar + r.domicilio)}</b> hamburguesas (${num(r.llevar)} para llevar y ${num(r.domicilio)} a domicilio).</p><p style="margin-top:14px"><a class="rest-btn sec chico" href="personal.html#pedidos">Ir a los pedidos</a></p>`;
   }
 
+  /* ---- secciones (pestañas): una pantalla por tema, con avisos que llevan a donde hay que actuar ---- */
+  const TABS = $$('.rd-tab'), IDS = TABS.map(b => b.dataset.p), badges = {};
+  function badge(k, n) { badges[k] = n; const el = $('#rd-tab-' + k + ' .n'); if (!el) return; el.hidden = !n; el.textContent = n > 99 ? '99+' : n; }
+  function irA(k, desdeUsuario) {
+    if (!IDS.includes(k)) k = 'hoy';
+    TABS.forEach(b => { const on = b.dataset.p === k; b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; });
+    IDS.forEach(i => { $('#rd-p-' + i).hidden = i !== k; });
+    try { sessionStorage.setItem('rd_tab', k); } catch (e) { /* sin almacenamiento */ }
+    if (history.replaceState) history.replaceState(null, '', '#' + k);
+    if (desdeUsuario) window.scrollTo({ top: Math.max(0, $('#rd-app').offsetTop - 8), behavior: 'smooth' });
+  }
+  function medirCabecera() { const c = document.querySelector('.cabecera'); document.documentElement.style.setProperty('--cab-h', (c ? c.offsetHeight : 0) + 'px'); }
+  function pintarAlertas(d) {
+    if (!d) return;
+    const al = [], ag = d.productos.filter(p => p.estado === 'agotado'), ba = d.productos.filter(p => p.estado === 'bajo'), sin = d.productos.filter(p => p.cuenta_burger && p.estado === 'sin_definir');
+    if (d.pendientes) al.push(['crit', 'Pedidos de la web', `${d.pendientes} esperando respuesta`, '<a class="rd-al-ir" href="personal.html#pedidos">Responder</a>']);
+    if (ag.length) al.push(['crit', 'Agotado', ag.slice(0, 3).map(p => esc(p.nombre)).join(', ') + (ag.length > 3 ? ` y ${ag.length - 3} más` : ''), '<button type="button" class="rd-al-ir" data-ir="stock">Ver stock</button>']);
+    if (ba.length) al.push(['aviso', 'Queda poco', ba.slice(0, 3).map(p => `${esc(p.nombre)} (${p.quedan})`).join(', ') + (ba.length > 3 ? ` y ${ba.length - 3} más` : ''), '<button type="button" class="rd-al-ir" data-ir="stock">Ver stock</button>']);
+    if (sin.length) al.push(['info', 'Stock sin cargar', `${sin.length} hamburguesa${sin.length > 1 ? 's' : ''} sin tope hoy`, '<button type="button" class="rd-al-ir" data-ir="stock">Cargar stock</button>']);
+    const ib = window.INS && window.INS.alertas;
+    if (ib && (ib.agotados || ib.bajos)) al.push([ib.agotados ? 'crit' : 'aviso', 'Bodega', `${ib.agotados ? ib.agotados + ' agotado' + (ib.agotados > 1 ? 's' : '') : ''}${ib.agotados && ib.bajos ? ' y ' : ''}${ib.bajos ? ib.bajos + ' con poco' : ''}`, '<button type="button" class="rd-al-ir" data-ir="bodega">Ver bodega</button>']);
+    if (ib && ib.sinCargar) al.push(['info', 'Bodega sin cargar', `${ib.sinCargar} insumo${ib.sinCargar > 1 ? 's' : ''} sin contar`, '<button type="button" class="rd-al-ir" data-ir="bodega">Contar ahora</button>']);
+    $('#rd-alertas').innerHTML = al.length ? al.map(([c, t, x, b]) => `<div class="rd-al ${c}"><span class="ic" aria-hidden="true">${c === 'crit' ? '■' : c === 'aviso' ? '▲' : 'ℹ'}</span><span class="tx"><b>${t}</b> ${x}</span>${b}</div>`).join('')
+      : '<div class="rd-al ok"><span class="ic" aria-hidden="true">●</span><span class="tx"><b>Todo en orden.</b> Nada urgente por ahora.</span></div>';
+    badge('hoy', d.pendientes || 0); badge('stock', ag.length + ba.length); if (ib) badge('bodega', (ib.agotados || 0) + (ib.bajos || 0));
+  }
+  window.RD = { alertas: () => pintarAlertas(D), badge };
+  TABS.forEach(b => {
+    b.onclick = () => irA(b.dataset.p, true);
+    b.onkeydown = e => { const i = IDS.indexOf(b.dataset.p), j = e.key === 'ArrowRight' ? (i + 1) % IDS.length : e.key === 'ArrowLeft' ? (i + IDS.length - 1) % IDS.length : e.key === 'Home' ? 0 : e.key === 'End' ? IDS.length - 1 : -1;
+      if (j >= 0) { e.preventDefault(); irA(IDS[j], true); TABS[j].focus(); } };
+  });
+  document.addEventListener('click', e => { const b = e.target.closest('[data-ir]'); if (b) irA(b.dataset.ir, true); });
+  window.addEventListener('resize', medirCabecera);
+
   function pintar(d) {
-    D = d; pintarHeroe(d); pintarKpis(d); pintarHoras(d); pintarCanales(d); pintarProductos(d); pintarFeed(d); pintarSemana(d); pintarEquipo(d); pintarWeb(d);
+    D = d; pintarAlertas(d); pintarHeroe(d); pintarKpis(d); pintarHoras(d); pintarCanales(d); pintarProductos(d); pintarFeed(d); pintarSemana(d); pintarEquipo(d); pintarWeb(d);
     vivo.classList.remove('caido'); $('#rd-vivo-txt').textContent = `En vivo · actualizado ${new Date().toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23', timeZone: window.RUI.TZ })}`;
     primera = false;
   }
@@ -129,6 +164,7 @@
   function alEntrar() {
     $('#rd-app').hidden = false; cargar(); timer = setInterval(cargar, 4000); juego(); setInterval(juego, 15000);
     if (window.INS && window.INS.arrancar) window.INS.arrancar();
+    medirCabecera(); let ini = location.hash.slice(1); try { ini = ini || sessionStorage.getItem('rd_tab'); } catch (e) { /* nada */ } irA(ini || 'hoy', false);
     document.addEventListener('visibilitychange', () => { if (!document.hidden) cargar(); }); window.addEventListener('storage', cargar);
     if (window.REST.modo === 'demo') $('#rd-demo').hidden = false;
   }

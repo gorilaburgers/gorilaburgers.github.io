@@ -36,22 +36,34 @@
   if (!raiz) return;
   const ESTADO = { ok: ['●', 'Hay'], bajo: ['▲', 'Poco'], agotado: ['■', 'Agotado'], sin_cargar: ['○', 'Sin cargar'] };
   const COLOR = { ok: 'var(--d-ok)', bajo: 'var(--d-aviso)', agotado: 'var(--d-crit)' };
-  let estado = [], formAbierta = false, periodo = 'hoy', cons = null, receta = { insumos: [], recetas: [] };
+  let estado = [], formAbierta = false, periodo = 'hoy', cons = null, receta = { insumos: [], recetas: [] }, filtro = 'todo';
 
   const cantEmp = i => i.empaque_cant ? ` · ${redondo(i.saldo / i.empaque_cant)} ${esc(i.empaque_nombre || 'empaque')}${redondo(i.saldo / i.empaque_cant) === 1 ? '' : 's'}` : '';
+  function pintarKpis() {
+    const n = estado.length, ag = estado.filter(i => i.estado === 'agotado').length, ba = estado.filter(i => i.estado === 'bajo').length, sin = estado.filter(i => i.estado === 'sin_cargar').length,
+      pocos = estado.filter(i => i.alcanza_dias != null && i.alcanza_dias < 2 && i.estado !== 'agotado').length;
+    window.INS.alertas = { agotados: ag, bajos: ba, sinCargar: sin };
+    const k = [['Insumos controlados', n, 'En la bodega', ''], ['Con poco o agotados', ag + ba, ag ? `${ag} agotado${ag > 1 ? 's' : ''}` : 'Revisa y compra', ag + ba ? 'alerta' : 'ok'],
+      ['Alcanzan menos de 2 días', pocos, 'Según lo que se gasta', pocos ? 'aviso' : ''], ['Sin cargar', sin, sin ? 'Cuéntalos con «Conté»' : 'Todo contado', sin ? 'aviso' : 'ok']];
+    $('#bo-kpis').innerHTML = k.map(([a, b, c, cl]) => `<article class="rest-tarjeta rd-kpi ${cl}"><span class="rotulo">${a}</span><span class="valor">${b}</span><span class="pie">${c}</span></article>`).join('');
+    const f = { todo: n, atencion: ag + ba, sin_cargar: sin };
+    $$('#bo-filtros .rd-chipf').forEach(b => { b.setAttribute('aria-pressed', b.dataset.f === filtro); b.dataset.n = f[b.dataset.f]; });
+    if (window.RD) window.RD.alertas();
+  }
   function pintarBodega() {
+    pintarKpis();
     const bajos = estado.filter(i => i.estado === 'bajo' || i.estado === 'agotado').length, sin = estado.filter(i => i.estado === 'sin_cargar').length;
     $('#bo-sub').textContent = sin ? `${sin} insumo${sin > 1 ? 's' : ''} sin cargar: cuenta lo que hay y regístralo (Bodega › Entró / Conté).` : bajos ? `${bajos} insumo${bajos > 1 ? 's' : ''} con poco o sin existencias.` : 'Todo con existencias. Baja solo con cada venta, según la receta.';
     $('#bo-n').hidden = !bajos; $('#bo-n').textContent = bajos;
-    const prio = { agotado: 0, bajo: 1, sin_cargar: 2, ok: 3 };
-    $('#bo-tabla').innerHTML = estado.map((i, n) => ({ i, n })).sort((a, b) => prio[a.i.estado] - prio[b.i.estado] || a.n - b.n).map(({ i }) => {
+    const prio = { agotado: 0, bajo: 1, sin_cargar: 2, ok: 3 }, pasa = i => filtro === 'todo' || (filtro === 'atencion' ? i.estado === 'agotado' || i.estado === 'bajo' : i.estado === filtro);
+    $('#bo-tabla').innerHTML = estado.map((i, n) => ({ i, n })).filter(x => pasa(x.i)).sort((a, b) => prio[a.i.estado] - prio[b.i.estado] || a.n - b.n).map(({ i }) => {
       const [ic, tx] = ESTADO[i.estado], f = i.minimo ? Math.max(0, Math.min(1, i.saldo / (i.minimo * 3))) : (i.saldo > 0 ? 1 : 0), col = COLOR[i.estado] || 'var(--d-mut)';
       return `<tr><td class="nom">${esc(i.nombre)}<small>${i.unidad === 'gr' ? 'gramos' : 'unidades'}${i.minimo ? ` · avisa bajo ${cant(i.minimo, i.unidad)}` : ''}</small></td>
         <td class="num">${i.hoy ? `<b>${cant(i.hoy, i.unidad)}</b>` : '<span class="mut">—</span>'}</td>
         <td><div class="rd-stock">${i.estado === 'sin_cargar' ? `<span><span class="rd-estado sin_definir">${ic} ${tx}</span></span>` : `<div class="pista"><i style="width:${f * 100}%;background:${col}"></i></div>
           <span><b>${cant(i.saldo, i.unidad)}<small style="font-weight:400">${cantEmp(i)}</small></b><span class="rd-estado ${i.estado}">${ic} ${tx}</span></span>`}</div></td>
         <td class="num">${i.alcanza_dias != null ? `<b>${i.alcanza_dias < 1 ? '< 1' : redondo(i.alcanza_dias)}</b> <small>día${i.alcanza_dias === 1 ? '' : 's'}</small>` : '<span class="mut">—</span>'}</td></tr>`;
-    }).join('');
+    }).join('') || '<tr><td colspan="4" class="rest-sub" style="padding:18px 0">Nada para mostrar con este filtro.</td></tr>';
     const sel = $('#bo-insumo'), previo = sel.value;
     if (sel.options.length !== estado.length) { sel.innerHTML = estado.map(i => `<option value="${esc(i.clave)}">${esc(i.nombre)}</option>`).join(''); if (previo) sel.value = previo; actualizarUnidad(); }
   }
@@ -101,6 +113,7 @@
 
   /* ---- eventos ---- */
   $('#bo-abrir').onclick = () => { const f = $('#bo-form'); f.hidden = !f.hidden; formAbierta = !f.hidden; if (!f.hidden) { actualizarUnidad(); $('#bo-cantidad').focus(); } };
+  $$('#bo-filtros .rd-chipf').forEach(b => b.onclick = () => { filtro = b.dataset.f; pintarBodega(); });
   $('#bo-x').onclick = () => { $('#bo-form').hidden = true; formAbierta = false; };
   $('#bo-insumo').onchange = actualizarUnidad;
   const tipoAyuda = { compra: 'Cuánto entró (se suma a lo que hay).', conteo: 'Cuánto hay de verdad ahora (se corrige la diferencia).', merma: 'Cuánto se perdió o dañó (se resta). Escribe el motivo.' };
