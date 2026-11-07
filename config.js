@@ -6,8 +6,8 @@ window.DEMO = {
   "ciudad": "Ambato",
   "waCliente": "593987188071",
   "direccion": "FICOA, Las Frambuesas y Guaytambos, frente al Parque de los Quindes",
-  "horario": "Lunes a sábado · consulta las horas por WhatsApp",
-  "domicilio": "confirmar",
+  "horario": "Todos los días · consulta las horas por WhatsApp",
+  "domicilio": true,
   "envio": null,
   "claveDemo": "gorila_demo_pedidos",
   "saludoPedido": "Hola Gorila Burgers, quiero hacer un pedido desde la web 🦍🍔",
@@ -16,15 +16,15 @@ window.DEMO = {
   "sectoresEjemplo": [
     {
       "nombre": "FICOA",
-      "costo": 100
+      "costo": 200
     },
     {
       "nombre": "Atocha",
-      "costo": 150
+      "costo": 200
     },
     {
       "nombre": "Miraflores",
-      "costo": 150
+      "costo": 200
     },
     {
       "nombre": "Centro",
@@ -32,11 +32,11 @@ window.DEMO = {
     },
     {
       "nombre": "Huachi",
-      "costo": 250
+      "costo": 200
     },
     {
       "nombre": "Izamba",
-      "costo": 300
+      "costo": 200
     }
   ],
   "modo": null

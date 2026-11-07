@@ -22,7 +22,7 @@ Página con vitrina de burgers, carta y pedido (llevar o domicilio en todo Ambat
 
 ## Base de datos (Supabase)
 1. Crear el proyecto. Authentication › **desactivar «Allow new users to sign up»**. Settings › API › **Exposed schemas**: agregar `gorila_burgers`.
-2. Correr `supabase/migrations/001` a `006` **en orden** (SQL Editor), y después `008_insumos.sql` y `009_semilla_insumos.sql` (recetas y bodega). Mientras la 008 no esté corrida, el dashboard funciona igual y la sección de bodega queda oculta.
+2. Correr `supabase/migrations/001` a `006` **en orden** (SQL Editor), y después `008_insumos.sql`, `009_semilla_insumos.sql` (recetas y bodega) y `010_ajustes.sql` (envío por sector y precios editables). Si ya corriste una versión anterior, vuelve a correr `006_semilla.sql` (agrega Molotov, The Beast, Pig Floyd y el envío de $2) y `009_semilla_insumos.sql`. Mientras la 008 no esté corrida, el dashboard funciona igual y la sección de bodega queda oculta.
 3. Poner la URL y la clave **anon** del proyecto en `modulos/restaurante/restaurante-datos.js` (o en la configuración de producción de la agencia y regenerar). **Nunca la clave `service_role`.**
 
 ## Dar de alta al personal

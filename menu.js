@@ -25,7 +25,7 @@ window.MENU = {
           "nombre": "SuperGuesa + papas",
           "precio": 790,
           "lema": "Nivel bestia activado",
-          "desc": "Receta de la casa.",
+          "desc": "3 carnes, 2 quesos cheddar, tocino, cebolla, lechuga, tomate, mayonesa y salsa Kong",
           "foto": {
             "src": "assets/carta-superguesa.webp",
             "alt": "SuperGuesa: doble carne con doble cheddar y tocino",
@@ -38,13 +38,53 @@ window.MENU = {
           "nombre": "Jam Smash",
           "precio": 499,
           "lema": "La que cambia el juego",
-          "desc": "2 carnes smash, 2 quesos cheddar, cebollas caramelizadas y salsa smash",
+          "desc": "2 carnes smash, 2 quesos cheddar, cebollas caramelizadas y salsa Jam",
           "foto": {
             "src": "assets/carta-jam.webp",
             "alt": "Jam Smash: doble carne smash con queso fundido y cebolla caramelizada",
             "w": 560,
             "h": 383
           }
+        },
+        {
+          "id": "molotov",
+          "nombre": "Molotov + papas",
+          "precio": 1000,
+          "lema": null,
+          "desc": "2 carnes, 2 quesos holandés, carne mechada, jalapeño con tocino y mayonesa",
+          "foto": {
+            "src": "assets/carta-molotov.webp",
+            "alt": "Molotov: carne mechada, queso fundido y brocheta de tocino con jalapeño",
+            "w": 560,
+            "h": 383
+          }
+        },
+        {
+          "id": "beast",
+          "nombre": "The Beast + papas",
+          "precio": 1000,
+          "lema": null,
+          "desc": "4 carnes, 2 quesos cheddar, 2 tocinos, huevo, cebolla, lechuga, tomate, mayonesa y salsa Kong",
+          "foto": {
+            "src": "assets/carta-beast.webp",
+            "alt": "The Beast: cuatro carnes con cheddar, tocino y huevo frito",
+            "w": 560,
+            "h": 383
+          }
+        },
+        {
+          "id": "pigfloyd",
+          "nombre": "Pig Floyd + papas",
+          "precio": 1000,
+          "lema": "Hamburguesa de temporada",
+          "desc": "2 carnes, 2 quesos cheddar, pulled pork, 2 tocinos, chicharrón, mayonesa y salsa Kong",
+          "foto": {
+            "src": "assets/carta-pigfloyd.webp",
+            "alt": "Pig Floyd: pulled pork, tocino y queso fundido en pan especial",
+            "w": 560,
+            "h": 383
+          },
+          "solo_temporada": true
         }
       ],
       "foto": "assets/carta-texas.webp"
@@ -60,7 +100,7 @@ window.MENU = {
           "nombre": "Hawayana + papas",
           "precio": 590,
           "lema": "Dulce, atrevida y peligrosa",
-          "desc": "Receta de la casa.",
+          "desc": "Carne, queso cheddar, piña a la plancha, cebolla, lechuga, tomate, mayonesa y salsa Kong",
           "foto": {
             "src": "assets/carta-hawayana.webp",
             "alt": "Hawayana: carne con cheddar y piña a la plancha en pan brioche",
@@ -218,10 +258,11 @@ window.MENU = {
   "temporada": {
     "nombre": "Pig Floyd",
     "nota": "Hamburguesa de temporada",
-    "precio": null,
+    "precio": 1000,
     "foto": "assets/pig-floyd-cartel.webp",
     "alt": "Cartel de la Pig Floyd, hamburguesa de temporada de Gorila Burgers: tocino, queso fundido y pan brioche frente a una fábrica con un cerdo volando",
     "fotoW": 660,
-    "fotoH": 739
+    "fotoH": 739,
+    "id": "pigfloyd"
   }
 };

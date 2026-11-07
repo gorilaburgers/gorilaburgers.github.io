@@ -299,3 +299,21 @@ dialog.rest-dialogo .acc { display: flex; gap: 10px; margin-top: 14px; justify-c
 .rd-fila6 { grid-template-columns: 1fr; }
 .bo-acciones { display: flex; gap: 8px; flex-wrap: wrap; }
 .sk-card[hidden] { display: none; }
+
+/* ====================== AJUSTES: envío por sector y precios ====================== */
+.rd-aj { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; } @media (max-width: 1000px) { .rd-aj { grid-template-columns: 1fr; } }
+.aj-todos { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 12px; } .aj-todos .rest-campo { flex: 1 1 200px; }
+.aj-lista { display: grid; gap: 0; } .aj-grupo { font: 800 .85rem/1 var(--fx-font-txt); text-transform: uppercase; letter-spacing: .06em; color: var(--d-mut); margin: 18px 0 4px; }
+.aj-fila { display: flex; align-items: center; gap: 12px; padding: 10px 6px; border-top: 1px solid var(--d-line); border-radius: 8px; transition: background .15s; } .aj-fila:first-child { border-top: 0; }
+.aj-fila .nom { flex: 1; min-width: 0; font: 700 1.08rem/1.15 var(--fx-font-txt); } .aj-fila.off .nom { opacity: .5; text-decoration: line-through; }
+.aj-fila.cambio { background: color-mix(in srgb, var(--fx-accent) 14%, transparent); }
+.aj-precio { display: inline-flex; align-items: center; gap: 4px; padding: 0 10px; min-height: 48px; border-radius: 12px; border: 2px solid var(--d-line); background: var(--fx-deep-2); } .aj-precio:focus-within { border-color: var(--fx-accent); }
+.aj-precio b { color: var(--d-mut); } .aj-precio input { width: 5.2em; min-height: 44px; border: 0; background: transparent; color: var(--fx-bg); font: 800 1.3rem/1 var(--fx-font-txt); text-align: right; outline: 0; -moz-appearance: textfield; }
+.aj-precio input::-webkit-outer-spin-button, .aj-precio input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.aj-sw { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; cursor: pointer; font: 700 .95rem/1 var(--fx-font-txt); color: var(--d-mut); }
+.aj-sw input { appearance: none; width: 46px; height: 26px; border-radius: 999px; background: color-mix(in srgb, var(--fx-bg) 18%, transparent); position: relative; cursor: pointer; transition: background .15s; margin: 0; }
+.aj-sw input::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--fx-bg); transition: transform .15s; }
+.aj-sw input:checked { background: var(--d-ok); } .aj-sw input:checked::after { transform: translateX(20px); } .aj-sw input:focus-visible { outline: 3px solid var(--fx-pop); outline-offset: 2px; }
+.aj-nuevo { display: grid; gap: 10px; grid-template-columns: 1fr 120px; align-items: end; margin-top: 16px; padding: 14px; border-radius: 12px; border: 1px dashed var(--d-line); } .aj-nuevo .rest-btn { grid-column: 1 / -1; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 760px) { .aj-fila { flex-wrap: wrap; } .aj-fila .nom { flex-basis: 100%; } }

@@ -1,6 +1,6 @@
 -- Módulo de restaurante · 009 insumos y recetas de Gorila Burgers (generado por scripts/migraciones-modulo.py desde clientes/gorila-burgers/cliente.json).
 -- Va DESPUÉS de 008_insumos.sql. Los mínimos de «queda poco» son de ejemplo: el dueño los ajusta con insumo_guardar().
--- Recetas de la tabla del dueño. Supuestos por confirmar: MAYORIA = mayonesa; PULLET PORK = pulled pork; los extras (tocino crunch, piña, salsas, cebollas) usan una porción estándar; la Hawayana no lleva piña en la tabla; The Beast y la Molotov no están en la carta. Papas: 150 gr por plato (la Jam Smash va sin papas), funda de 2500 gr; Cheese Bacon Fries: 2 tocinos, 50 gr de salsa cheddar y 200 gr de papas.
+-- Recetas de la tabla del dueño. Confirmado: MAYORIA = mayonesa; la Hawayana lleva piña (1 rodaja). Por confirmar: «PULLET PORK» = pulled pork; los extras (tocino crunch, piña, salsas, cebollas) usan una porción estándar; la Jam Smash lleva salsa Jam, pero en la tabla descuenta 20 gr de salsa Kong. Papas: 150 gr por plato (la Jam Smash va sin papas), funda de 2500 gr; Cheese Bacon Fries: 2 tocinos, 50 gr de salsa cheddar y 200 gr de papas.
 -- Después de correr esto, el dueño carga lo que hay en bodega con insumo_mover(insumo, 'conteo', cantidad) (desde el dashboard › Bodega): hasta entonces los insumos salen «sin cargar».
 insert into gorila_burgers.insumos (clave, nombre, unidad, empaque_cant, empaque_nombre, minimo, orden) values
   ('carne', 'Carne', 'uni', null, null, 30, 0),
@@ -67,6 +67,7 @@ insert into gorila_burgers.recetas (producto, insumo, cantidad) values
   ('hawayana', 'salsa-kong', 20),
   ('hawayana', 'mayonesa', 13),
   ('hawayana', 'papas', 150),
+  ('hawayana', 'pina', 1),
   ('superguesa', 'carne', 3),
   ('superguesa', 'cheddar', 2),
   ('superguesa', 'pan-gorila', 1),

@@ -32,7 +32,7 @@
         <h1 id="rd-titulo">Hoy en Gorila<small id="rd-fecha"></small></h1>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="rd-vivo" id="rd-vivo" role="status"><i></i><span id="rd-vivo-txt">Conectando…</span></span><button type="button" class="rest-btn sec chico" id="rd-salir">Salir</button></div>
       </div>
-      <nav class="rd-nav" id="rd-nav" role="tablist" aria-label="Secciones del dashboard"><button type="button" role="tab" class="rd-tab" id="rd-tab-hoy" data-p="hoy" aria-selected="false" aria-controls="rd-p-hoy" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="tx">Hoy</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-stock" data-p="stock" aria-selected="false" aria-controls="rd-p-stock" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11h16a8 7 0 0 1-16 0zM5 8c1-3 13-3 14 0M4 15h16"/></svg><span class="tx">Qué se vende</span><span class="tc">Ventas</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-bodega" data-p="bodega" aria-selected="false" aria-controls="rd-p-bodega" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-5 9 5v10H3zM9 19v-6h6v6"/></svg><span class="tx">Ingredientes</span><span class="tc">Bodega</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-semana" data-p="semana" aria-selected="false" aria-controls="rd-p-semana" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span class="tx">Semana y equipo</span><span class="tc">Semana</span><span class="n" hidden></span></button></nav>
+      <nav class="rd-nav" id="rd-nav" role="tablist" aria-label="Secciones del dashboard"><button type="button" role="tab" class="rd-tab" id="rd-tab-hoy" data-p="hoy" aria-selected="false" aria-controls="rd-p-hoy" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="tx">Hoy</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-stock" data-p="stock" aria-selected="false" aria-controls="rd-p-stock" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11h16a8 7 0 0 1-16 0zM5 8c1-3 13-3 14 0M4 15h16"/></svg><span class="tx">Qué se vende</span><span class="tc">Ventas</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-bodega" data-p="bodega" aria-selected="false" aria-controls="rd-p-bodega" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-5 9 5v10H3zM9 19v-6h6v6"/></svg><span class="tx">Ingredientes</span><span class="tc">Bodega</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-semana" data-p="semana" aria-selected="false" aria-controls="rd-p-semana" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span class="tx">Semana y equipo</span><span class="tc">Semana</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-ajustes" data-p="ajustes" aria-selected="false" aria-controls="rd-p-ajustes" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10M14 4v6M8 14v6"/></svg><span class="tx">Ajustes</span><span class="n" hidden></span></button></nav>
       <div id="rd-cuerpo">
 <section class="rd-panel" id="rd-p-hoy" role="tabpanel" aria-labelledby="rd-tab-hoy">
                     <div class="rd-alertas" id="rd-alertas" aria-live="polite"></div>
@@ -97,6 +97,18 @@
           <article class="rest-tarjeta"><header><div><h2>Equipo hoy</h2><small>Ventas registradas en el local</small></div></header><div class="rd-equipo" id="rd-equipo"></div></article>
         </section>
         </section>
+<section class="rd-panel" id="rd-p-ajustes" role="tabpanel" aria-labelledby="rd-tab-ajustes" hidden>
+          <header class="rd-ph"><h2>Ajustes</h2><p>Cambia el costo de envío y los precios cuando quieras. Vale para los pedidos nuevos: lo ya vendido conserva su precio.</p></header>
+        <section class="rd-aj">
+          <article class="rest-tarjeta"><header><div><h2>Envío a domicilio</h2><small>Cuánto cobras por cada sector. Apaga los sectores a los que no llegas.</small></div></header>
+            <div class="aj-todos"><label class="rest-campo">Mismo costo para todos ($)<input id="aj-todos" type="number" step="0.25" min="0" max="20" inputmode="decimal" placeholder="2.00"></label><button type="button" class="rest-btn sec chico" id="aj-todos-ok">Aplicar a todos</button></div>
+            <div class="aj-lista" id="aj-sectores"><p class="rest-sub">Cargando…</p></div>
+            <form class="aj-nuevo" id="aj-nuevo"><label class="rest-campo">Sector nuevo<input name="nombre" maxlength="60" placeholder="Ej.: Ficoa Alto" autocomplete="off"></label><label class="rest-campo">Costo ($)<input name="costo" type="number" step="0.25" min="0" max="20" inputmode="decimal" placeholder="2.00"></label><button type="submit" class="rest-btn sec chico">Agregar sector</button></form></article>
+          <article class="rest-tarjeta"><header><div><h2>Precios de la carta</h2><small>Toca el precio y escribe el nuevo.</small></div></header><div class="aj-lista" id="aj-precios"></div></article>
+        </section>
+        <div class="sk-guardar" id="aj-guardar" hidden role="region" aria-label="Cambios sin guardar"><span class="sk-cambios" id="aj-cambios"></span>
+          <button type="button" class="rest-btn sec" id="aj-descartar">Descartar</button><button type="button" class="rest-btn" id="aj-ok">Guardar cambios</button></div>
+        </section>
 
 
         <div class="rd-demo" id="rd-demo" hidden>
@@ -116,6 +128,7 @@
 
 <script src="modulos/restaurante/rest-api.js"></script>
 <script src="modulos/restaurante/rest-insumos.js"></script>
+<script src="modulos/restaurante/rest-ajustes.js"></script>
 <script src="modulos/restaurante/rest-dashboard.js"></script>
 
 </body>

@@ -44,7 +44,7 @@
         ${t.foto ? `<img src="${esc(t.foto)}" alt="${esc(t.alt || t.nombre)}" width="${esc(t.fotoW)}" height="${esc(t.fotoH)}" loading="lazy">` : ''}
         <div><span class="pd-sello">${esc(t.nota)}</span>
         <h3>${esc(t.nombre)}</h3>
-        <p>${marca(t.confirmar)}</p></div>
+        ${t.id && items.get(t.id) ? `<p class="pd-desc">${esc(items.get(t.id).desc || '')}</p><div class="pd-acc"><span class="pd-precio">${plata(items.get(t.id).precio)}</span><button type="button" class="pd-btn pd-btn-add" data-add="${esc(t.id)}" aria-label="Agregar ${esc(t.nombre)}">Agregar</button></div>` : `<p>${marca(t.confirmar)}</p>`}</div>
       </div>` : '';
   const titulo = c => `<h2 id="cat-${c.id}"><span class="fino">${esc(c.antes || 'Carta')}</span> <span class="grueso">${esc(c.nombre)}</span></h2>`;
 
@@ -56,7 +56,7 @@
       ${M.categorias.map(c => `
         <section class="pd-cat" aria-labelledby="cat-${c.id}">
           ${titulo(c)}
-          <ul class="pd-lista" data-stagger>${c.items.map(i => itemHtml(i, c)).join('')}
+          <ul class="pd-lista" data-stagger>${c.items.filter(i => !i.solo_temporada).map(i => itemHtml(i, c)).join('')}
           </ul>
         </section>`).join('')}`;
     raiz.addEventListener('click', e => {
@@ -188,7 +188,7 @@
 
       ${R ? '' : `<fieldset class="pd-tipo"><legend>¿Cómo lo quieres?</legend>
         <label class="pd-op"><input type="radio" name="tipo" value="llevar" ${datos.tipo === 'llevar' ? 'checked' : ''}><span>Para llevar<small>Retiras en el local</small></span></label>
-        ${hayDom ? `<label class="pd-op"><input type="radio" name="tipo" value="domicilio" ${datos.tipo === 'domicilio' ? 'checked' : ''}><span>A domicilio<small>${D.envio == null ? 'Envío por confirmar' : 'Envío ' + plata(D.envio)}${D.domicilio === 'confirmar' ? ' ' + marca('¿hace domicilio?') : ''}</small></span></label>` : ''}
+        ${hayDom ? `<label class="pd-op"><input type="radio" name="tipo" value="domicilio" ${datos.tipo === 'domicilio' ? 'checked' : ''}><span>A domicilio<small>${sectores() && sectores().some(z => z.costo != null) ? 'Envío según tu sector' : D.envio == null ? 'Envío por confirmar' : 'Envío ' + plata(D.envio)}${D.domicilio === 'confirmar' ? ' ' + marca('¿hace domicilio?') : ''}</small></span></label>` : ''}
       </fieldset>`}
 
       <div class="pd-campos" id="pd-campos"></div>

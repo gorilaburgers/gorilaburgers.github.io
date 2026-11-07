@@ -212,18 +212,18 @@
 
 <section class="sec oscuro eventos" id="eventos"><div class="wrap">
   <h2 class="doble" data-reveal><span>Gorila también va</span>a tu evento</h2>
-  <p class="intro" data-reveal>Tenemos food truck. Llevamos las burgers de Gorila a conciertos, ferias, fiestas y cualquier actividad. Cotiza y ten la mejor hamburguesa de Ambato en tu evento.</p>
+  <p class="intro" data-reveal>Tenemos food truck. Vamos a Ambato y a otras ciudades: conciertos, ferias, fiestas y cualquier actividad. No hay mínimos: cotizas tu paquete y tienes la mejor hamburguesa de Ambato en tu evento.</p>
   <div class="evento-grid con-foto">
     <figure class="evento-foto" data-reveal><img src="assets/foodtruck-jungla.webp" alt="Food truck de Gorila Burgers con la frase Welcome to the Jungle, listo para un evento" width="807" height="587" loading="lazy"><figcaption>Welcome to the jungle</figcaption></figure>
     <div class="pasos" data-stagger>
     <div class="paso"><span class="ico"><svg><use href="#i-estrella"/></svg></span><div><h3>Conciertos y festivales</h3><p>Burgers a la plancha para el público, los artistas y el equipo.</p></div></div>
     <div class="paso"><span class="ico"><svg><use href="#i-copa"/></svg></span><div><h3>Cumpleaños y matrimonios</h3><p>Un menú para tus invitados, armado a tu medida.</p></div></div>
     <div class="paso"><span class="ico"><svg><use href="#i-equipo"/></svg></span><div><h3>Ferias y eventos de empresa</h3><p>Para ferias, lanzamientos, colegios, universidades y equipos de trabajo.</p></div></div>
-    <div class="paso"><span class="ico"><svg><use href="#i-pin"/></svg></span><div><h3>Cualquier actividad</h3><p>Si hay gente con hambre, Gorila va. Cuéntanos fecha, lugar y cuántas personas.</p></div></div>
+    <div class="paso"><span class="ico"><svg><use href="#i-pin"/></svg></span><div><h3>Cualquier actividad</h3><p>Si hay gente con hambre, Gorila va. Cuéntanos ciudad, fecha, lugar y cuántas personas.</p></div></div>
     
     </div>
   </div>
-  <div class="acciones eventos-cta" data-reveal><a class="btn fx-brillo" data-wa="Hola Gorila, quiero cotizar el food truck para un evento. Tipo de evento, fecha, lugar y número de personas:">Cotizar mi evento</a></div>
+  <div class="acciones eventos-cta" data-reveal><a class="btn fx-brillo" data-wa="Hola Gorila, quiero cotizar el food truck para un evento. Ciudad, tipo de evento, fecha, lugar y número de personas:">Cotizar mi paquete</a></div>
 </div></section>
 
 <div class="fx-rock-caja" aria-hidden="true"><div class="fx-rock-cinta"><p><span>Gorila</span><i class="fx-rock-rayo"></i><span>Rock</span><i class="fx-rock-rayo"></i><span>Burgers</span><i class="fx-rock-rayo"></i><span>Gorila</span><i class="fx-rock-rayo"></i><span>Rock</span><i class="fx-rock-rayo"></i><span>Burgers</span><i class="fx-rock-rayo"></i><span>Gorila</span><i class="fx-rock-rayo"></i><span>Rock</span><i class="fx-rock-rayo"></i></p></div></div>
@@ -252,7 +252,7 @@
   <div data-reveal>
     <h2 class="doble"><span>Ven al</span>territorio Gorila</h2>
     <div class="dato"><span class="ico"><svg><use href="#i-pin"/></svg></span><span>FICOA, Las Frambuesas y Guaytambos, frente al Parque de los Quindes, Ambato</span></div>
-    <div class="dato"><span class="ico"><svg><use href="#i-reloj"/></svg></span><span>Lunes a sábado · consulta las horas por WhatsApp</span></div>
+    <div class="dato"><span class="ico"><svg><use href="#i-reloj"/></svg></span><span>Lunes a sábado · todos los días, consulta las horas por WhatsApp</span></div>
     <div class="acciones">
       <a class="btn" href="https://www.google.com/maps/search/?api=1&amp;query=Gorila+Burgers+FICOA+Ambato" target="_blank" rel="noopener">Cómo llegar</a>
       <a class="btn btn-linea" id="ig" target="_blank" rel="noopener">Instagram</a>
@@ -262,7 +262,7 @@
     <h3 style="font:900 2rem/.95 var(--fx-font-disp);text-transform:uppercase">Pedidos por WhatsApp</h3>
     <p style="font:900 clamp(2.4rem,7vw,3.4rem)/1 var(--fx-font-disp);color:var(--fx-pop);margin:10px 0 6px">098 718 8071</p>
     <div class="dato"><span class="ico" style="color:var(--fx-pop)"><svg><use href="#i-bolsa"/></svg></span><span>Para llevar: pides en la web y pasas a retirar.</span></div>
-    <div class="dato"><span class="ico" style="color:var(--fx-pop)"><svg><use href="#i-moto"/></svg></span><span>A domicilio A domicilio en todo Ambato; el costo del envío se confirma por WhatsApp.</span></div>
+    <div class="dato"><span class="ico" style="color:var(--fx-pop)"><svg><use href="#i-moto"/></svg></span><span>A domicilio A domicilio en todo Ambato con repartidor propio. Envío desde $2 según el sector.</span></div>
     <div class="acciones"><a class="btn" data-wa="Hola Gorila, quiero hacer un pedido.">Escribir a Gorila</a></div>
   </div>
 </div></section>
@@ -314,7 +314,7 @@ document.querySelectorAll('[data-pedir]').forEach(a => a.addEventListener('click
 }));
 
 /* Premium: envío por sector (todo Ambato) y pedido programado. El precio real sale de la base; si no responde, los datos del cliente. */
-{ const aplicar = ss => { DEMO.sectores = ss.map(z => ({ nombre: z.nombre, costo: RESTDATA.envio_por_confirmar ? null : z.costo_cent, ejemplo: !!RESTDATA.sectores_ejemplo })); DEMO.programar = true; };
+{ const aplicar = ss => { DEMO.sectores = ss.map(z => ({ nombre: z.nombre, costo: RESTDATA.envio_por_confirmar ? null : z.costo_cent, ejemplo: !!RESTDATA.sectores_ejemplo })); DEMO.programar = !!RESTDATA.programar; };
   aplicar(RESTDATA.sectores); REST.rpc('carta').then(c => aplicar(c.sectores)).catch(() => {}); }
 { const q = new URLSearchParams(location.search).get('pedir'); if (q && P.items.has(q)) setTimeout(() => P.abrirProducto(q), 500); }   /* viene de la vitrina de burgers: «Pedir esta burger» */
 

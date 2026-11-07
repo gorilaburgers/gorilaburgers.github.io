@@ -221,6 +221,7 @@
   function alEntrar() {
     $('#rd-app').hidden = false; cargar(); timer = setInterval(cargar, 4000); juego(); setInterval(juego, 15000);
     if (window.INS && window.INS.arrancar) window.INS.arrancar();
+    if (window.AJ) window.AJ.arrancar();
     medirCabecera(); let ini = location.hash.slice(1); try { ini = ini || sessionStorage.getItem('rd_tab'); } catch (e) { /* nada */ } irA(ini || 'hoy', false);
     document.addEventListener('visibilitychange', () => { if (!document.hidden) cargar(); }); window.addEventListener('storage', cargar);
     if (window.REST.modo === 'demo') $('#rd-demo').hidden = false;
