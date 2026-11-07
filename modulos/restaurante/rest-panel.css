@@ -267,3 +267,35 @@ dialog.rest-dialogo .acc { display: flex; gap: 10px; margin-top: 14px; justify-c
   .rd-al { flex-wrap: wrap; } .rd-al .tx { flex-basis: calc(100% - 40px); } .rd-al-ir { margin-left: 38px; }
 }
 @media (prefers-reduced-motion: reduce) { .rd-panel { animation: none; } .rd-tab { transition: none; } }
+
+/* ====================== STOCK DEL DÍA: tarjetas grandes con + y − ====================== */
+.sk-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); }
+.sk-card { display: grid; gap: 10px; padding: 16px; border-radius: 16px; background: var(--d-card-2); border: 2px solid var(--d-line); transition: border-color .15s, box-shadow .15s; }
+.sk-card > header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; } .sk-card h3 { font: 800 1.2rem/1.1 var(--fx-font-disp); text-transform: uppercase; }
+.sk-card.ok { border-color: color-mix(in srgb, var(--d-ok) 40%, var(--d-line)); } .sk-card.bajo { border-color: var(--d-aviso); } .sk-card.agotado { border-color: var(--d-crit); background: color-mix(in srgb, var(--d-crit) 10%, var(--d-card-2)); }
+.sk-card.cambio { border-color: var(--fx-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--fx-accent) 30%, transparent); }
+.sk-quedan { display: flex; align-items: baseline; gap: 8px; } .sk-quedan b { font: 800 3.4rem/1 var(--fx-font-disp); font-variant-numeric: tabular-nums; } .sk-quedan span { color: var(--d-mut); font-weight: 600; font-size: 1.05rem; }
+.sk-card .pista { height: 12px; border-radius: 6px; background: color-mix(in srgb, var(--fx-bg) 12%, transparent); overflow: hidden; } .sk-card .pista i { display: block; height: 100%; border-radius: 6px; transition: width .4s; }
+.sk-det { color: var(--d-mut); font-size: 1rem; line-height: 1.25; margin: 0; } .sk-det b { color: var(--fx-bg); }
+.sk-ctrl { display: grid; gap: 8px; padding-top: 10px; border-top: 1px dashed var(--d-line); } .sk-lab { font: 800 .8rem/1 var(--fx-font-txt); text-transform: uppercase; letter-spacing: .06em; color: var(--d-mut); }
+.sk-paso { display: grid; grid-template-columns: 64px 1fr 64px; gap: 8px; }
+.sk-paso button { min-height: 60px; border-radius: 14px; border: 2px solid var(--d-line); background: transparent; color: var(--fx-bg); font: 800 2rem/1 var(--fx-font-txt); cursor: pointer; touch-action: manipulation; transition: transform .08s, background .15s; }
+.sk-paso button[data-acc="mas"] { background: var(--fx-accent); border-color: var(--fx-accent); color: var(--fx-deep); }
+.sk-paso button:active { transform: scale(.93); } .sk-paso button:focus-visible, .sk-rap button:focus-visible, .sk-paso input:focus-visible { outline: 3px solid var(--fx-pop); outline-offset: 2px; }
+.sk-paso input { min-width: 0; width: 100%; min-height: 60px; text-align: center; font: 800 2rem/1 var(--fx-font-txt); border-radius: 14px; border: 2px solid var(--d-line); background: var(--fx-deep-2); color: var(--fx-bg); -moz-appearance: textfield; }
+.sk-paso input::-webkit-outer-spin-button, .sk-paso input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.sk-rap { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; } .sk-rap button { min-height: 44px; border-radius: 12px; border: 1px solid var(--d-line); background: color-mix(in srgb, var(--fx-bg) 8%, transparent); color: var(--fx-bg); font: 800 1.1rem/1 var(--fx-font-txt); cursor: pointer; touch-action: manipulation; }
+.sk-rap button:active { background: var(--fx-accent); color: var(--fx-deep); }
+.sk-delta { margin: 0; padding: 6px 10px; border-radius: 8px; background: color-mix(in srgb, var(--fx-accent) 18%, transparent); color: var(--fx-accent); font: 700 .98rem/1.2 var(--fx-font-txt); }
+.sk-guardar { position: sticky; bottom: 14px; z-index: 25; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 14px; margin: 14px 0; padding: 12px 16px; border-radius: 16px; background: var(--fx-deep); border: 2px solid var(--fx-accent); box-shadow: 0 14px 40px rgba(0, 0, 0, .5); }
+.sk-guardar[hidden] { display: none; } .sk-cambios { flex: 1 1 260px; font: 500 1rem/1.3 var(--fx-font-txt); } .sk-cambios b { color: var(--fx-accent); }
+.sk-guardar .rest-btn { min-height: 52px; }
+.sk-panel + .sk-guardar + article, .sk-panel + article { margin-top: 14px; }
+.bo-tabla td.acc { text-align: right; white-space: nowrap; } .bo-cargar { min-height: 38px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--fx-accent); background: transparent; color: var(--fx-accent); font: 800 .95rem/1 var(--fx-font-txt); cursor: pointer; }
+.bo-cargar:hover, .bo-cargar:focus-visible { background: var(--fx-accent); color: var(--fx-deep); outline: 0; }
+@media (max-width: 760px) { .sk-guardar { bottom: calc(76px + env(safe-area-inset-bottom, 0px)); } .sk-quedan b { font-size: 3rem; } }
+@media (prefers-reduced-motion: reduce) { .sk-card, .sk-card .pista i, .sk-paso button { transition: none; } }
+.sk-card > header { min-height: 2.6em; } .sk-card .rd-estado { white-space: nowrap; flex: 0 0 auto; }
+.rd-fila6 { grid-template-columns: 1fr; }
+.bo-acciones { display: flex; gap: 8px; flex-wrap: wrap; }
+.sk-card[hidden] { display: none; }

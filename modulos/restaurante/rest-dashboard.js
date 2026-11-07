@@ -5,7 +5,7 @@
   const CAN = { local: 'var(--d-s1)', llevar: 'var(--d-s2)', domicilio: 'var(--d-s3)' };
   const ESTADO = { ok: ['●', 'Hay'], bajo: ['▲', 'Bajo'], agotado: ['■', 'Agotado'], sin_definir: ['○', 'Sin cargar'], libre: ['–', 'Sin control'] };
   const COLOR_ESTADO = { ok: 'var(--d-ok)', bajo: 'var(--d-aviso)', agotado: 'var(--d-crit)' };
-  let D = null, timer = null, auto = null, vistos = new Set(), primera = true, editando = false;
+  let D = null, timer = null, auto = null, vistos = new Set(), primera = true;
 
   const raiz = $('#rd-app'), vivo = $('#rd-vivo');
 
@@ -54,24 +54,81 @@
     $('#rd-canal').setAttribute('aria-label', cs.map(([c, n]) => `${canalTxt(c)} ${n}`).join(', '));
     $('#rd-canal-lista').innerHTML = cs.map(([c, n]) => `<div><i style="background:${CAN[c]}"></i><span>${canalTxt(c)}</span><span><b>${num(n)}</b> <em>${Math.round(n / tot * 100)} %</em></span></div>`).join('');
   }
-  function pintarProductos(d) {
-    const burgers = d.productos.filter(p => p.cuenta_burger), otros = d.productos.filter(p => !p.cuenta_burger && p.vendidas > 0 && p.categoria !== 'extras'), maxV = Math.max(1, ...d.productos.map(p => p.vendidas));
-    const fila = p => { const f = p.inicial ? Math.max(0, Math.min(1, p.quedan / p.inicial)) : 0, col = COLOR_ESTADO[p.estado] || 'var(--d-mut)', [ic, tx] = ESTADO[p.estado];
-      return `<tr><td class="nom">${esc(p.nombre)}<small>${plata(p.precio_cent)}</small></td>
-        <td><div class="rd-vend"><div class="pista"><i style="width:${p.vendidas / maxV * 100}%"></i></div><b>${p.vendidas}</b></div></td>
-        <td><div class="rd-stock">${p.estado === 'libre' || p.estado === 'sin_definir' ? `<span><span class="rd-estado ${p.estado}">${ic} ${tx}</span></span>` :
-          `<div class="pista"><i style="width:${f * 100}%;background:${col}"></i></div><span><b>${p.quedan} <small style="font-weight:400">de ${p.inicial}</small></b><span class="rd-estado ${p.estado}">${ic} ${tx}</span></span>`}</div></td></tr>`; };
-    $('#rd-prod').innerHTML = burgers.map(fila).join('') + (otros.length ? `<tr><td colspan="3" style="padding-top:16px;color:var(--d-mut);font:700 .85rem var(--fx-font-txt);text-transform:uppercase;letter-spacing:.05em">Papas, bebidas y más</td></tr>` + otros.map(fila).join('') : '');
-    const sin = burgers.filter(p => p.estado === 'sin_definir').length, baj = d.productos.filter(p => p.estado === 'bajo' || p.estado === 'agotado').length;
-    $('#rd-stock-sub').textContent = sin ? `Faltan ${sin} burger${sin > 1 ? 's' : ''} por cargar: sin stock cargado se vende sin tope.` : baj ? `${baj} producto${baj > 1 ? 's' : ''} con poco o sin stock.` : 'Stock del día cargado por el dueño; baja solo con cada venta.';
-    if (!editando) armarEditor(d);
+  /* ---- stock del día: una tarjeta grande por hamburguesa, con + y − (pensado para tocar sin pensar) ----
+     El borrador vive en el navegador hasta que el dueño toca «Guardar stock»; la base recibe solo lo que cambió. */
+  const draft = new Map(), ULT = 'rd_ultimo_stock';
+  let armado = '';
+  const clampMin = (p, n) => Math.max(p.vendidas || 0, Math.min(9999, Math.round(n) || 0));
+  const actual = p => draft.has(p.clave) ? draft.get(p.clave) : (p.inicial != null ? p.inicial : 0);
+  function pintarCambios() {
+    const ps = (D ? D.productos : []).filter(p => draft.has(p.clave)), bar = $('#sk-guardar');
+    bar.hidden = !ps.length;
+    $('#sk-cambios').innerHTML = ps.length ? `<b>${ps.length} cambio${ps.length > 1 ? 's' : ''} sin guardar:</b> ` + ps.map(p => { const dif = draft.get(p.clave) - (p.inicial || 0); return `${esc(p.nombre)} ${p.inicial == null ? `→ ${draft.get(p.clave)}` : (dif > 0 ? '+' : '') + dif}`; }).join(' · ') : '';
+    $$('.sk-card', $('#sk-grid')).forEach(c => {
+      const p = D.productos.find(x => x.clave === c.dataset.k), on = draft.has(p.clave), dl = $('[data-r="delta"]', c);
+      c.classList.toggle('cambio', on); dl.hidden = !on;
+      if (on) { const dif = draft.get(p.clave) - (p.inicial || 0); dl.textContent = p.inicial == null ? `Se cargarán ${draft.get(p.clave)} para hoy` : `${p.inicial} → ${draft.get(p.clave)} (${dif >= 0 ? '+' : ''}${dif})`; }
+    });
   }
-  function armarEditor(d) {
-    const f = $('#rd-editor'); if (f.dataset.hecho === d.dia && !f.hidden) return;
-    const ps = d.productos.filter(p => p.estado !== 'libre');
-    f.innerHTML = ps.map(p => `<label class="rest-campo">${esc(p.nombre)}<input type="number" inputmode="numeric" min="${p.vendidas}" max="9999" step="1" name="${esc(p.clave)}" value="${p.inicial ?? ''}" placeholder="Hoy, en total"></label>`).join('') +
-      `<div class="pie"><button type="submit" class="rest-btn">Guardar stock del día</button><button type="button" class="rest-btn sec" id="rd-editor-x">Cancelar</button><small>Pon cuántas hay para hoy en total (lo ya vendido cuenta dentro). Las ventas lo van bajando solas.</small></div>`;
-    f.dataset.hecho = d.dia; $('#rd-editor-x').onclick = () => { f.hidden = true; editando = false; };
+  function poner(p, n) {
+    n = clampMin(p, n); const base = p.inicial != null ? p.inicial : null;
+    if (n === base || (base == null && n === 0 && !draft.has(p.clave))) draft.delete(p.clave); else draft.set(p.clave, n);
+    const inp = $(`.sk-card[data-k="${CSS.escape(p.clave)}"] input`, $('#sk-grid')); if (inp) inp.value = draft.has(p.clave) ? draft.get(p.clave) : (p.inicial != null ? p.inicial : '');
+    pintarCambios();
+  }
+  function pintarProductos(d) {
+    const ps = d.productos.filter(p => p.estado !== 'libre'), otros = d.productos.filter(p => p.estado === 'libre' && p.vendidas > 0 && p.categoria !== 'extras'), maxV = Math.max(1, ...d.productos.map(p => p.vendidas));
+    $('#sk-otros').hidden = !otros.length;
+    $('#rd-prod').innerHTML = otros.map(p => `<tr><td class="nom">${esc(p.nombre)}<small>${plata(p.precio_cent)}</small></td><td><div class="rd-vend"><div class="pista"><i style="width:${p.vendidas / maxV * 100}%"></i></div><b>${p.vendidas}</b></div></td></tr>`).join('');
+    if (!$('#sk-grid')) return;
+    const llave = d.dia + '|' + ps.map(p => p.clave).join();
+    if (armado !== llave) {                                                        // se arma una sola vez: así no se pierde lo que se está escribiendo
+      armado = llave; draft.clear();
+      $('#sk-grid').innerHTML = ps.map(p => `<article class="sk-card" data-k="${esc(p.clave)}"><header><h3>${esc(p.nombre)}</h3><span class="rd-estado" data-r="estado"></span></header>
+        <div class="sk-quedan"><b data-r="quedan">—</b><span data-r="quedan-t">quedan</span></div><div class="pista" aria-hidden="true"><i data-r="barra"></i></div>
+        <p class="sk-det" data-r="det"></p>
+        <div class="sk-ctrl"><span class="sk-lab" id="sk-l-${esc(p.clave)}">Cargadas hoy</span>
+          <div class="sk-paso" role="group" aria-labelledby="sk-l-${esc(p.clave)}"><button type="button" data-acc="menos" aria-label="Quitar una de ${esc(p.nombre)}">−</button><input type="number" inputmode="numeric" min="0" max="9999" step="1" data-r="in" aria-label="Cargadas hoy de ${esc(p.nombre)}" placeholder="0"><button type="button" data-acc="mas" aria-label="Subir una de ${esc(p.nombre)}">+</button></div>
+          <div class="sk-rap" aria-label="Subir de golpe"><button type="button" data-n="5">+5</button><button type="button" data-n="10">+10</button><button type="button" data-n="20">+20</button></div>
+          <p class="sk-delta" data-r="delta" hidden></p></div></article>`).join('');
+    }
+    ps.forEach(p => {
+      const c = $(`.sk-card[data-k="${CSS.escape(p.clave)}"]`, $('#sk-grid')); if (!c) return;
+      const f = p.inicial ? Math.max(0, Math.min(1, p.quedan / p.inicial)) : 0, col = COLOR_ESTADO[p.estado] || 'var(--d-mut)', [ic, tx] = ESTADO[p.estado], r = k => $(`[data-r="${k}"]`, c);
+      c.className = 'sk-card ' + p.estado + (draft.has(p.clave) ? ' cambio' : '');
+      r('estado').className = 'rd-estado ' + p.estado; r('estado').textContent = `${ic} ${tx}`;
+      r('quedan').textContent = p.quedan == null ? '∞' : p.quedan; r('quedan-t').textContent = p.quedan == null ? 'sin tope' : p.quedan === 1 ? 'queda' : 'quedan';
+      r('barra').style.width = (p.quedan == null ? 0 : f * 100) + '%'; r('barra').style.background = col;
+      r('det').innerHTML = p.inicial == null ? 'Aún no cargaste cuántas hay hoy: se vende sin límite.' : `<b>${p.vendidas}</b> vendida${p.vendidas === 1 ? '' : 's'} de <b>${p.inicial}</b> cargadas`;
+      const inp = r('in'); inp.min = p.vendidas; if (document.activeElement !== inp) inp.value = draft.has(p.clave) ? draft.get(p.clave) : (p.inicial != null ? p.inicial : '');
+    });
+    const sin = ps.filter(p => p.estado === 'sin_definir').length, baj = ps.filter(p => p.estado === 'bajo' || p.estado === 'agotado').length;
+    $('#rd-stock-sub').textContent = sin ? `Faltan ${sin} por cargar: sin stock se vende sin límite. Toca + para empezar.` : baj ? `${baj} con poco o sin stock. Sube más con +5, +10 o +20.` : 'Toca + para subir hamburguesas al stock. Lo que se vende baja solo.';
+    pintarCambios();
+  }
+  if ($('#sk-grid')) {
+  $('#sk-grid').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b || !D) return; const c = b.closest('.sk-card'), p = D.productos.find(x => x.clave === c.dataset.k); if (!p) return;
+    if (b.dataset.acc) poner(p, actual(p) + (b.dataset.acc === 'mas' ? 1 : -1)); else if (b.dataset.n) poner(p, actual(p) + parseInt(b.dataset.n, 10));
+  });
+  $('#sk-grid').addEventListener('input', e => { const inp = e.target.closest('input'); if (!inp || !D) return; const p = D.productos.find(x => x.clave === inp.closest('.sk-card').dataset.k); if (!p) return;
+    const n = inp.value === '' ? 0 : parseInt(inp.value, 10); if (n === actual(p)) return; const base = p.inicial != null ? p.inicial : null, v = Math.max(p.vendidas || 0, Math.min(9999, n || 0));
+    if (v === base) draft.delete(p.clave); else draft.set(p.clave, v); pintarCambios(); });
+  $('#sk-grid').addEventListener('change', e => { const inp = e.target.closest('input'); if (!inp || !D) return; const p = D.productos.find(x => x.clave === inp.closest('.sk-card').dataset.k); if (p) poner(p, inp.value === '' ? actual(p) : parseInt(inp.value, 10)); });
+  $('#sk-descartar').onclick = () => { draft.clear(); armado = ''; if (D) pintarProductos(D); };
+  $('#sk-ultimo').onclick = () => {
+    let u = null; try { u = JSON.parse(localStorage.getItem(ULT) || 'null'); } catch (e) { u = null; }
+    if (!u || !D) { aviso('Todavía no hay una carga anterior en este celular.', true); return; }
+    D.productos.filter(p => p.estado !== 'libre' && u[p.clave] != null).forEach(p => poner(p, u[p.clave])); aviso('Listo: revisa los números y toca «Guardar stock».');
+  };
+  $('#sk-ok').onclick = async () => {
+    const items = [...draft].map(([producto, cantidad]) => ({ producto, cantidad })); if (!items.length) return; const b = $('#sk-ok'); b.disabled = true;
+    try {
+      await window.REST.rpc('stock_fijar_varios', { p_items: items });
+      const todo = {}; D.productos.filter(p => p.estado !== 'libre').forEach(p => { todo[p.clave] = actual(p); }); try { localStorage.setItem(ULT, JSON.stringify(todo)); } catch (e) { /* sin almacenamiento */ }
+      aviso(items.length === 1 ? 'Stock guardado.' : `Stock guardado: ${items.length} hamburguesas.`); draft.clear(); armado = ''; await cargar();
+    } catch (er) { aviso(er.message, true); } finally { b.disabled = false; }
+  };
   }
   function pintarFeed(d) {
     const html = d.ultimas.map(v => { const nuevo = !primera && !vistos.has(v.id + v.estado); vistos.add(v.id + v.estado);
@@ -123,7 +180,7 @@
       : '<div class="rd-al ok"><span class="ic" aria-hidden="true">●</span><span class="tx"><b>Todo en orden.</b> Nada urgente por ahora.</span></div>';
     badge('hoy', d.pendientes || 0); badge('stock', ag.length + ba.length); if (ib) badge('bodega', (ib.agotados || 0) + (ib.bajos || 0));
   }
-  window.RD = { alertas: () => pintarAlertas(D), badge };
+  window.RD = { alertas: () => pintarAlertas(D), badge, datos: () => D };
   TABS.forEach(b => {
     b.onclick = () => irA(b.dataset.p, true);
     b.onkeydown = e => { const i = IDS.indexOf(b.dataset.p), j = e.key === 'ArrowRight' ? (i + 1) % IDS.length : e.key === 'ArrowLeft' ? (i + IDS.length - 1) % IDS.length : e.key === 'Home' ? 0 : e.key === 'End' ? IDS.length - 1 : -1;
@@ -133,7 +190,7 @@
   window.addEventListener('resize', medirCabecera);
 
   function pintar(d) {
-    D = d; pintarAlertas(d); pintarHeroe(d); pintarKpis(d); pintarHoras(d); pintarCanales(d); pintarProductos(d); pintarFeed(d); pintarSemana(d); pintarEquipo(d); pintarWeb(d);
+    D = d; if (window.INS && window.INS.pintarAlcance) window.INS.pintarAlcance(); pintarAlertas(d); pintarHeroe(d); pintarKpis(d); pintarHoras(d); pintarCanales(d); pintarProductos(d); pintarFeed(d); pintarSemana(d); pintarEquipo(d); pintarWeb(d);
     vivo.classList.remove('caido'); $('#rd-vivo-txt').textContent = `En vivo · actualizado ${new Date().toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23', timeZone: window.RUI.TZ })}`;
     primera = false;
   }
@@ -170,18 +227,11 @@
   }
   $('#rd-feed').addEventListener('click', async e => { const b = e.target.closest('[data-ins]'); if (!b) return; await window.INS.alternar(+b.dataset.ins); if (D) pintarFeed(D); });
   $('#rd-salir').onclick = () => { window.REST.salir(); location.reload(); };
-  $('#rd-stock-abrir').onclick = () => { const f = $('#rd-editor'); f.hidden = !f.hidden; editando = !f.hidden; if (!f.hidden) { f.dataset.hecho = ''; armarEditor(D); $('input', f).focus(); } };
-  $('#rd-editor').onsubmit = async e => {
-    e.preventDefault(); const items = [...new FormData(e.target)].filter(([, v]) => v !== '').map(([producto, v]) => ({ producto, cantidad: parseInt(v, 10) }));
-    if (!items.length) { aviso('Escribe al menos una cantidad.', true); return; }
-    try { await window.REST.rpc('stock_fijar_varios', { p_items: items }); aviso('Stock de hoy guardado.'); e.target.hidden = true; editando = false; await cargar(); }
-    catch (er) { aviso(er.message, true); }
-  };
   $$('.rd-vistatabla').forEach(b => b.onclick = () => { const k = b.dataset.tabla, on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', on); b.textContent = on ? 'Ver gráfica' : 'Ver tabla'; $('#rd-' + k).hidden = on; $('#rd-' + k + '-tabla').hidden = !on; });
   const sim = async () => { try { const r = await window.REST.rpc('demo_simular'); if (r && r.n) { aviso(`Venta simulada: ${r.n} hamburguesa${r.n > 1 ? 's' : ''}.`); cargar(); } } catch (e) { aviso(e.message, true); } };
   $('#rd-sim').onclick = sim;
   $('#rd-auto').onclick = e => { const on = e.currentTarget.getAttribute('aria-pressed') !== 'true'; e.currentTarget.setAttribute('aria-pressed', on); e.currentTarget.textContent = on ? 'Detener simulación' : 'Simular ventas cada 6 s'; clearInterval(auto); if (on) { sim(); auto = setInterval(sim, 6000); } };
-  $('#rd-reset').onclick = async () => { await window.REST.rpc('demo_reiniciar'); vistos = new Set(); primera = true; $('#rd-editor').dataset.hecho = ''; cargar(); aviso('Datos de ejemplo reiniciados.'); };
+  $('#rd-reset').onclick = async () => { await window.REST.rpc('demo_reiniciar'); vistos = new Set(); primera = true; cargar(); aviso('Datos de ejemplo reiniciados.'); };
 
   window.RUI.sesion({ raiz: $('#rd-entrada'), roles: ['admin'], titulo: R.dashboard_txt.entrada_titulo, texto: R.dashboard_txt.entrada_texto, alEntrar });
 })();

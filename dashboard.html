@@ -32,7 +32,7 @@
         <h1 id="rd-titulo">Hoy en Gorila<small id="rd-fecha"></small></h1>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="rd-vivo" id="rd-vivo" role="status"><i></i><span id="rd-vivo-txt">Conectando…</span></span><button type="button" class="rest-btn sec chico" id="rd-salir">Salir</button></div>
       </div>
-      <nav class="rd-nav" id="rd-nav" role="tablist" aria-label="Secciones del dashboard"><button type="button" role="tab" class="rd-tab" id="rd-tab-hoy" data-p="hoy" aria-selected="false" aria-controls="rd-p-hoy" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="tx">Hoy</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-stock" data-p="stock" aria-selected="false" aria-controls="rd-p-stock" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11h16a8 7 0 0 1-16 0zM5 8c1-3 13-3 14 0M4 15h16"/></svg><span class="tx">Productos y stock</span><span class="tc">Stock</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-bodega" data-p="bodega" aria-selected="false" aria-controls="rd-p-bodega" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-5 9 5v10H3zM9 19v-6h6v6"/></svg><span class="tx">Bodega</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-semana" data-p="semana" aria-selected="false" aria-controls="rd-p-semana" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span class="tx">Semana y equipo</span><span class="tc">Semana</span><span class="n" hidden></span></button></nav>
+      <nav class="rd-nav" id="rd-nav" role="tablist" aria-label="Secciones del dashboard"><button type="button" role="tab" class="rd-tab" id="rd-tab-hoy" data-p="hoy" aria-selected="false" aria-controls="rd-p-hoy" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="tx">Hoy</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-stock" data-p="stock" aria-selected="false" aria-controls="rd-p-stock" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11h16a8 7 0 0 1-16 0zM5 8c1-3 13-3 14 0M4 15h16"/></svg><span class="tx">Qué se vende</span><span class="tc">Ventas</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-bodega" data-p="bodega" aria-selected="false" aria-controls="rd-p-bodega" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-5 9 5v10H3zM9 19v-6h6v6"/></svg><span class="tx">Ingredientes</span><span class="tc">Bodega</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-semana" data-p="semana" aria-selected="false" aria-controls="rd-p-semana" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span class="tx">Semana y equipo</span><span class="tc">Semana</span><span class="n" hidden></span></button></nav>
       <div id="rd-cuerpo">
 <section class="rd-panel" id="rd-p-hoy" role="tabpanel" aria-labelledby="rd-tab-hoy">
                     <div class="rd-alertas" id="rd-alertas" aria-live="polite"></div>
@@ -54,29 +54,34 @@
         </section>
         </section>
 <section class="rd-panel" id="rd-p-stock" role="tabpanel" aria-labelledby="rd-tab-stock" hidden>
-          <header class="rd-ph"><h2>Productos y stock</h2><p>Qué se vende más y cuánto queda de cada hamburguesa. Carga el stock cada mañana.</p></header>
+          <header class="rd-ph"><h2>Qué se vende</h2><p>Lo que salió hoy de cada hamburguesa y cuántas más se pueden hacer con los ingredientes que hay.</p></header>
         <section class="rd-una">
-          <article class="rest-tarjeta"><header><div><h2>Qué se vende y qué queda</h2><small id="rd-stock-sub">Stock del día cargado por el dueño; baja solo con cada venta.</small></div><button type="button" class="rest-btn chico" id="rd-stock-abrir">Cargar stock de hoy</button></header>
-            <form id="rd-editor" class="rd-editor" hidden></form>
-            <div style="overflow-x:auto"><table class="rd-prod"><thead><tr><th>Producto</th><th>Vendidas hoy</th><th>Stock</th></tr></thead><tbody id="rd-prod"></tbody></table></div></article>
+          <article class="rest-tarjeta"><header><div><h2>Cuántas alcanzan hoy</h2><small id="al-sub">Calculado con los ingredientes que cargaste en la bodega.</small></div><button type="button" class="rest-btn chico" data-ir="bodega">Cargar ingredientes</button></header>
+            <div class="sk-grid" id="al-grid"><p class="rest-sub">Carga los ingredientes en la pestaña «Ingredientes» y aquí verás cuántas hamburguesas alcanzan.</p></div></article>
+
+<article class="rest-tarjeta" id="sk-otros" hidden><header><div><h2>Papas, bebidas y más</h2><small>Se venden sin control de stock</small></div></header>
+            <div style="overflow-x:auto"><table class="rd-prod"><tbody id="rd-prod"></tbody></table></div></article>
         </section>
         </section>
 <section class="rd-panel" id="rd-p-bodega" role="tabpanel" aria-labelledby="rd-tab-bodega" hidden>
-          <header class="rd-ph"><h2>Bodega e insumos</h2><p>Lo que hay en la cocina, lo que se gasta con cada venta y para cuántos días alcanza.</p></header>
+          <header class="rd-ph"><h2>Ingredientes de hoy</h2><p>Carga cada mañana lo que hay en la cocina: 10 carnes, 30 quesos… Toca + o escribe el número. Lo que se vende baja solo.</p></header>
         <section class="rd-bod-kpis" id="bo-kpis" aria-label="Resumen de bodega"></section>
         <section class="rd-fila6" id="rd-bodega" aria-label="Bodega, consumo y recetas">
-          <article class="rest-tarjeta"><header><div><h2>Bodega <span class="rd-n" id="bo-n" hidden>0</span></h2><small id="bo-sub">Cada venta descuenta lo que lleva la receta.</small></div><button type="button" class="rest-btn chico" id="bo-abrir">Entró · Conté · Se perdió</button></header>
+          <article class="rest-tarjeta"><header><div><h2>Cuántos hay <span class="rd-n" id="bo-n" hidden>0</span></h2><small id="bo-sub">Cada venta descuenta lo que lleva la receta.</small></div>
+              <div class="bo-acciones"><button type="button" class="rest-btn sec chico" id="bo-ultimo">Usar lo de la última vez</button><button type="button" class="rest-btn sec chico" id="bo-abrir">Se perdió o se dañó algo</button></div></header>
             <form id="bo-form" class="bo-form" hidden>
               <label class="rest-campo">Insumo<select id="bo-insumo" name="insumo"></select></label>
-              <label class="rest-campo">Qué pasó<select id="bo-tipo" name="tipo"><option value="compra">Entró mercadería</option><option value="conteo">Hice un conteo</option><option value="merma">Se perdió o dañó</option></select></label>
+              <label class="rest-campo">Qué pasó<select id="bo-tipo" name="tipo"><option value="merma">Se perdió o dañó</option><option value="compra">Entró mercadería</option><option value="conteo">Hice un conteo</option></select></label>
               <label class="rest-campo">Cantidad<input id="bo-cantidad" name="cantidad" type="number" min="0" step="any" inputmode="decimal" required></label>
               <label class="rest-campo">En<select id="bo-unidad" name="unidad"></select></label>
               <label class="rest-campo bo-nota">Nota (obligatoria si se perdió)<input name="nota" maxlength="200" placeholder="Ej.: compra del proveedor, se cayó al piso"></label>
-              <p class="rest-sub bo-ayuda" id="bo-ayuda">Cuánto entró (se suma a lo que hay).</p>
+              <p class="rest-sub bo-ayuda" id="bo-ayuda">Cuánto se perdió o dañó (se resta). Escribe el motivo.</p>
               <div class="pie"><button type="submit" class="rest-btn">Guardar</button><button type="button" class="rest-btn sec" id="bo-x">Cancelar</button></div>
             </form>
             <div class="bo-filtros" id="bo-filtros" role="group" aria-label="Filtrar insumos"><button type="button" class="rd-chipf" data-f="todo" aria-pressed="true">Todo</button><button type="button" class="rd-chipf" data-f="atencion" aria-pressed="false">Poco o agotado</button><button type="button" class="rd-chipf" data-f="sin_cargar" aria-pressed="false">Sin cargar</button></div>
-            <div style="overflow-x:auto"><table class="rd-prod bo-tabla"><thead><tr><th>Insumo</th><th>Salió hoy</th><th>Queda</th><th>Alcanza</th></tr></thead><tbody id="bo-tabla"></tbody></table></div></article>
+            <div class="sk-grid" id="bo-grid"></div><p class="rest-sub" id="bo-vacio" hidden>Nada para mostrar con este filtro.</p></article>
+          <div class="sk-guardar" id="bo-guardar" hidden role="region" aria-label="Cambios sin guardar"><span class="sk-cambios" id="bo-cambios"></span>
+            <button type="button" class="rest-btn sec" id="bo-descartar">Descartar</button><button type="button" class="rest-btn" id="bo-ok">Guardar</button></div>
           <article class="rest-tarjeta"><header><div><h2>Qué salió</h2><small>Todo lo que se usó, desglosado por hamburguesa</small></div>
               <div class="co-periodos" role="group" aria-label="Período"><button type="button" class="rest-btn sec chico" data-periodo="hoy" aria-pressed="true">Hoy</button><button type="button" class="rest-btn sec chico" data-periodo="semana" aria-pressed="false">7 días</button><button type="button" class="rest-btn sec chico" data-periodo="mes" aria-pressed="false">Este mes</button></div></header>
             <ul class="co-lista" id="co-lista"></ul>
