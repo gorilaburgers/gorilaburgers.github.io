@@ -1,7 +1,7 @@
 /* Módulo de restaurante · bodega central y envíos al local (módulo adicional: solo se copia si el cliente tiene restaurante.bodega_central).
    Dueño (dashboard › «Bodega central»): qué hay en la central, qué está en camino, cómo está el local y qué conviene enviar, con envíos de un toque.
-   Local (pantalla de ventas › «Inventario»): recibir lo que envía la bodega, ver el inventario en vivo y cuántas alcanzan de cada producto; cada venta lo descuenta (008).
-   La base valida todo (011_bodega_central.sql): aquí solo se muestra y se pide. Todo texto que viene de la base se inserta con esc(). */
+   Local (pantalla de ventas › «Inventario»): recibir lo que envía la bodega CONTANDO cada ingrediente (a ciegas: no ve cuánto se envió), ver el inventario en vivo y cuántas alcanzan de cada producto; cada venta lo descuenta (008).
+   La base valida todo (011_bodega_central.sql y 012_recepcion.sql): aquí solo se muestra y se pide. Todo texto que viene de la base se inserta con esc(). */
 (() => {
   const R = window.RESTDATA;
   if (!R || !R.bodega_central || !window.RUI) return;
@@ -9,6 +9,7 @@
   const redondo = n => Math.round(n * 10) / 10;
   const cant = (n, u) => u === 'gr' ? `${num(redondo(n))} gr` : num(redondo(n));
   const chip = x => `<li><b>${cant(x.cantidad, x.unidad)}</b> ${esc(x.nombre)}</li>`;
+  const chipRec = x => x.recibido == null ? chip(x) : `<li class="${x.diferencia ? 'dif' : ''}"><b>${cant(x.recibido, x.unidad)}</b> ${esc(x.nombre)} <small>${x.diferencia ? `enviado ${cant(x.cantidad, x.unidad)} · ${x.diferencia > 0 ? '+' : '−'}${cant(Math.abs(x.diferencia), x.unidad)}` : '✓ coincide'}</small></li>`;
   const FALTA = /could not find|schema cache|does not exist|no está disponible/i;       // la base aún no tiene 011_bodega_central.sql: la pantalla sigue igual que antes
   const ESTADO = { ok: ['●', 'Hay'], bajo: ['▲', 'Poco'], agotado: ['■', 'Agotado'], sin_cargar: ['○', 'Sin cargar'], enviar: ['▲', 'Enviar'], central_bajo: ['■', 'Central baja'], sin_central: ['○', 'Sin contar'] };
   const COLOR = { ok: 'var(--d-ok)', bajo: 'var(--d-aviso)', agotado: 'var(--d-crit)', enviar: 'var(--d-aviso)', central_bajo: 'var(--d-crit)' };
@@ -19,14 +20,22 @@
   /* =====================  PANTALLA DE VENTAS (local)  ===================== */
   const iv = $('#p-inventario');
   if (iv) {
-    let inv = { insumos: [], productos: [] }, envios = [], filtro = 'todo';
+    let inv = { insumos: [], productos: [] }, envios = [], filtro = 'todo', armadoEnv = '';
+    const conteo = new Map();                       // borrador de lo contado por envío: sobrevive a las actualizaciones automáticas
+    const nota = new Map(), pideNota = new Set();
     const badgeIv = () => { const n = envios.filter(e => e.estado === 'enviado').length; window.CEN.pendientes = n; const b = $('#rp-n-inv'); if (b) { b.hidden = !n; b.textContent = n; } };
     function pintarEnvios() {
-      const en = envios.filter(e => e.estado === 'enviado'), rec = envios.filter(e => e.estado === 'recibido').slice(0, 3);
-      $('#iv-envios').innerHTML = en.length ? en.map(e => `<article class="rest-tarjeta iv-envio"><header><div><h2>Envío #${e.numero} de la bodega</h2><small>Salió ${hace(e.creado)}${e.quien ? ' · lo envió ' + esc(e.quien) : ''}${e.nota ? ' · ' + esc(e.nota) : ''}</small></div><span class="rd-estado bajo">▲ En camino</span></header>
-          <ul class="ins-chips">${e.items.map(chip).join('')}</ul><p class="rest-sub">Cuenta lo que llegó. Al recibirlo, pasa al inventario del local y las ventas lo descuentan.</p>
-          <div class="acc"><button type="button" class="rest-btn" data-recibir="${e.id}">Recibir envío</button></div></article>`).join('')
-        : `<p class="rest-sub iv-vacio">No hay envíos esperando.${rec.length ? ` Último recibido: #${rec[0].numero}, ${hace(rec[0].recibido_en)}.` : ''}</p>`;
+      const en = envios.filter(e => e.estado === 'enviado'), rec = envios.filter(e => e.estado === 'recibido').slice(0, 3), caja = $('#iv-envios');
+      const llave = en.map(e => e.id).join();
+      if (armadoEnv === llave && caja.children.length && en.length) return;               // no se vuelve a dibujar mientras cuenta: así no pierde lo que escribió
+      armadoEnv = llave;
+      caja.innerHTML = en.length ? en.map(e => { const d = conteo.get(e.id) || {};
+        return `<article class="rest-tarjeta iv-envio" data-e="${e.id}"><header><div><h2>Envío #${e.numero} de la bodega</h2><small>Salió ${hace(e.creado)}${e.quien ? ' · lo envió ' + esc(e.quien) : ''}${e.nota ? ' · ' + esc(e.nota) : ''}</small></div><span class="rd-estado bajo">▲ En camino</span></header>
+          <p class="rest-sub"><b>Cuenta lo que llegó</b> de cada ingrediente y escribe cuánto es. Si no llegó, pon 0. Al confirmar, entra al inventario lo que contaste.</p>
+          <ul class="iv-conteo">${e.items.map(x => `<li><label for="iv-c-${e.id}-${esc(x.insumo)}"><b>${esc(x.nombre)}</b><small>${x.unidad === 'gr' ? 'en gramos' : 'en unidades'}</small></label><input id="iv-c-${e.id}-${esc(x.insumo)}" type="number" inputmode="decimal" min="0" max="1000000" step="any" data-i="${esc(x.insumo)}" placeholder="Cuenta" value="${d[x.insumo] ?? ''}"></li>`).join('')}</ul>
+          <label class="rest-campo iv-nota" ${pideNota.has(e.id) ? '' : 'hidden'}>Lo que contaste no coincide con lo enviado. Cuenta de nuevo; si está bien, explica la diferencia<input maxlength="200" data-nota placeholder="Ej.: la caja de carne venía abierta, faltaron 2" value="${esc(nota.get(e.id) || '')}"></label>
+          <div class="acc"><button type="button" class="rest-btn" data-recibir="${e.id}">Confirmar lo que conté</button></div></article>`; }).join('')
+        : `<p class="rest-sub iv-vacio">No hay envíos esperando.${rec.length ? ` Último recibido: #${rec[0].numero}, ${hace(rec[0].recibido_en)}${rec[0].con_diferencias ? ' (con diferencias)' : ''}.` : ''}</p>`;
     }
     function pintarInventario() {
       const prio = { agotado: 0, bajo: 1, sin_cargar: 2, ok: 3 }, pasa = i => filtro === 'todo' || (filtro === 'atencion' ? i.estado === 'agotado' || i.estado === 'bajo' : i.estado === filtro);
@@ -49,10 +58,24 @@
       try { envios = await window.REST.rpc('envios_lista', { p_dias: 14 }); window.CEN.ok = true; pintarEnvios(); badgeIv(); } catch (e) { if (FALTA.test(e.message)) { window.CEN.ok = false; $('#t-inventario').hidden = true; } }
     }
     async function refrescar() { await Promise.all([cargarInv(), cargarEnvios()]); }
+    $('#iv-envios').addEventListener('input', e => {                       // guarda el borrador de lo contado
+      const t = e.target, card = t.closest('[data-e]'); if (!card) return; const id = +card.dataset.e;
+      if (t.dataset.nota !== undefined) nota.set(id, t.value); else if (t.dataset.i) { const d = conteo.get(id) || {}; d[t.dataset.i] = t.value; conteo.set(id, d); }
+    });
     $('#iv-envios').addEventListener('click', async e => {
-      const b = e.target.closest('[data-recibir]'); if (!b) return; b.disabled = true;
-      try { const r = await window.REST.rpc('envio_recibir', { p_id: +b.dataset.recibir }); aviso(`Envío #${r.numero} recibido: ya está en el inventario del local.`); await refrescar(); }
-      catch (er) { aviso(er.message, true); b.disabled = false; refrescar(); }
+      const b = e.target.closest('[data-recibir]'); if (!b) return; const card = b.closest('[data-e]'), id = +b.dataset.recibir;
+      const campos = $$('[data-i]', card), vacio = campos.find(c => c.value.trim() === '');
+      if (vacio) { aviso('Cuenta todos los ingredientes antes de confirmar. Si no llegó, pon 0.', true); vacio.focus(); return; }
+      const items = campos.map(c => ({ insumo: c.dataset.i, cantidad: Number(c.value) })); if (items.some(x => !(x.cantidad >= 0))) { aviso('Revisa las cantidades: deben ser números desde 0.', true); return; }
+      b.disabled = true;
+      try {
+        const txt = ($('[data-nota]', card).value || '').trim(), r = await window.REST.rpc('envio_recibir', { p_id: id, p_items: items, p_nota: txt || null });
+        conteo.delete(id); nota.delete(id); pideNota.delete(id); armadoEnv = '';
+        aviso(r.con_diferencias ? `Envío #${r.numero} recibido con diferencias. Ya quedó avisado al dueño.` : `Envío #${r.numero} recibido: lo que contaste ya está en el inventario.`); await refrescar();
+      } catch (er) {
+        if (/no coincide/i.test(er.message)) { pideNota.add(id); const f = $('.iv-nota', card); f.hidden = false; $('[data-nota]', card).focus(); }
+        aviso(er.message, true); b.disabled = false; if (!/no coincide/i.test(er.message)) { armadoEnv = ''; refrescar(); }
+      }
     });
     $$('#iv-filtros .rd-chipf').forEach(b => b.onclick = () => { filtro = b.dataset.f; pintarInventario(); });
     /* después de cada venta: se refresca el inventario y se avisa si algo se acabó */
@@ -76,7 +99,8 @@
 
   function pintarKpis() {
     const paraEnviar = est.filter(i => i.estado === 'enviar' || i.estado === 'central_bajo').length, bajas = est.filter(i => i.estado === 'central_bajo').length, sin = est.filter(i => i.estado === 'sin_cargar').length, cam = envios.filter(e => e.estado === 'enviado').length;
-    window.CEN.alertas = { paraEnviar, bajas, sin, enCamino: cam };
+    const dif = envios.filter(e => e.estado === 'recibido' && e.con_diferencias && Date.now() - new Date(e.recibido_en).getTime() < 7 * 864e5).length;
+    window.CEN.alertas = { paraEnviar, bajas, sin, enCamino: cam, diferencias: dif };
     const k = [['Para enviar al local', paraEnviar, paraEnviar ? 'El local lo necesita pronto' : 'El local está cubierto', paraEnviar ? 'aviso' : 'ok'], ['Central baja', bajas, bajas ? 'No alcanza para lo sugerido: compra más' : 'La central alcanza', bajas ? 'alerta' : 'ok'],
       ['Envíos en camino', cam, cam ? 'Esperan que el local los reciba' : 'Nada pendiente', cam ? 'aviso' : ''], ['Central sin contar', sin, sin ? 'Cuéntalos con «Conté»' : 'Todo contado', sin ? 'aviso' : 'ok']];
     $('#ce-kpis').innerHTML = k.map(([a, b, c, cl]) => `<article class="rest-tarjeta rd-kpi ${cl}"><span class="rotulo">${a}</span><span class="valor">${b}</span><span class="pie">${c}</span></article>`).join('');
@@ -126,10 +150,10 @@
   }
   function pintarEnvios() {
     $('#ce-envios').innerHTML = envios.length ? envios.slice(0, 12).map(e => {
-      const cl = e.estado === 'enviado' ? 'bajo' : e.estado === 'recibido' ? 'ok' : 'agotado', tx = e.estado === 'enviado' ? '▲ En camino' : e.estado === 'recibido' ? '● Recibido' : '■ Anulado';
+      const cl = e.estado === 'enviado' ? 'bajo' : e.estado === 'recibido' ? (e.con_diferencias ? 'agotado' : 'ok') : 'agotado', tx = e.estado === 'enviado' ? '▲ En camino' : e.estado === 'recibido' ? (e.con_diferencias ? '■ Con diferencias' : '● Recibido') : '■ Anulado';
       return `<article class="ce-envio ${e.estado}"><header><h3>Envío #${e.numero}</h3><span class="rd-estado ${cl}">${tx}</span></header>
-        <p class="sk-det">Salió ${hace(e.creado)}${e.quien ? ' · ' + esc(e.quien) : ''}${e.nota ? ' · ' + esc(e.nota) : ''}${e.estado === 'recibido' ? `<br>Lo recibió <b>${esc(e.recibido_por || 'el local')}</b> a las ${hhmm(e.recibido_en)}` : ''}${e.estado === 'anulado' ? `<br>Anulado: ${esc(e.anulado_motivo || '')}` : ''}</p>
-        <ul class="ins-chips">${e.items.map(chip).join('')}</ul>${e.estado === 'enviado' ? `<div class="acc"><button type="button" class="rest-btn peligro chico" data-anular="${e.id}">Anular envío</button></div>` : ''}</article>`; }).join('')
+        <p class="sk-det">Salió ${hace(e.creado)}${e.quien ? ' · ' + esc(e.quien) : ''}${e.nota ? ' · ' + esc(e.nota) : ''}${e.estado === 'recibido' ? `<br>Lo recibió <b>${esc(e.recibido_por || 'el local')}</b> a las ${hhmm(e.recibido_en)}${e.recepcion_nota ? `<br>Nota del local: <b>${esc(e.recepcion_nota)}</b>` : ''}` : ''}${e.estado === 'anulado' ? `<br>Anulado: ${esc(e.anulado_motivo || '')}` : ''}</p>
+        <ul class="ins-chips">${e.items.map(e.estado === 'recibido' ? chipRec : chip).join('')}</ul>${e.estado === 'enviado' ? `<div class="acc"><button type="button" class="rest-btn peligro chico" data-anular="${e.id}">Anular envío</button></div>` : ''}</article>`; }).join('')
       : '<p class="rest-sub">Todavía no has enviado nada al local. Arriba eliges qué enviar.</p>';
   }
   async function cargar() {

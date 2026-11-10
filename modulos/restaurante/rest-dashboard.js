@@ -179,6 +179,7 @@
     const ce = window.CEN && window.CEN.alertas;
     if (ce && ce.bajas) al.push(['crit', 'Bodega central', `${ce.bajas} ingrediente${ce.bajas > 1 ? 's' : ''} sin lo suficiente para abastecer al local`, '<button type="button" class="rd-al-ir" data-ir="central">Ver central</button>']);
     if (ce && ce.paraEnviar - (ce.bajas || 0) > 0) al.push(['aviso', 'Para enviar', `${ce.paraEnviar - ce.bajas} ingrediente${ce.paraEnviar - ce.bajas > 1 ? 's' : ''} del local piden reposición`, '<button type="button" class="rd-al-ir" data-ir="central">Preparar envío</button>']);
+    if (ce && ce.diferencias) al.push(['aviso', 'Recepción', `${ce.diferencias} envío${ce.diferencias > 1 ? 's' : ''} recibido${ce.diferencias > 1 ? 's' : ''} con diferencias esta semana`, '<button type="button" class="rd-al-ir" data-ir="central">Ver diferencias</button>']);
     if (ce && ce.enCamino) al.push(['info', 'Envíos', `${ce.enCamino} en camino esperando que el local los reciba`, '<button type="button" class="rd-al-ir" data-ir="central">Ver envíos</button>']);
     $('#rd-alertas').innerHTML = al.length ? al.map(([c, t, x, b]) => `<div class="rd-al ${c}"><span class="ic" aria-hidden="true">${c === 'crit' ? '■' : c === 'aviso' ? '▲' : 'ℹ'}</span><span class="tx"><b>${t}</b> ${x}</span>${b}</div>`).join('')
       : '<div class="rd-al ok"><span class="ic" aria-hidden="true">●</span><span class="tx"><b>Todo en orden.</b> Nada urgente por ahora.</span></div>';
