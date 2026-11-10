@@ -18,6 +18,10 @@
 <meta name="description" content="Pantalla del personal de Gorila Burgers: registrar ventas del local, confirmar pedidos de la web y anular errores.">
 <link rel="stylesheet" href="modulos/restaurante/rest.css">
 <link rel="stylesheet" href="modulos/restaurante/rest-panel.css">
+<link rel="manifest" href="caja.webmanifest">
+<link rel="apple-touch-icon" href="assets/caja-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Gorila Caja"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 <body class="rest-oscuro" data-pagina="Pantalla de ventas (personal)" data-secciones='["Vender", "Pedidos web", "Mis ventas"]'>
 <header class="cabecera"><div class="wrap">
@@ -37,6 +41,7 @@
             <button type="button" role="tab" id="t-ventas" aria-selected="false" aria-controls="p-ventas">Mis ventas</button>
             
           </div>
+          <button type="button" class="rest-btn chico" id="rp-instalar" hidden>Instalar acceso directo</button>
           <button type="button" class="rest-btn sec chico" id="rp-salir">Salir</button>
         </div>
       </div>
@@ -66,6 +71,7 @@
 <script src="modulos/restaurante/rest-api.js"></script>
 <script src="modulos/restaurante/rest-insumos.js"></script>
 <script src="modulos/restaurante/rest-personal.js"></script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw-caja.js').catch(() => {});</script>
 
 </body>
 </html>

@@ -99,6 +99,24 @@
     $('#t-premios').addEventListener('click', ventasParaCanje);
   }
 
+  /* ---------- acceso directo en la pantalla de inicio (app instalable) ---------- */
+  const bi = $('#rp-instalar');
+  if (bi && !(matchMedia('(display-mode: standalone)').matches || navigator.standalone)) {
+    let evento = null; bi.hidden = false;
+    window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); evento = e; });
+    window.addEventListener('appinstalled', () => { bi.hidden = true; aviso('Listo: busca el ícono «Caja» en la pantalla de inicio.'); });
+    const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    bi.onclick = async () => {
+      if (evento) { evento.prompt(); try { await evento.userChoice; } catch (e) { /* cerrado */ } evento = null; return; }
+      const d = document.createElement('dialog'); d.className = 'rest-dialogo';
+      d.innerHTML = `<form method="dialog"><h2>Instalar en este ${ios ? 'iPhone' : 'celular'}</h2><ol class="rp-pasos">${ios
+        ? '<li>Abre esta página en <b>Safari</b>.</li><li>Toca el botón <b>Compartir</b> (el cuadro con una flecha hacia arriba).</li><li>Elige <b>Agregar a pantalla de inicio</b> y toca <b>Agregar</b>.</li>'
+        : '<li>Abre el menú del navegador (<b>⋮</b> arriba a la derecha).</li><li>Toca <b>Instalar app</b> o <b>Agregar a pantalla de inicio</b>.</li><li>Confirma con <b>Instalar</b>.</li>'}</ol>
+        <p class="rest-sub">Después aparece el ícono «Caja» en la pantalla de inicio y abre directo esta pantalla de ventas.</p><div class="acc"><button class="rest-btn">Entendido</button></div></form>`;
+      document.body.append(d); d.addEventListener('close', () => d.remove()); d.showModal();
+    };
+  }
+
   /* ---------- pestañas y arranque ---------- */
   function pestana(k) { ['vender', 'pedidos', 'ventas', 'premios'].filter(t => $('#t-' + t)).forEach(t => { $('#t-' + t).setAttribute('aria-selected', t === k); $('#p-' + t).hidden = t !== k; }); if (k === 'pedidos') pedidos(); if (k === 'ventas') ventas(); history.replaceState(null, '', '#' + k); }
   ['vender', 'pedidos', 'ventas', 'premios'].filter(k => $('#t-' + k)).forEach(k => $('#t-' + k).onclick = () => pestana(k));
