@@ -1,7 +1,7 @@
 /* Módulo de restaurante · bodega central y envíos al local (módulo adicional: solo se copia si el cliente tiene restaurante.bodega_central).
    Dueño (dashboard › «Bodega central»): qué hay en la central, qué está en camino, cómo está el local y qué conviene enviar, con envíos de un toque.
-   Local (pantalla de ventas › «Inventario»): recibir lo que envía la bodega CONTANDO cada ingrediente (a ciegas: no ve cuánto se envió), ver el inventario en vivo y cuántas alcanzan de cada producto; cada venta lo descuenta (008).
-   La base valida todo (011_bodega_central.sql y 012_recepcion.sql): aquí solo se muestra y se pide. Todo texto que viene de la base se inserta con esc(). */
+   Local (pantalla de ventas › «Inventario»): anotar lo que llegó al local (cada ingrediente, sin compararlo con ningún envío: también lo de terceros), ver el inventario en vivo y cuántas alcanzan de cada producto; cada venta lo descuenta (008).
+   La base valida todo (011_bodega_central.sql y 013_recepcion_libre.sql): aquí solo se muestra y se pide. Todo texto que viene de la base se inserta con esc(). */
 (() => {
   const R = window.RESTDATA;
   if (!R || !R.bodega_central || !window.RUI) return;
@@ -9,6 +9,8 @@
   const redondo = n => Math.round(n * 10) / 10;
   const cant = (n, u) => u === 'gr' ? `${num(redondo(n))} gr` : num(redondo(n));
   const chip = x => `<li><b>${cant(x.cantidad, x.unidad)}</b> ${esc(x.nombre)}</li>`;
+  const lleg = (e, cl) => (window.CEN.recs || []).filter(r => !r.anulada && new Date(r.creado) >= new Date(e.creado)).reduce((t, r) => t + r.items.filter(i => i.insumo === cl).reduce((u, i) => u + i.cantidad, 0), 0);
+  const chipCam = e => x => { const l = lleg(e, x.insumo); return `<li class="${l >= x.cantidad ? '' : 'dif'}"><b>${cant(x.cantidad, x.unidad)}</b> ${esc(x.nombre)} <small>${l >= x.cantidad ? '✓ ya llegó' : l > 0 ? `el local anotó ${cant(l, x.unidad)}` : 'el local aún no anota nada'}</small></li>`; };
   const chipRec = x => x.recibido == null ? chip(x) : `<li class="${x.diferencia ? 'dif' : ''}"><b>${cant(x.recibido, x.unidad)}</b> ${esc(x.nombre)} <small>${x.diferencia ? `enviado ${cant(x.cantidad, x.unidad)} · ${x.diferencia > 0 ? '+' : '−'}${cant(Math.abs(x.diferencia), x.unidad)}` : '✓ coincide'}</small></li>`;
   const FALTA = /could not find|schema cache|does not exist|no está disponible/i;       // la base aún no tiene 011_bodega_central.sql: la pantalla sigue igual que antes
   const ESTADO = { ok: ['●', 'Hay'], bajo: ['▲', 'Poco'], agotado: ['■', 'Agotado'], sin_cargar: ['○', 'Sin cargar'], enviar: ['▲', 'Enviar'], central_bajo: ['■', 'Central baja'], sin_central: ['○', 'Sin contar'] };
@@ -20,22 +22,25 @@
   /* =====================  PANTALLA DE VENTAS (local)  ===================== */
   const iv = $('#p-inventario');
   if (iv) {
-    let inv = { insumos: [], productos: [] }, envios = [], filtro = 'todo', armadoEnv = '';
-    const conteo = new Map();                       // borrador de lo contado por envío: sobrevive a las actualizaciones automáticas
-    const nota = new Map(), pideNota = new Set();
-    const badgeIv = () => { const n = envios.filter(e => e.estado === 'enviado').length; window.CEN.pendientes = n; const b = $('#rp-n-inv'); if (b) { b.hidden = !n; b.textContent = n; } };
-    function pintarEnvios() {
-      const en = envios.filter(e => e.estado === 'enviado'), rec = envios.filter(e => e.estado === 'recibido').slice(0, 3), caja = $('#iv-envios');
-      const llave = en.map(e => e.id).join();
-      if (armadoEnv === llave && caja.children.length && en.length) return;               // no se vuelve a dibujar mientras cuenta: así no pierde lo que escribió
-      armadoEnv = llave;
-      caja.innerHTML = en.length ? en.map(e => { const d = conteo.get(e.id) || {};
-        return `<article class="rest-tarjeta iv-envio" data-e="${e.id}"><header><div><h2>Envío #${e.numero} de la bodega</h2><small>Salió ${hace(e.creado)}${e.quien ? ' · lo envió ' + esc(e.quien) : ''}${e.nota ? ' · ' + esc(e.nota) : ''}</small></div><span class="rd-estado bajo">▲ En camino</span></header>
-          <p class="rest-sub"><b>Cuenta lo que llegó</b> de cada ingrediente y escribe cuánto es. Si no llegó, pon 0. Al confirmar, entra al inventario lo que contaste.</p>
-          <ul class="iv-conteo">${e.items.map(x => `<li><label for="iv-c-${e.id}-${esc(x.insumo)}"><b>${esc(x.nombre)}</b><small>${x.unidad === 'gr' ? 'en gramos' : 'en unidades'}</small></label><input id="iv-c-${e.id}-${esc(x.insumo)}" type="number" inputmode="decimal" min="0" max="1000000" step="any" data-i="${esc(x.insumo)}" placeholder="Cuenta" value="${d[x.insumo] ?? ''}"></li>`).join('')}</ul>
-          <label class="rest-campo iv-nota" ${pideNota.has(e.id) ? '' : 'hidden'}>Lo que contaste no coincide con lo enviado. Cuenta de nuevo; si está bien, explica la diferencia<input maxlength="200" data-nota placeholder="Ej.: la caja de carne venía abierta, faltaron 2" value="${esc(nota.get(e.id) || '')}"></label>
-          <div class="acc"><button type="button" class="rest-btn" data-recibir="${e.id}">Confirmar lo que conté</button></div></article>`; }).join('')
-        : `<p class="rest-sub iv-vacio">No hay envíos esperando.${rec.length ? ` Último recibido: #${rec[0].numero}, ${hace(rec[0].recibido_en)}${rec[0].con_diferencias ? ' (con diferencias)' : ''}.` : ''}</p>`;
+    let inv = { insumos: [], productos: [] }, recs = [], filtro = 'todo', armadoRec = '';
+    const dentro10 = r => Date.now() - new Date(r.creado).getTime() < 10 * 60e3;
+    /* formulario: una casilla por ingrediente; solo se anota lo que llegó (las casillas vacías no cuentan). No muestra ni pide nada de los envíos. */
+    function pintarRecibir() {
+      const caja = $('#iv-envios'), llave = inv.insumos.map(i => i.clave).join();
+      if (!inv.insumos.length) return;
+      if (armadoRec !== llave) {
+        armadoRec = llave;
+        caja.innerHTML = `<article class="rest-tarjeta iv-envio iv-recibir"><header><div><h2>Llegó mercadería al local</h2><small>Escribe cuánto llegó de cada cosa. Deja vacío lo que no llegó.</small></div></header>
+          <ul class="iv-conteo">${inv.insumos.map(i => `<li><label for="iv-c-${esc(i.clave)}"><b>${esc(i.nombre)}</b><small>${i.unidad === 'gr' ? 'en gramos' : 'en unidades'}</small></label><input id="iv-c-${esc(i.clave)}" type="number" inputmode="decimal" min="0" max="1000000" step="any" data-i="${esc(i.clave)}" placeholder="0"></li>`).join('')}</ul>
+          <label class="rest-campo iv-nota">Nota (opcional)<input maxlength="200" id="iv-nota" placeholder="Ej.: las papas las trajo otro proveedor"></label>
+          <div class="acc"><button type="button" class="rest-btn" id="iv-guardar">Guardar lo que llegó</button></div></article><div class="iv-recs" id="iv-recs"></div>`;
+      }
+      pintarRecs();
+    }
+    function pintarRecs() {
+      const c = $('#iv-recs'); if (!c) return;
+      c.innerHTML = recs.length ? `<h3 class="iv-sub">Lo que anotaste hoy</h3>` + recs.slice(0, 6).map(r => `<article class="rest-tarjeta iv-rec ${r.anulada ? 'anulada' : ''}"><header><b>Recepción #${r.id}</b><small>${hace(r.creado)}${r.anulada ? ' · anulada' : ''}</small></header>
+        <ul class="ins-chips">${r.items.map(chip).join('')}</ul>${r.nota ? `<p class="rest-sub">${esc(r.nota)}</p>` : ''}${!r.anulada && dentro10(r) ? `<div class="acc"><button type="button" class="rest-btn sec chico" data-ranular="${r.id}">Me equivoqué: anular</button></div>` : ''}</article>`).join('') : '';
     }
     function pintarInventario() {
       const prio = { agotado: 0, bajo: 1, sin_cargar: 2, ok: 3 }, pasa = i => filtro === 'todo' || (filtro === 'atencion' ? i.estado === 'agotado' || i.estado === 'bajo' : i.estado === filtro);
@@ -54,27 +59,34 @@
       try { inv = await window.REST.rpc('inventario_local'); window.CEN.ok = true; window.CEN.alcance = new Map(inv.productos.map(p => [p.producto, p])); pintarInventario(); if (window.CEN.alAlcance) window.CEN.alAlcance(); }
       catch (e) { if (FALTA.test(e.message)) { window.CEN.ok = false; $('#t-inventario').hidden = true; } }
     }
-    async function cargarEnvios() {
-      try { envios = await window.REST.rpc('envios_lista', { p_dias: 14 }); window.CEN.ok = true; pintarEnvios(); badgeIv(); } catch (e) { if (FALTA.test(e.message)) { window.CEN.ok = false; $('#t-inventario').hidden = true; } }
+    async function cargarRecs() {
+      try { recs = await window.REST.rpc('recepciones_lista', { p_dias: 1 }); pintarRecibir(); } catch (e) { if (FALTA.test(e.message)) { const c = $('#iv-envios'); if (c) c.innerHTML = '<p class="rest-sub iv-vacio">Anotar lo que llega estará disponible muy pronto.</p>'; } }
     }
-    async function refrescar() { await Promise.all([cargarInv(), cargarEnvios()]); }
-    $('#iv-envios').addEventListener('input', e => {                       // guarda el borrador de lo contado
-      const t = e.target, card = t.closest('[data-e]'); if (!card) return; const id = +card.dataset.e;
-      if (t.dataset.nota !== undefined) nota.set(id, t.value); else if (t.dataset.i) { const d = conteo.get(id) || {}; d[t.dataset.i] = t.value; conteo.set(id, d); }
-    });
+    async function refrescar() { await cargarInv(); await cargarRecs(); }
+    function confirmar(items, nota) {
+      const d = document.createElement('dialog'); d.className = 'rest-dialogo';
+      d.innerHTML = `<form method="dialog"><h2>¿Esto es lo que llegó?</h2><ul class="ins-chips">${items.map(x => chip({ ...x, nombre: inv.insumos.find(i => i.clave === x.insumo).nombre, unidad: inv.insumos.find(i => i.clave === x.insumo).unidad })).join('')}</ul><p class="rest-sub">Se suma al inventario del local ahora.</p>
+        <div class="acc"><button value="no" class="rest-btn sec" formnovalidate>Revisar</button><button value="si" class="rest-btn">Sí, guardar</button></div></form>`;
+      document.body.append(d); d.addEventListener('close', async () => { const ok = d.returnValue === 'si'; d.remove(); if (!ok) return; await guardar(items, nota); }); d.showModal();
+    }
+    async function guardar(items, nota) {
+      const b = $('#iv-guardar'); if (b) b.disabled = true;
+      try { const r = await window.REST.rpc('recepcion_registrar', { p_items: items, p_nota: nota || null }); aviso(`Listo: se sumó al inventario (${r.items.length} ingrediente${r.items.length > 1 ? 's' : ''}).`);
+        $$('#iv-envios [data-i]').forEach(c => c.value = ''); const n = $('#iv-nota'); if (n) n.value = ''; await refrescar(); }
+      catch (er) { aviso(er.message, true); } finally { if (b) b.disabled = false; }
+    }
     $('#iv-envios').addEventListener('click', async e => {
-      const b = e.target.closest('[data-recibir]'); if (!b) return; const card = b.closest('[data-e]'), id = +b.dataset.recibir;
-      const campos = $$('[data-i]', card), vacio = campos.find(c => c.value.trim() === '');
-      if (vacio) { aviso('Cuenta todos los ingredientes antes de confirmar. Si no llegó, pon 0.', true); vacio.focus(); return; }
-      const items = campos.map(c => ({ insumo: c.dataset.i, cantidad: Number(c.value) })); if (items.some(x => !(x.cantidad >= 0))) { aviso('Revisa las cantidades: deben ser números desde 0.', true); return; }
-      b.disabled = true;
-      try {
-        const txt = ($('[data-nota]', card).value || '').trim(), r = await window.REST.rpc('envio_recibir', { p_id: id, p_items: items, p_nota: txt || null });
-        conteo.delete(id); nota.delete(id); pideNota.delete(id); armadoEnv = '';
-        aviso(r.con_diferencias ? `Envío #${r.numero} recibido con diferencias. Ya quedó avisado al dueño.` : `Envío #${r.numero} recibido: lo que contaste ya está en el inventario.`); await refrescar();
-      } catch (er) {
-        if (/no coincide/i.test(er.message)) { pideNota.add(id); const f = $('.iv-nota', card); f.hidden = false; $('[data-nota]', card).focus(); }
-        aviso(er.message, true); b.disabled = false; if (!/no coincide/i.test(er.message)) { armadoEnv = ''; refrescar(); }
+      const g = e.target.closest('#iv-guardar'), an = e.target.closest('[data-ranular]');
+      if (g) {
+        const items = $$('#iv-envios [data-i]').filter(c => c.value.trim() !== '').map(c => ({ insumo: c.dataset.i, cantidad: Number(c.value) }));
+        if (!items.length) { aviso('Escribe cuánto llegó de al menos un ingrediente.', true); return; }
+        if (items.some(x => !(x.cantidad > 0 && x.cantidad <= 1000000))) { aviso('Revisa las cantidades: deben ser mayores que cero.', true); return; }
+        confirmar(items, ($('#iv-nota').value || '').trim());
+      } else if (an) {
+        const id = +an.dataset.ranular, d = document.createElement('dialog'); d.className = 'rest-dialogo';
+        d.innerHTML = `<form method="dialog"><h2>Anular recepción #${id}</h2><p class="rest-sub">Se resta del inventario lo que sumaste. Después anótala de nuevo bien.</p><label class="rest-campo">Motivo<input id="iv-motivo" maxlength="200" placeholder="Ej.: puse mal la cantidad"></label><div class="acc"><button value="no" class="rest-btn sec" formnovalidate>Volver</button><button value="si" class="rest-btn peligro">Anular</button></div></form>`;
+        document.body.append(d); d.addEventListener('close', async () => { const m = ($('#iv-motivo', d) || {}).value || '', ok = d.returnValue === 'si'; d.remove(); if (!ok) return; if (m.trim().length < 3) { aviso('Escribe el motivo.', true); return; }
+          try { await window.REST.rpc('recepcion_anular', { p_id: id, p_motivo: m.trim() }); aviso('Recepción anulada: se restó del inventario.'); await refrescar(); } catch (er) { aviso(er.message, true); } }); d.showModal();
       }
     });
     $$('#iv-filtros .rd-chipf').forEach(b => b.onclick = () => { filtro = b.dataset.f; pintarInventario(); });
@@ -83,13 +95,13 @@
       await cargarInv(); const sin = inv.insumos.filter(i => i.estado === 'agotado'); if (sin.length) aviso(`Ojo: se acabó ${sin.slice(0, 3).map(i => i.nombre).join(', ')}${sin.length > 3 ? '…' : ''}. Avisa a bodega.`, true);
     };
     window.CEN.refrescar = refrescar;
-    window.CEN.arrancar = () => { refrescar(); setInterval(() => { if (!document.hidden) refrescar(); }, 7000); window.addEventListener('storage', refrescar); };
+    window.CEN.arrancar = () => { refrescar(); setInterval(() => { if (!document.hidden) { cargarInv(); cargarRecs(); } }, 7000); window.addEventListener('storage', refrescar); };
   }
 
   /* =====================  DASHBOARD DEL DUEÑO (bodega central)  ===================== */
   const raiz = $('#rd-p-central');
   if (!raiz) return;
-  let est = [], envios = [], filtro = 'todo', dias = 3, armado = '';
+  let est = [], envios = [], recs = [], filtro = 'todo', dias = 3, armado = '';
   const draft = new Map();
   const paso = i => i.unidad === 'gr' ? 100 : 1;
   const rapidos = i => i.unidad === 'uni' ? [10, 20, 50] : [500, 1000, 5000];
@@ -149,16 +161,24 @@
     $('#ce-unidad').innerHTML = `<option value="1">${i.unidad === 'gr' ? 'gramos' : 'unidades'}</option>` + (i.empaque_cant ? `<option value="${i.empaque_cant}">${esc(i.empaque_nombre || 'empaque')}s de ${num(i.empaque_cant)} ${i.unidad === 'gr' ? 'gr' : 'uni'}</option>` : '');
   }
   function pintarEnvios() {
+    window.CEN.recs = recs;
     $('#ce-envios').innerHTML = envios.length ? envios.slice(0, 12).map(e => {
       const cl = e.estado === 'enviado' ? 'bajo' : e.estado === 'recibido' ? (e.con_diferencias ? 'agotado' : 'ok') : 'agotado', tx = e.estado === 'enviado' ? '▲ En camino' : e.estado === 'recibido' ? (e.con_diferencias ? '■ Con diferencias' : '● Recibido') : '■ Anulado';
       return `<article class="ce-envio ${e.estado}"><header><h3>Envío #${e.numero}</h3><span class="rd-estado ${cl}">${tx}</span></header>
         <p class="sk-det">Salió ${hace(e.creado)}${e.quien ? ' · ' + esc(e.quien) : ''}${e.nota ? ' · ' + esc(e.nota) : ''}${e.estado === 'recibido' ? `<br>Lo recibió <b>${esc(e.recibido_por || 'el local')}</b> a las ${hhmm(e.recibido_en)}${e.recepcion_nota ? `<br>Nota del local: <b>${esc(e.recepcion_nota)}</b>` : ''}` : ''}${e.estado === 'anulado' ? `<br>Anulado: ${esc(e.anulado_motivo || '')}` : ''}</p>
-        <ul class="ins-chips">${e.items.map(e.estado === 'recibido' ? chipRec : chip).join('')}</ul>${e.estado === 'enviado' ? `<div class="acc"><button type="button" class="rest-btn peligro chico" data-anular="${e.id}">Anular envío</button></div>` : ''}</article>`; }).join('')
+        <ul class="ins-chips">${e.items.map(e.estado === 'enviado' ? chipCam(e) : e.estado === 'recibido' ? chipRec : chip).join('')}</ul>${e.estado === 'enviado' ? `<div class="acc"><button type="button" class="rest-btn chico" data-cerrar="${e.id}">Marcar como recibido</button><button type="button" class="rest-btn peligro chico" data-anular="${e.id}">Anular envío</button></div>` : ''}</article>`; }).join('')
       : '<p class="rest-sub">Todavía no has enviado nada al local. Arriba eliges qué enviar.</p>';
+  }
+  function pintarRecs() {
+    const c = $('#ce-recepciones'); if (!c) return;
+    c.innerHTML = recs.length ? recs.slice(0, 12).map(r => `<article class="ce-envio ${r.anulada ? 'anulado' : 'recibido'}"><header><h3>Llegó al local #${r.id}</h3><span class="rd-estado ${r.anulada ? 'agotado' : 'ok'}">${r.anulada ? '■ Anulada' : '● Anotada'}</span></header>
+      <p class="sk-det">${hace(r.creado)} · lo anotó <b>${esc(r.quien || 'el local')}</b>${r.nota ? ' · ' + esc(r.nota) : ''}${r.anulada ? `<br>Anulada: ${esc(r.anulada_motivo || '')}` : ''}</p>
+      <ul class="ins-chips">${r.items.map(chip).join('')}</ul>${r.anulada ? '' : `<div class="acc"><button type="button" class="rest-btn sec chico" data-ranular="${r.id}">Anular (se resta del local)</button></div>`}</article>`).join('')
+      : '<p class="rest-sub">Todavía el local no ha anotado nada. Cuando reciban ingredientes, aparece aquí.</p>';
   }
   async function cargar() {
     if (document.hidden) return;
-    try { [est, envios] = await Promise.all([window.REST.rpc('central_estado', { p_dias: dias }), window.REST.rpc('envios_lista', { p_dias: 30 })]); window.CEN.ok = true; pintarGrid(); pintarEnvios(); }
+    try { [est, envios] = await Promise.all([window.REST.rpc('central_estado', { p_dias: dias }), window.REST.rpc('envios_lista', { p_dias: 30 })]); window.CEN.ok = true; try { recs = await window.REST.rpc('recepciones_lista', { p_dias: 30 }); } catch (e) { recs = []; } pintarGrid(); pintarEnvios(); pintarRecs(); }
     catch (e) { if (FALTA.test(e.message)) { window.CEN.ok = false; const t = $('#rd-tab-central'); if (t) t.hidden = true; } }
   }
   function dialogo(html, alCerrar) {
@@ -187,7 +207,18 @@
           aviso(`Envío #${r.numero} en camino: ${cs.length} ingrediente${cs.length > 1 ? 's' : ''}.`); draft.clear(); armado = ''; await cargar(); } catch (er) { aviso(er.message, true); } });
     void d;
   };
+  $('#ce-recepciones').addEventListener('click', e => {
+    const b = e.target.closest('[data-ranular]'); if (!b) return; const id = +b.dataset.ranular;
+    dialogo(`<form method="dialog"><h2>Anular lo que llegó #${id}</h2><p class="rest-sub">Se resta del inventario del local lo que esa recepción sumó.</p><label class="rest-campo">Motivo<input id="ce-motivo" maxlength="200" placeholder="Ej.: se anotó doble"></label>
+      <div class="acc"><button value="no" class="rest-btn sec" formnovalidate>Volver</button><button value="si" class="rest-btn peligro">Anular</button></div></form>`,
+      async dl => { const m = ($('#ce-motivo', dl) || {}).value || ''; if (dl.returnValue !== 'si') return; if (m.trim().length < 3) { aviso('Escribe el motivo.', true); return; }
+        try { await window.REST.rpc('recepcion_anular', { p_id: id, p_motivo: m.trim() }); aviso('Recepción anulada.'); await cargar(); } catch (er) { aviso(er.message, true); } });
+  });
   $('#ce-envios').addEventListener('click', e => {
+    const c = e.target.closest('[data-cerrar]');
+    if (c) { const id = +c.dataset.cerrar; dialogo(`<form method="dialog"><h2>Marcar el envío como recibido</h2><p class="rest-sub">Úsalo cuando ya llegó. No cambia el inventario del local: eso lo anota el vendedor al recibir.</p><label class="rest-campo">Nota (opcional)<input id="ce-cnota" maxlength="200" placeholder="Ej.: llegó completo"></label>
+        <div class="acc"><button value="no" class="rest-btn sec" formnovalidate>Volver</button><button value="si" class="rest-btn">Marcar recibido</button></div></form>`,
+        async dl => { if (dl.returnValue !== 'si') return; try { await window.REST.rpc('envio_cerrar', { p_id: id, p_nota: (($('#ce-cnota', dl) || {}).value || '').trim() || null }); aviso('Envío marcado como recibido.'); await cargar(); } catch (er) { aviso(er.message, true); } }); return; }
     const b = e.target.closest('[data-anular]'); if (!b) return; const id = +b.dataset.anular;
     dialogo(`<form method="dialog"><h2>Anular envío</h2><p class="rest-sub">La mercadería vuelve a la bodega central. Solo se puede si el local todavía no lo recibió.</p><label class="rest-campo">Motivo<input id="ce-motivo" maxlength="200" placeholder="Ej.: me equivoqué de insumo"></label>
       <div class="acc"><button value="no" class="rest-btn sec" formnovalidate>Volver</button><button value="si" class="rest-btn peligro">Anular</button></div></form>`,

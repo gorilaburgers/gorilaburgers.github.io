@@ -350,3 +350,6 @@ dialog.rest-dialogo .acc { display: flex; gap: 10px; margin-top: 14px; justify-c
 .iv-conteo input:focus-visible { outline: 3px solid var(--d-aviso); outline-offset: 1px; }
 .iv-nota[hidden] { display: none; } .ins-chips li.dif { border-color: var(--d-crit); } .ins-chips li small { display: block; color: var(--d-mut); font-weight: 400; }
 .iv-nota { display: grid; gap: 6px; margin-top: 6px; } .iv-envio .acc { margin-top: 10px; }
+
+.iv-recs { display: grid; gap: 10px; margin-top: 12px; } .iv-sub { font: 800 1.05rem/1 var(--fx-font-disp); text-transform: uppercase; color: var(--d-mut); margin: 4px 2px 0; }
+.iv-rec > header { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; } .iv-rec.anulada { opacity: .6; }
