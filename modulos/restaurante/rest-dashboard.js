@@ -176,9 +176,13 @@
     const ib = window.INS && window.INS.alertas;
     if (ib && (ib.agotados || ib.bajos)) al.push([ib.agotados ? 'crit' : 'aviso', 'Bodega', `${ib.agotados ? ib.agotados + ' agotado' + (ib.agotados > 1 ? 's' : '') : ''}${ib.agotados && ib.bajos ? ' y ' : ''}${ib.bajos ? ib.bajos + ' con poco' : ''}`, '<button type="button" class="rd-al-ir" data-ir="bodega">Ver bodega</button>']);
     if (ib && ib.sinCargar) al.push(['info', 'Bodega sin cargar', `${ib.sinCargar} insumo${ib.sinCargar > 1 ? 's' : ''} sin contar`, '<button type="button" class="rd-al-ir" data-ir="bodega">Contar ahora</button>']);
+    const ce = window.CEN && window.CEN.alertas;
+    if (ce && ce.bajas) al.push(['crit', 'Bodega central', `${ce.bajas} ingrediente${ce.bajas > 1 ? 's' : ''} sin lo suficiente para abastecer al local`, '<button type="button" class="rd-al-ir" data-ir="central">Ver central</button>']);
+    if (ce && ce.paraEnviar - (ce.bajas || 0) > 0) al.push(['aviso', 'Para enviar', `${ce.paraEnviar - ce.bajas} ingrediente${ce.paraEnviar - ce.bajas > 1 ? 's' : ''} del local piden reposición`, '<button type="button" class="rd-al-ir" data-ir="central">Preparar envío</button>']);
+    if (ce && ce.enCamino) al.push(['info', 'Envíos', `${ce.enCamino} en camino esperando que el local los reciba`, '<button type="button" class="rd-al-ir" data-ir="central">Ver envíos</button>']);
     $('#rd-alertas').innerHTML = al.length ? al.map(([c, t, x, b]) => `<div class="rd-al ${c}"><span class="ic" aria-hidden="true">${c === 'crit' ? '■' : c === 'aviso' ? '▲' : 'ℹ'}</span><span class="tx"><b>${t}</b> ${x}</span>${b}</div>`).join('')
       : '<div class="rd-al ok"><span class="ic" aria-hidden="true">●</span><span class="tx"><b>Todo en orden.</b> Nada urgente por ahora.</span></div>';
-    badge('hoy', d.pendientes || 0); badge('stock', ag.length + ba.length); if (ib) badge('bodega', (ib.agotados || 0) + (ib.bajos || 0));
+    badge('hoy', d.pendientes || 0); badge('stock', ag.length + ba.length); if (ib) badge('bodega', (ib.agotados || 0) + (ib.bajos || 0)); if (ce) badge('central', (ce.paraEnviar || 0) + (ce.enCamino || 0));
   }
   window.RD = { alertas: () => pintarAlertas(D), badge, datos: () => D };
   TABS.forEach(b => {
@@ -222,6 +226,7 @@
     $('#rd-app').hidden = false; cargar(); timer = setInterval(cargar, 4000); juego(); setInterval(juego, 15000);
     if (window.INS && window.INS.arrancar) window.INS.arrancar();
     if (window.AJ) window.AJ.arrancar();
+    if (window.CEN && window.CEN.arrancar) window.CEN.arrancar();
     medirCabecera(); let ini = location.hash.slice(1); try { ini = ini || sessionStorage.getItem('rd_tab'); } catch (e) { /* nada */ } irA(ini || 'hoy', false);
     document.addEventListener('visibilitychange', () => { if (!document.hidden) cargar(); }); window.addEventListener('storage', cargar);
     if (window.REST.modo === 'demo') $('#rd-demo').hidden = false;

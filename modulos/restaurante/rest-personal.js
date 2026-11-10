@@ -8,11 +8,14 @@
   const GRUPOS = [['Hamburguesas', p => p.cuenta_burger], ['Papas y bebidas', p => !p.cuenta_burger && p.categoria !== 'extras'], ['Extras', p => p.categoria === 'extras']];
 
   function estadoStock(p) { if (!p.controla_stock || p.quedan == null) return null; return p.quedan <= 0 ? 'agotado' : p.quedan <= R.stock_bajo ? 'bajo' : 'ok'; }
+  /* con bodega central: cuántas se pueden hacer con el inventario del local (lo calcula la base) */
+  const alcanceChip = p => { const a = window.CEN && window.CEN.alcance && window.CEN.alcance.get(p.clave); if (!a || a.alcanzan == null) return ''; const n = a.alcanzan, cl = n <= 0 ? 'agotado' : n <= Math.max(R.stock_bajo || 5, 10) ? 'bajo' : 'ok';
+    return `<span class="al ${cl}">${n <= 0 ? 'Sin ingredientes' : 'Alcanzan ' + n}</span>`; };
   function pintarBotones() {
     $('#rp-botones').innerHTML = GRUPOS.map(([tit, f]) => { const ps = productos.filter(f); return ps.length ? `<div class="rp-grupo"><h2>${tit}</h2><div class="rp-botones">${ps.map(p => {
       const e = estadoStock(p), c = ticket.get(p.clave) || 0, sin = e === 'agotado';
       return `<button type="button" class="rp-prod" data-c="${esc(p.clave)}" ${sin ? 'disabled' : ''}><span>${esc(p.nombre)}</span><span class="precio">${plata(p.precio_cent)}</span>
-        ${e ? `<span class="q" style="color:${e === 'ok' ? '#7fe07f' : e === 'bajo' ? 'var(--d-aviso)' : '#ff9a9a'}">${e === 'ok' ? '●' : e === 'bajo' ? '▲' : '■'} ${sin ? 'Agotado' : `Quedan ${p.quedan}`}</span>` : ''}${c ? `<span class="cant">${c}</span>` : ''}</button>`; }).join('')}</div></div>` : ''; }).join('');
+        ${e ? `<span class="q" style="color:${e === 'ok' ? '#7fe07f' : e === 'bajo' ? 'var(--d-aviso)' : '#ff9a9a'}">${e === 'ok' ? '●' : e === 'bajo' ? '▲' : '■'} ${sin ? 'Agotado' : `Quedan ${p.quedan}`}</span>` : ''}${alcanceChip(p)}${c ? `<span class="cant">${c}</span>` : ''}</button>`; }).join('')}</div></div>` : ''; }).join('');
     $$('.rp-prod').forEach(b => b.onclick = () => { ticket.set(b.dataset.c, (ticket.get(b.dataset.c) || 0) + 1); pintarTicket(); });
   }
   function pintarTicket() {
@@ -30,7 +33,7 @@
     if (ocupado || !ticket.size) return; ocupado = true; clave = clave || nuevaClave(); $('#rp-registrar').disabled = true;
     try {
       const r = await window.REST.rpc('venta_registrar', { p_lineas: [...ticket].map(([producto, cantidad]) => ({ producto, cantidad })), p_clave: clave });
-      aviso(`Venta #${r.numero} registrada · ${plata(r.total_cent)}`); ticket.clear(); clave = null; await Promise.all([stock(), ventas()]);
+      aviso(`Venta #${r.numero} registrada · ${plata(r.total_cent)}`); ticket.clear(); clave = null; await Promise.all([stock(), ventas()]); if (window.CEN && window.CEN.trasVenta) window.CEN.trasVenta();
     } catch (e) { aviso(e.message, true); if (/stock|disponible/i.test(e.message)) { clave = null; stock(); } }
     finally { ocupado = false; pintarTicket(); }
   };
@@ -118,12 +121,13 @@
   }
 
   /* ---------- pestañas y arranque ---------- */
-  function pestana(k) { ['vender', 'pedidos', 'ventas', 'premios'].filter(t => $('#t-' + t)).forEach(t => { $('#t-' + t).setAttribute('aria-selected', t === k); $('#p-' + t).hidden = t !== k; }); if (k === 'pedidos') pedidos(); if (k === 'ventas') ventas(); history.replaceState(null, '', '#' + k); }
-  ['vender', 'pedidos', 'ventas', 'premios'].filter(k => $('#t-' + k)).forEach(k => $('#t-' + k).onclick = () => pestana(k));
+  function pestana(k) { ['vender', 'pedidos', 'ventas', 'inventario', 'premios'].filter(t => $('#t-' + t)).forEach(t => { $('#t-' + t).setAttribute('aria-selected', t === k); $('#p-' + t).hidden = t !== k; }); if (k === 'pedidos') pedidos(); if (k === 'ventas') ventas(); history.replaceState(null, '', '#' + k); }
+  ['vender', 'pedidos', 'ventas', 'inventario', 'premios'].filter(k => $('#t-' + k)).forEach(k => $('#t-' + k).onclick = () => pestana(k));
   $('#rp-salir').onclick = () => { window.REST.salir(); location.reload(); };
   function alEntrar(u) {
+    if (window.CEN && window.CEN.arrancar) { window.CEN.alAlcance = pintarBotones; window.CEN.arrancar(); }
     yo = u; $('#rp-app').hidden = false; $('#rp-quien').textContent = `${u.nombre} · ${u.rol === 'admin' ? 'Dueño' : 'Ventas'}`; stock(); pedidos(); ventas(); pintarTicket();
-    const h = location.hash.slice(1); if (['pedidos', 'ventas'].includes(h)) pestana(h);
+    const h = location.hash.slice(1); if (['pedidos', 'ventas', 'inventario'].includes(h)) pestana(h);
     timer = setInterval(() => { if (!document.hidden) { stock(); pedidos(); } }, 6000); window.addEventListener('storage', () => { stock(); pedidos(); ventas(); });
   }
   window.RUI.sesion({ raiz: $('#rp-entrada'), roles: ['vendedor', 'admin'], titulo: R.personal_txt.entrada_titulo, texto: R.personal_txt.entrada_texto, alEntrar });

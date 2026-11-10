@@ -39,6 +39,7 @@
             <button type="button" role="tab" id="t-vender" aria-selected="true" aria-controls="p-vender">Vender</button>
             <button type="button" role="tab" id="t-pedidos" aria-selected="false" aria-controls="p-pedidos">Pedidos web <span class="n" id="rp-n" hidden>0</span></button>
             <button type="button" role="tab" id="t-ventas" aria-selected="false" aria-controls="p-ventas">Mis ventas</button>
+            <button type="button" role="tab" id="t-inventario" aria-selected="false" aria-controls="p-inventario">Inventario <span class="n" id="rp-n-inv" hidden>0</span></button>
             
           </div>
           <button type="button" class="rest-btn chico" id="rp-instalar" hidden>Instalar acceso directo</button>
@@ -57,6 +58,13 @@
 
       <section id="p-pedidos" role="tabpanel" aria-labelledby="t-pedidos" hidden><div class="rp-lista" id="rp-pedidos"></div></section>
       <section id="p-ventas" role="tabpanel" aria-labelledby="t-ventas" hidden><div class="rp-lista" id="rp-ventas"></div></section>
+      <section id="p-inventario" role="tabpanel" aria-labelledby="t-inventario" hidden>
+        <div class="rp-lista" id="iv-envios"></div>
+        <article class="rest-tarjeta iv-panel"><header><div><h2>Inventario del local</h2><small>Lo que hay ahora, en vivo. Cada venta que registras lo descuenta.</small></div></header>
+          <div class="bo-filtros" id="iv-filtros" role="group" aria-label="Filtrar ingredientes"><button type="button" class="rd-chipf" data-f="todo" aria-pressed="true">Todo</button><button type="button" class="rd-chipf" data-f="atencion" aria-pressed="false">Poco o agotado</button><button type="button" class="rd-chipf" data-f="sin_cargar" aria-pressed="false">Sin contar</button></div>
+          <div class="sk-grid iv-grid" id="iv-grid"></div></article>
+        <article class="rest-tarjeta iv-panel"><header><div><h2>Cuántas alcanzan</h2><small>Lo que todavía se puede vender con los ingredientes que hay</small></div></header><ul class="iv-prod" id="iv-prod"></ul></article>
+      </section>
       
     </div>
   </div>
@@ -70,6 +78,7 @@
 
 <script src="modulos/restaurante/rest-api.js"></script>
 <script src="modulos/restaurante/rest-insumos.js"></script>
+<script src="modulos/restaurante/rest-central.js"></script>
 <script src="modulos/restaurante/rest-personal.js"></script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw-caja.js').catch(() => {});</script>
 

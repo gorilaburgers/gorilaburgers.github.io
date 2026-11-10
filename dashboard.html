@@ -32,7 +32,7 @@
         <h1 id="rd-titulo">Hoy en Gorila<small id="rd-fecha"></small></h1>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="rd-vivo" id="rd-vivo" role="status"><i></i><span id="rd-vivo-txt">Conectando…</span></span><button type="button" class="rest-btn sec chico" id="rd-salir">Salir</button></div>
       </div>
-      <nav class="rd-nav" id="rd-nav" role="tablist" aria-label="Secciones del dashboard"><button type="button" role="tab" class="rd-tab" id="rd-tab-hoy" data-p="hoy" aria-selected="false" aria-controls="rd-p-hoy" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="tx">Hoy</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-stock" data-p="stock" aria-selected="false" aria-controls="rd-p-stock" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11h16a8 7 0 0 1-16 0zM5 8c1-3 13-3 14 0M4 15h16"/></svg><span class="tx">Qué se vende</span><span class="tc">Ventas</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-bodega" data-p="bodega" aria-selected="false" aria-controls="rd-p-bodega" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-5 9 5v10H3zM9 19v-6h6v6"/></svg><span class="tx">Ingredientes</span><span class="tc">Bodega</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-semana" data-p="semana" aria-selected="false" aria-controls="rd-p-semana" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span class="tx">Semana y equipo</span><span class="tc">Semana</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-ajustes" data-p="ajustes" aria-selected="false" aria-controls="rd-p-ajustes" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10M14 4v6M8 14v6"/></svg><span class="tx">Ajustes</span><span class="n" hidden></span></button></nav>
+      <nav class="rd-nav" id="rd-nav" role="tablist" aria-label="Secciones del dashboard"><button type="button" role="tab" class="rd-tab" id="rd-tab-hoy" data-p="hoy" aria-selected="false" aria-controls="rd-p-hoy" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="tx">Hoy</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-stock" data-p="stock" aria-selected="false" aria-controls="rd-p-stock" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11h16a8 7 0 0 1-16 0zM5 8c1-3 13-3 14 0M4 15h16"/></svg><span class="tx">Qué se vende</span><span class="tc">Ventas</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-bodega" data-p="bodega" aria-selected="false" aria-controls="rd-p-bodega" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-5 9 5v10H3zM9 19v-6h6v6"/></svg><span class="tx">Ingredientes</span><span class="tc">Bodega</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-central" data-p="central" aria-selected="false" aria-controls="rd-p-central" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7M7 19.5a1.5 1.5 0 1 0 .01 0M17 19.5a1.5 1.5 0 1 0 .01 0"/></svg><span class="tx">Bodega central</span><span class="tc">Central</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-semana" data-p="semana" aria-selected="false" aria-controls="rd-p-semana" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span class="tx">Semana y equipo</span><span class="tc">Semana</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-ajustes" data-p="ajustes" aria-selected="false" aria-controls="rd-p-ajustes" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10M14 4v6M8 14v6"/></svg><span class="tx">Ajustes</span><span class="n" hidden></span></button></nav>
       <div id="rd-cuerpo">
 <section class="rd-panel" id="rd-p-hoy" role="tabpanel" aria-labelledby="rd-tab-hoy">
                     <div class="rd-alertas" id="rd-alertas" aria-live="polite"></div>
@@ -90,6 +90,29 @@
                 <p class="rest-sub">Cantidad que lleva UNA unidad. Déjalo vacío si no lo usa. Vale solo para las ventas nuevas: las anteriores conservan su receta.</p><button type="submit" class="rest-btn">Guardar receta</button></form></div></article>
         </section>
         </section>
+<section class="rd-panel" id="rd-p-central" role="tabpanel" aria-labelledby="rd-tab-central" hidden>
+          <header class="rd-ph"><h2>Bodega central</h2><p>Lo que hay en la central, lo que ya enviaste al local y qué falta enviar. Lo que llega al local lo descuentan las ventas.</p></header>
+        <section class="rd-bod-kpis" id="ce-kpis" aria-label="Resumen de la bodega central"></section>
+        <section class="rd-una">
+          <article class="rest-tarjeta"><header><div><h2>Qué enviar al local</h2><small id="ce-sub">Cargando…</small></div>
+              <div class="bo-acciones"><label class="ce-dias">Cubrir <select id="ce-dias"><option value="1">1 día</option><option value="2">2 días</option><option value="3" selected>3 días</option><option value="5">5 días</option><option value="7">7 días</option></select></label>
+                <button type="button" class="rest-btn chico" id="ce-sugerido">Llenar con lo sugerido</button><button type="button" class="rest-btn sec chico" id="ce-abrir">Entró · Conté · Se dañó (central)</button></div></header>
+            <form id="ce-form" class="bo-form" hidden>
+              <label class="rest-campo">Insumo<select id="ce-insumo" name="insumo"></select></label>
+              <label class="rest-campo">Qué pasó<select id="ce-tipo" name="tipo"><option value="compra">Entró mercadería</option><option value="conteo">Hice un conteo</option><option value="merma">Se perdió o dañó</option></select></label>
+              <label class="rest-campo">Cantidad<input id="ce-cantidad" name="cantidad" type="number" min="0" step="any" inputmode="decimal" required></label>
+              <label class="rest-campo">En<select id="ce-unidad" name="unidad"></select></label>
+              <label class="rest-campo bo-nota">Nota (obligatoria si se perdió)<input name="nota" maxlength="200" placeholder="Ej.: compra del proveedor, se dañó en la cadena de frío"></label>
+              <p class="rest-sub bo-ayuda" id="ce-ayuda">Cuánto entró a la central (se suma).</p>
+              <div class="pie"><button type="submit" class="rest-btn">Guardar</button><button type="button" class="rest-btn sec" id="ce-x">Cancelar</button></div>
+            </form>
+            <div class="bo-filtros" id="ce-filtros" role="group" aria-label="Filtrar insumos"><button type="button" class="rd-chipf" data-f="todo" aria-pressed="true">Todo</button><button type="button" class="rd-chipf" data-f="enviar" aria-pressed="false">Para enviar</button><button type="button" class="rd-chipf" data-f="central_bajo" aria-pressed="false">Central baja</button><button type="button" class="rd-chipf" data-f="sin_cargar" aria-pressed="false">Sin contar</button></div>
+            <div class="sk-grid" id="ce-grid"></div><p class="rest-sub" id="ce-vacio" hidden>Nada para mostrar con este filtro.</p></article>
+          <div class="sk-guardar" id="ce-guardar" hidden role="region" aria-label="Envío sin enviar"><span class="sk-cambios" id="ce-cambios"></span>
+            <button type="button" class="rest-btn sec" id="ce-descartar">Descartar</button><button type="button" class="rest-btn" id="ce-ok">Enviar al local</button></div>
+          <article class="rest-tarjeta"><header><div><h2>Envíos al local</h2><small>Lo que ya salió de la central y si el local ya lo recibió</small></div></header><div class="ce-envios" id="ce-envios"></div></article>
+        </section>
+        </section>
 <section class="rd-panel" id="rd-p-semana" role="tabpanel" aria-labelledby="rd-tab-semana" hidden>
           <header class="rd-ph"><h2>Semana y equipo</h2><p>Cómo vienen los últimos 7 días y quién vendió hoy en el local.</p></header>
         <section class="rd-fila4 rd-sem2">
@@ -128,6 +151,7 @@
 
 <script src="modulos/restaurante/rest-api.js"></script>
 <script src="modulos/restaurante/rest-insumos.js"></script>
+<script src="modulos/restaurante/rest-central.js"></script>
 <script src="modulos/restaurante/rest-ajustes.js"></script>
 <script src="modulos/restaurante/rest-dashboard.js"></script>
 
