@@ -18,6 +18,10 @@
 <meta name="description" content="Dashboard en vivo de Gorila Burgers Ambato: cuántas burgers se venden, qué queda en stock y cómo te piden.">
 <link rel="stylesheet" href="modulos/restaurante/rest.css">
 <link rel="stylesheet" href="modulos/restaurante/rest-panel.css">
+<link rel="manifest" href="dueno.webmanifest">
+<link rel="apple-touch-icon" href="assets/dueno-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Gorila Dueño"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 <body class="rest-oscuro" data-pagina="Dashboard del dueño (Premium)" data-secciones='["Resumen de hoy", "Hamburguesas por hora", "Cómo te piden", "Qué se vende y qué queda", "Movimientos en vivo", "Últimos 7 días", "Equipo", "Pedidos de la web"]'>
 <header class="cabecera"><div class="wrap">
@@ -30,7 +34,7 @@
     <div id="rd-app" hidden>
       <div class="rd-barra">
         <h1 id="rd-titulo">Hoy en Gorila<small id="rd-fecha"></small></h1>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="rd-vivo" id="rd-vivo" role="status"><i></i><span id="rd-vivo-txt">Conectando…</span></span><button type="button" class="rest-btn sec chico" id="rd-salir">Salir</button></div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="rd-vivo" id="rd-vivo" role="status"><i></i><span id="rd-vivo-txt">Conectando…</span></span><button type="button" class="rest-btn chico" id="rd-instalar" hidden>Instalar acceso directo</button><button type="button" class="rest-btn sec chico" id="rd-salir">Salir</button></div>
       </div>
       <nav class="rd-nav" id="rd-nav" role="tablist" aria-label="Secciones del dashboard"><button type="button" role="tab" class="rd-tab" id="rd-tab-hoy" data-p="hoy" aria-selected="false" aria-controls="rd-p-hoy" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="tx">Hoy</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-stock" data-p="stock" aria-selected="false" aria-controls="rd-p-stock" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11h16a8 7 0 0 1-16 0zM5 8c1-3 13-3 14 0M4 15h16"/></svg><span class="tx">Qué se vende</span><span class="tc">Ventas</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-bodega" data-p="bodega" aria-selected="false" aria-controls="rd-p-bodega" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-5 9 5v10H3zM9 19v-6h6v6"/></svg><span class="tx">Ingredientes</span><span class="tc">Bodega</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-central" data-p="central" aria-selected="false" aria-controls="rd-p-central" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7M7 19.5a1.5 1.5 0 1 0 .01 0M17 19.5a1.5 1.5 0 1 0 .01 0"/></svg><span class="tx">Bodega central</span><span class="tc">Central</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-semana" data-p="semana" aria-selected="false" aria-controls="rd-p-semana" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span class="tx">Semana y equipo</span><span class="tc">Semana</span><span class="n" hidden></span></button><button type="button" role="tab" class="rd-tab" id="rd-tab-ajustes" data-p="ajustes" aria-selected="false" aria-controls="rd-p-ajustes" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10M14 4v6M8 14v6"/></svg><span class="tx">Ajustes</span><span class="n" hidden></span></button></nav>
       <div id="rd-cuerpo">
@@ -154,6 +158,7 @@
 <script src="modulos/restaurante/rest-central.js"></script>
 <script src="modulos/restaurante/rest-ajustes.js"></script>
 <script src="modulos/restaurante/rest-dashboard.js"></script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw-app.js').catch(() => {});</script>
 
 </body>
 </html>

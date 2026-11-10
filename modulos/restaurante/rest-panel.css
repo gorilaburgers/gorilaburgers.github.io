@@ -340,3 +340,5 @@ dialog.rest-dialogo .acc { display: flex; gap: 10px; margin-top: 14px; justify-c
 /* con 4 o 5 pestañas (inventario, premios) la barra no debe ensanchar la página en el celular */
 .rp-tabs { max-width: 100%; overflow-x: auto; scrollbar-width: none; } .rp-tabs::-webkit-scrollbar { display: none; } .rp-tabs button { flex: 0 0 auto; }
 @media (max-width: 560px) { .rp-tabs { width: 100%; } .rp-tabs button { padding: 0 12px; font-size: 1rem; min-height: 46px; } .rp-barra > div { width: 100%; } }
+
+.rest-inst { margin: 14px 0 0; text-align: center; }

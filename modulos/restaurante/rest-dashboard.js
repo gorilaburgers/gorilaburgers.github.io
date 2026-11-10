@@ -232,6 +232,7 @@
     if (window.REST.modo === 'demo') $('#rd-demo').hidden = false;
   }
   $('#rd-feed').addEventListener('click', async e => { const b = e.target.closest('[data-ins]'); if (!b) return; await window.INS.alternar(+b.dataset.ins); if (D) pintarFeed(D); });
+  window.RUI.instalar($('#rd-instalar'), 'Dueño');
   $('#rd-salir').onclick = () => { window.REST.salir(); location.reload(); };
   $$('.rd-vistatabla').forEach(b => b.onclick = () => { const k = b.dataset.tabla, on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', on); b.textContent = on ? 'Ver gráfica' : 'Ver tabla'; $('#rd-' + k).hidden = on; $('#rd-' + k + '-tabla').hidden = !on; });
   const sim = async () => { try { const r = await window.REST.rpc('demo_simular'); if (r && r.n) { aviso(`Venta simulada: ${r.n} hamburguesa${r.n > 1 ? 's' : ''}.`); cargar(); } } catch (e) { aviso(e.message, true); } };
@@ -239,5 +240,5 @@
   $('#rd-auto').onclick = e => { const on = e.currentTarget.getAttribute('aria-pressed') !== 'true'; e.currentTarget.setAttribute('aria-pressed', on); e.currentTarget.textContent = on ? 'Detener simulación' : 'Simular ventas cada 6 s'; clearInterval(auto); if (on) { sim(); auto = setInterval(sim, 6000); } };
   $('#rd-reset').onclick = async () => { await window.REST.rpc('demo_reiniciar'); vistos = new Set(); primera = true; cargar(); aviso('Datos de ejemplo reiniciados.'); };
 
-  window.RUI.sesion({ raiz: $('#rd-entrada'), roles: ['admin'], titulo: R.dashboard_txt.entrada_titulo, texto: R.dashboard_txt.entrada_texto, alEntrar });
+  window.RUI.sesion({ app: 'Dueño', raiz: $('#rd-entrada'), roles: ['admin'], titulo: R.dashboard_txt.entrada_titulo, texto: R.dashboard_txt.entrada_texto, alEntrar });
 })();

@@ -43,12 +43,13 @@
 
   /* Pantalla de entrada del personal (dueño o empleado). Demo: se elige un usuario de ejemplo. Producción: correo y clave de Authentication.
      Después de entrar se pregunta a la base quién es (yo()) y se comprueba el rol. */
-  async function sesion({ raiz, roles, titulo, texto, alEntrar }) {
+  async function sesion({ raiz, roles, titulo, texto, alEntrar, app }) {
     const R = window.RESTDATA, esDemo = window.REST.modo === 'demo';
     const mostrarEntrada = (aviso) => {
       raiz.hidden = false; raiz.innerHTML = `<div class="rest-entrar"><h2>${esc(titulo)}</h2><p>${esc(texto)}</p>${aviso ? `<p class="rest-error" role="alert">${esc(aviso)}</p>` : ''}
         ${esDemo ? `<p class="rest-chip-demo">Demo: elige con quién entrar</p><div class="rest-usuarios">${R.demo.usuarios.filter(u => roles.includes(u.rol)).map((u, i) => `<button type="button" class="rest-btn" data-u="${i}">${esc(u.nombre)}${(u.rol === 'admin' ? 'Dueño' : 'Empleado') === u.nombre ? '' : `<small>${u.rol === 'admin' ? 'Dueño' : 'Empleado'}</small>`}</button>`).join('')}</div>`
         : `<form class="rest-form" autocomplete="on"><label>Correo<input type="email" name="correo" autocomplete="username" required></label><label>Clave<input type="password" name="clave" autocomplete="current-password" required></label><button class="rest-btn" type="submit">Entrar</button></form>`}</div>`;
+      raiz.firstElementChild.insertAdjacentHTML('beforeend', '<p class="rest-inst"><button type="button" class="rest-btn sec chico" id="rest-inst-e" hidden>Instalar acceso directo</button></p>'); if (app) instalar($('#rest-inst-e', raiz), app);
       if (esDemo) $$('[data-u]', raiz).forEach(b => b.onclick = () => { window.REST.entrarDemo(R.demo.usuarios.filter(u => roles.includes(u.rol))[+b.dataset.u]); verificar(); });
       else $('form', raiz).onsubmit = async e => { e.preventDefault(); const f = e.target, btn = $('button', f); btn.disabled = true;
         try { await window.REST.entrar(f.correo.value.trim(), f.clave.value); await verificar(); } catch (er) { mostrarEntrada(er.message); } };
@@ -63,5 +64,23 @@
     if (window.REST.haySesion()) verificar(); else mostrarEntrada();
   }
 
-  window.RUI = { TZ, esc, plata, num, hhmm, fechaLarga, diaCorto, canalTxt, hace, $, $$, aviso, tooltip, sesion };
+  /* Botón «Instalar acceso directo»: usa la ventana nativa si el navegador la ofrece; si no, explica los pasos (Android o iPhone). Se esconde si la app ya está instalada. */
+  function instalar(boton, nombre) {
+    if (!boton || matchMedia('(display-mode: standalone)').matches || navigator.standalone) return;
+    let evento = null; boton.hidden = false;
+    window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); evento = e; });
+    window.addEventListener('appinstalled', () => { boton.hidden = true; aviso(`Listo: busca el ícono «${nombre}» en la pantalla de inicio.`); });
+    const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    boton.onclick = async () => {
+      if (evento) { evento.prompt(); try { await evento.userChoice; } catch (e) { /* cerrado */ } evento = null; return; }
+      const d = document.createElement('dialog'); d.className = 'rest-dialogo';
+      d.innerHTML = `<form method="dialog"><h2>Instalar en este ${ios ? 'iPhone' : 'celular'}</h2><ol class="rp-pasos">${ios
+        ? '<li>Abre esta página en <b>Safari</b>.</li><li>Toca el botón <b>Compartir</b> (el cuadro con una flecha hacia arriba).</li><li>Elige <b>Agregar a pantalla de inicio</b> y toca <b>Agregar</b>.</li>'
+        : '<li>Abre el menú del navegador (<b>⋮</b> arriba a la derecha).</li><li>Toca <b>Instalar app</b> o <b>Agregar a pantalla de inicio</b>.</li><li>Confirma con <b>Instalar</b>.</li>'}</ol>
+        <p class="rest-sub">Después aparece el ícono «${esc(nombre)}» en la pantalla de inicio y abre directo esta pantalla.</p><div class="acc"><button class="rest-btn">Entendido</button></div></form>`;
+      document.body.append(d); d.addEventListener('close', () => d.remove()); d.showModal();
+    };
+  }
+
+  window.RUI = { instalar, TZ, esc, plata, num, hhmm, fechaLarga, diaCorto, canalTxt, hace, $, $$, aviso, tooltip, sesion };
 })();

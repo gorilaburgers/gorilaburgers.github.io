@@ -1,0 +1,33 @@
+{
+  "name": "Gorila Dueño",
+  "short_name": "Gorila Dueño",
+  "description": "Dashboard del dueño de Gorila Burgers: ventas en vivo, ingredientes, bodega central y ajustes.",
+  "id": "dashboard.html",
+  "start_url": "dashboard.html",
+  "scope": "dashboard.html",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#12324A",
+  "theme_color": "#12324A",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "assets/dueno-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/dueno-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/dueno-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

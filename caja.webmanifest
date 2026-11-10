@@ -1,10 +1,10 @@
 {
   "name": "Gorila Caja",
   "short_name": "Gorila Caja",
-  "description": "Pantalla de ventas de Gorila Burgers: registrar ventas y confirmar pedidos.",
+  "description": "Pantalla de ventas de Gorila Burgers: registrar ventas, recibir envíos y confirmar pedidos.",
   "id": "personal.html",
   "start_url": "personal.html",
-  "scope": "./",
+  "scope": "personal.html",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#12324A",
